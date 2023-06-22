@@ -2,7 +2,7 @@
 Relics is a simple full-stack web application for a school project
 
 ## Get started
-The application is split in two parts: the frontend and the backend. The backend can be found in /backend and the frontend can be found in /web.
+The application is split in two parts: the frontend and the backend. The backend can be found in `/backend` and the frontend can be found in `/web`.
 
 ### Setting up the database
 First you will need to spin up a docker container running the PostgreSQL database. This can be found here: https://hub.docker.com/_/postgres.
