@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <AssemblyName>Backend</AssemblyName>
+        <RootNamespace>Backend</RootNamespace>
+      <UserSecretsId>e2ef5c30-86af-4be1-a8b7-44157c123c35</UserSecretsId>
+  </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+        <PackageReference Include="HotChocolate" Version="13.1.0" />
+        <PackageReference Include="HotChocolate.AspNetCore" Version="13.1.0" />
+
+        <PackageReference Include="Dapper" Version="2.0.123" />
+
+        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.1.0" />
+
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
+        <PackageReference Include="Npgsql" Version="7.0.4" />
+
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+</Project>

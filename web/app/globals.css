@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gutter-x-margin: 36px;
+  --gutter-y-margin: 48px;
+}
