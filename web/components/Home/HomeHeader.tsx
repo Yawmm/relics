@@ -1,5 +1,4 @@
 import LogoIcon from "@/components/Icons/LogoIcon";
-import MenuIcon from "@/components/Icons/MenuIcon";
 import React from "react";
 import Link from "next/link";
 
@@ -10,5 +9,5 @@ export default function HomeHeader() {
 				<LogoIcon className={"w-[24px] h-[24px]"} />
 			</Link>
 		</div>
-	)
+	);
 }

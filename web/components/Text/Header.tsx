@@ -6,5 +6,5 @@ export default function Header({ children, className, ...params } : any) {
 		<h2 className={`text-zinc-200 text-lg font-semibold ${className}`} {...params}>
 			{children}
 		</h2>
-	)
+	);
 }

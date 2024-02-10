@@ -9,8 +9,8 @@ const Toggle = ({ children } : ToggleProps) => {
         <div className={"flex flex-row items-center gap-[12px] py-[8px] text-zinc-200 text-sm"}>
             {children}
         </div>
-    )
-}
+    );
+};
 
 type ToggleOptionProps = {
     id: string,
@@ -26,13 +26,13 @@ const ToggleOption = ({ id, value = false }: ToggleOptionProps) => {
                 type={"checkbox"}
                 id={id}
             />
-            <div className={"flex items-center justify-begin px-[4px] peer w-[48px] h-[24px] bg-zinc-700 rounded-3xl peer-checked:bg-main-700 peer-checked:justify-end peer-focus:ring-2 peer-focus:ring-main-500"}>
+            <div className={"flex items-center justify-begin px-[4px] peer w-[48px] h-[24px] bg-zinc-700 rounded-3xl peer-checked:bg-zinc-50 peer-checked:justify-end peer-focus:ring-4 peer-focus:ring-zinc-500"}>
                 <div className={"w-[16px] h-[16px] bg-zinc-800 rounded-3xl"} />
             </div>
         </div>
         
-    )
-}
+    );
+};
 
 Toggle.Option = ToggleOption;
 

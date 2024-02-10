@@ -16,7 +16,7 @@ type ConfirmationDialogProps = {
 }
 
 const ConfirmationDialog = forwardRef<ConfirmationDialogHandle, ConfirmationDialogProps>(({ onDismiss } : ConfirmationDialogProps, ref) => {
-    const [title, setTitle] = useState<string | null>(null)
+    const [title, setTitle] = useState<string | null>(null);
     const [warning, setWarning] = useState<string | null>(null);
 
     const callback = useRef(() => {});
@@ -24,6 +24,11 @@ const ConfirmationDialog = forwardRef<ConfirmationDialogHandle, ConfirmationDial
     
     function confirm() {
         if (callback.current) callback.current();
+        innerDialogRef.current?.hide();
+    }
+
+    function dismiss() {
+        if (onDismiss) onDismiss();
         innerDialogRef.current?.hide();
     }
     
@@ -37,8 +42,8 @@ const ConfirmationDialog = forwardRef<ConfirmationDialogHandle, ConfirmationDial
                 innerDialogRef.current?.show();
             },
             hide: () => innerDialogRef.current?.hide()
-        }
-    })
+        };
+    });
     
     return (
         <Dialog.Modal ref={innerDialogRef}>
@@ -54,18 +59,18 @@ const ConfirmationDialog = forwardRef<ConfirmationDialogHandle, ConfirmationDial
                 </Dialog.Column>
 
                 <Dialog.Row>
-                    <Button focus onClick={() => innerDialogRef.current?.hide()} type={"rounded"} usage={"other"} intent={"secondary"}>
+                    <Button focus onClick={dismiss} type={"rounded"} usage={"other"} intent={"secondary"}>
                         <RemoveIcon className={"w-[16px] h-[16px]"}/>
                         Cancel
                     </Button>
-                    <Button onClick={() => confirm()} className={"w-full justify-center"} type={"rounded"} usage={"form"} intent={"warn"}>
+                    <Button onClick={confirm} className={"w-full justify-center"} type={"rounded"} usage={"form"} intent={"warn"}>
                         <ConfirmIcon className={"w-[16px] h-[16px]"}/>
                         Confirm
                     </Button>
                 </Dialog.Row>
             </Dialog.Container>            
         </Dialog.Modal>
-    )
+    );
 });
 
 export default ConfirmationDialog;

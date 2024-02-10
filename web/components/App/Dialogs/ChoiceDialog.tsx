@@ -1,4 +1,4 @@
-import React, {Dispatch, RefObject, SetStateAction} from "react";
+import React, {RefObject} from "react";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import Title from "@/components/Text/Title";
 import Description from "@/components/Text/Description";
@@ -21,11 +21,15 @@ type ChoiceDialogProps = {
 
 export default function ChoiceDialog({ dialog, options, onSelectOption, onResetOption } : ChoiceDialogProps) {
 	function chooseItem(item: string | null) {
-		dialog.current?.hide()
+		dialog.current?.hide();
+
 		if (item === null)
-			onResetOption()
-		else
-			onSelectOption(item)
+		{
+			onResetOption();
+			return;
+		}
+
+		onSelectOption(item);
 	}
 
 	return (
@@ -83,5 +87,5 @@ export default function ChoiceDialog({ dialog, options, onSelectOption, onResetO
 				</Dialog.Column>
 			</Dialog.Container>
 		</Dialog.Modal>
-	)
+	);
 }

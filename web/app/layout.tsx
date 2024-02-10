@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import './globals.css'
-import { Inter } from 'next/font/google'
+import './globals.css';
+import {Inter} from 'next/font/google';
 import React, {useCallback, useEffect} from "react";
 import {ApolloProvider} from "@apollo/client";
 import client from "@/apollo-client";
@@ -11,7 +11,7 @@ import {usePathname, useRouter} from "next/navigation";
 import AppFooter from "@/components/App/AppFooter";
 import Loader from "@/components/Login/Loader";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
     children,
@@ -26,16 +26,16 @@ export default function RootLayout({
 
     useEffect(() => {
         if (isApp() && !(authentication.isLoggedIn || loading || (authentication.expiration && authentication.expiration > Date.now()))) {
-            push("/sign-in")
+            push("/sign-in");
         }
-    }, [authentication.isLoggedIn, loading])
+    }, [authentication.isLoggedIn, loading]);
 
     return (
         <html lang="en" className={"flex flex-col min-h-screen"}>
             <body className={inter.className + " flex flex-col min-h-screen"}>
                 <ApolloProvider client={client}>
                     <main className={`flex flex-col flex-grow w-full h-full bg-zinc-800
-                        selection:bg-main-500`
+                        selection:bg-zinc-500`
                     }>
                         {isApp()
                             ? !authentication.isLoggedIn || loading
@@ -62,5 +62,5 @@ export default function RootLayout({
                 </ApolloProvider>
             </body>
         </html>
-    )
+    );
 }

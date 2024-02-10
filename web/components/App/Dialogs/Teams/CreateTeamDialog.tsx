@@ -5,34 +5,33 @@ import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
 import ConfirmIcon from "@/components/Icons/ConfirmIcon";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
-import {RefObject} from "react";
-import {addProject} from "@/lib/projects";
+import {FormEvent, RefObject} from "react";
+import {addTeam} from "@/lib/teams";
 import {User} from "@/lib/types";
 
 type CreateProjectDialogProps = {
     dialog: RefObject<DialogModalHandle>
     user: User | null,
 
-    onUpdate: () => void,
+    onUpdate?: () => void,
 }
 
-export default function CreateProjectDialog({ dialog, user, onUpdate } : CreateProjectDialogProps) {
-    async function createProject(event: any) {
-        event.preventDefault()
+export default function CreateTeamDialog({ dialog, user, onUpdate } : CreateProjectDialogProps) {
+    async function createTeam(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
         
         if (!user)
             return;
 
-        let data = {
+        const data = {
             name: String(event.currentTarget.Name.value),
-            description: String(event.currentTarget.Description.value),
-        }
+        };
 
-        await addProject(data.name, data.description, user.id);
-        onUpdate()
+        await addTeam(data.name, user.id);
+        if (onUpdate) onUpdate();
 
         dialog.current?.hide();
-        event.target.reset();
+        event.currentTarget?.reset();
     }
     
     return (
@@ -40,28 +39,22 @@ export default function CreateProjectDialog({ dialog, user, onUpdate } : CreateP
             <Dialog.Container>
                 <Dialog.Column>
                     <Title context={"dialog"}>
-                        Create project
+                        Create team
                     </Title>
 
                     <Description>
-                        Create a new project item under the current logged in user.
+                        Create a new team item under the current logged in user.
                     </Description>
                 </Dialog.Column>
 
-                <Dialog.Form onSubmit={createProject}>
+                <Dialog.Form onSubmit={createTeam}>
                     <Dialog.Column>
                         <InputField
                             focus
                             type={"form"}
                             title={"Name"}
-                            placeholder={"Default project"}
+                            placeholder={"Default team"}
                             maximum={20}
-                            required
-                        />
-                        <InputField
-                            type={"form"}
-                            title={"Description"}
-                            placeholder={"This is a default project."}
                             required
                         />
                     </Dialog.Column>
@@ -79,5 +72,5 @@ export default function CreateProjectDialog({ dialog, user, onUpdate } : CreateP
                 </Dialog.Form>
             </Dialog.Container>
         </Dialog.Modal>
-    )
+    );
 }

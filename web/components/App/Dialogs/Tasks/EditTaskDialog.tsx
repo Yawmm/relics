@@ -1,4 +1,4 @@
-import React, {Dispatch, RefObject, SetStateAction, useEffect, useRef, useState} from "react";
+import React, {Dispatch, FormEvent, RefObject, SetStateAction, useEffect, useRef, useState} from "react";
 import {Category, Project, Task, User} from "@/lib/types";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import Title from "@/components/Text/Title";
@@ -15,24 +15,24 @@ type EditTaskDialogProps = {
     dialog: RefObject<DialogModalHandle>,
     task: Task | undefined
 
-    onUpdate: () => void,
+    onUpdate?: () => void,
 }
 
 export default function EditTaskDialog({ dialog, task, onUpdate} : EditTaskDialogProps) {
-    async function submit(event: any) {
-        event.preventDefault()
+    async function submit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
 
         if (!task)
             return;
 
-        let data = {
+        const data = {
             name: String(event.currentTarget.Name.value),
             description: String(event.currentTarget.Description.value),
             isFinished: Boolean(event.currentTarget.Finished.checked),
-        }
+        };
         
         dialog.current?.hide();
-        event.target.reset();
+        event.currentTarget?.reset();
 
         await editTask(
             task.id,
@@ -43,7 +43,7 @@ export default function EditTaskDialog({ dialog, task, onUpdate} : EditTaskDialo
             }
         );
 
-        await onUpdate()
+        if (onUpdate) onUpdate();
     }
     
     return (
@@ -98,5 +98,5 @@ export default function EditTaskDialog({ dialog, task, onUpdate} : EditTaskDialo
                 </Dialog.Form>
             </Dialog.Container>
         </Dialog.Modal>
-    )
+    );
 }

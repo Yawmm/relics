@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, {forwardRef, useImperativeHandle, useState} from "react";
+import React, {FormEvent, forwardRef, useImperativeHandle, useState} from "react";
 import {AnimatePresence, motion} from "framer-motion";
 
 /*
@@ -9,7 +9,7 @@ Used to group together common components for dialog functionality in the applica
 Instead of the default usage of 'function' declaration for components, 'const' is used because
 we need to assign properties to it, like modals, containers, buttons, etc.
  */
-const Dialog = () => { return (<></>); }
+const Dialog = () => { return (<></>); };
 
 /*
 The types of functions available to dialog modals.
@@ -25,6 +25,8 @@ export type DialogModalHandle = {
 The properties of dialog modals.
  */
 type DialogModalProps = {
+	/* Called when the dialog modal is opened. */
+	onOpen?: () => void,
 	/* Called when the dialog modal is closed by tapping the back overlay. */
 	onClose?: () => void,
 	/* The children of the dialog modal component. */
@@ -34,7 +36,7 @@ type DialogModalProps = {
 /*
 Used to display a modal dialog to the user, with a back overlay to grab the user's attention.
  */
-const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onClose, children } : DialogModalProps, ref) => {
+const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onOpen, onClose, children } : DialogModalProps, ref) => {
 	/* Whether or not the dialog modal is shown to the user. */
 	const [isShown, setIsShown] = useState<boolean>(false);
 
@@ -51,15 +53,21 @@ const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onClose, 
 	 */
 	useImperativeHandle(ref, () => {
 		return {
-			show: () => setIsShown(true),
-			hide: () => setIsShown(false),
-		}
-	})
+			show: () => {
+				if (onOpen) onOpen();
+				setIsShown(true);
+			},
+			hide: () => {
+				if (onClose) onClose();
+				setIsShown(false);
+			},
+		};
+	});
 
 	return (
 		<AnimatePresence>
 			{isShown && (
-				<div className={"flex"}>
+				<div className={"flex mt-[-12px] ml-[-12px]"}>
 					<motion.div
 						onClick={onCloseModal}
 						className={"fixed top-0 left-0 w-full h-full bg-zinc-900 z-50 bg-opacity-70"}
@@ -84,14 +92,14 @@ const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onClose, 
 				</div>
 			)}
 		</AnimatePresence>
-	)
+	);
 });
 
 /*
 The properties of dialog forms.
  */
 type DialogFormProps = {
-	onSubmit: (event: any) => void;
+	onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 	children: React.ReactNode
 }
 
@@ -103,8 +111,8 @@ const DialogForm = ({ onSubmit, children } : DialogFormProps) => {
 		<form onSubmit={onSubmit} className={"flex flex-col gap-[24px]"}>
 			{children}
 		</form>
-	)
-}
+	);
+};
 
 /*
 The properties of dialog sections (columns, rows, etc.).
@@ -121,8 +129,8 @@ const DialogColumn = ({ children } : DialogSectionProps) => {
 		<div className={"flex flex-col gap-[12px]"}>
 			{children}
 		</div>
-	)
-}
+	);
+};
 
 /*
 Used to define a constant style of horizontal item separation which should be used in dialog modals.
@@ -132,8 +140,8 @@ const DialogRow = ({ children } : DialogSectionProps) => {
 		<div className={"flex flex-row gap-[12px]"}>
 			{children}
 		</div>
-	)
-}
+	);
+};
 
 /*
 The properties of dialog containers (columns, rows, etc.).
@@ -150,8 +158,8 @@ const DialogContainer = ({ children } : DialogContainerProps) => {
 		<div className={"flex flex-col gap-[24px]"}>
 			{children}
 		</div>
-	)
-}
+	);
+};
 
 // Assign all the components to the properties of the dialog object.
 Dialog.Modal = DialogModal;

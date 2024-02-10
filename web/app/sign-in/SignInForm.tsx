@@ -1,39 +1,38 @@
-"use client"
+"use client";
 
 import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
-import GoogleIcon from "@/components/Icons/GoogleIcon";
-import GithubIcon from "@/components/Icons/GithubIcon";
 import {loginPasswordUser} from "@/lib/users";
 import {setCookie} from "cookies-next";
 import {useRouter} from "next/navigation";
 import RightArrowIcon from "@/components/Icons/RightArrowIcon";
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 
 export function SignInForm() {
 	const [error, setError] = useState<string | null>(null);
 	const { push } = useRouter();
 
-	async function handleSubmit(event: any) {
-		event.preventDefault()
-		setError(null)
+	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+		setError(null);
 
-		let data = {
+		const data = {
 			email: String(event.currentTarget.Email.value),
 			password: String(event.currentTarget.Password.value),
-		}
+		};
 
 		loginPasswordUser(data.email, data.password)
 			.then(async result => {
-				let root = result.data.loginPasswordUser;
+				const root = result.data.loginPasswordUser;
 				if (root.errors) {
-					setError(root.errors[0].message)
-				} else {
-					let token = root.userLoginResult.jwt;
-					await setCookie("token", token)
-					await push("/app")
+					setError(root.errors[0].message);
+					return;
 				}
+
+				const token = root.userLoginResult.jwt;
+				setCookie("token", token);
+				push("/app");
 			});
 	}
 
@@ -58,5 +57,5 @@ export function SignInForm() {
 				</Button>
 			</div>
 		</form>
-	)
+	);
 }

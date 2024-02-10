@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Title from "@/components/Text/Title";
 import Description from "@/components/Text/Description";
@@ -57,5 +57,5 @@ export default function Home() {
                 </div>
             </div>
         </div>
-    )
+    );
 }

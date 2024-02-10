@@ -6,5 +6,5 @@ export default function Description({ children, ...params } : any) {
 		<p className={"text-zinc-400 text-md"} {...params}>
 			{children}
 		</p>
-	)
+	);
 }

@@ -18,8 +18,8 @@ type ItemDialogProps = {
 
 export default function ItemDialog({ dialog, items } : ItemDialogProps) {
 	function dismiss(method?: () => void) {
-		dialog.current?.hide()
-		if (method) method()
+		dialog.current?.hide();
+		if (method) method();
 	}
 
 	return (
@@ -66,5 +66,5 @@ export default function ItemDialog({ dialog, items } : ItemDialogProps) {
 				</Dialog.Row>
 			</Dialog.Container>
 		</Dialog.Modal>
-	)
+	);
 }

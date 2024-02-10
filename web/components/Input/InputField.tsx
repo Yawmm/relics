@@ -45,7 +45,7 @@ export default function InputField(
 	} : InputFieldProps) {
 	return (
 		<div className={`flex flex-col w-full px-[24px] py-[12px] bg-zinc-700 rounded-lg
-			focus-within:ring-2 focus-within:ring-main-500`
+			focus-within:ring-4 focus-within:ring-zinc-500`
 		}>
 			<label htmlFor={title} className={"text-zinc-400 text-sm"}>
 				{title}{required && "*"}
@@ -68,5 +68,5 @@ export default function InputField(
 				required={required}
 			/>
 		</div>
-	)
+	);
 }

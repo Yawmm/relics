@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import AppHeader from "@/components/App/AppHeader";
 import Button from "@/components/Input/Button";
@@ -6,33 +6,32 @@ import UserIcon from "@/components/Icons/UserIcon";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
 import Subtitle from "@/components/Text/Subtitle";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
-import {deleteCookie, setCookie} from "cookies-next";
+import {deleteCookie} from "cookies-next";
 import {removeUser} from "@/lib/users";
 import {useUser} from "@/lib/hooks";
 import {useRouter} from "next/navigation";
 import RightArrowIcon from "@/components/Icons/RightArrowIcon";
-import SettingsIcon from "@/components/Icons/SettingsIcon";
-import DataIcon from "@/components/Icons/DataIcon";
 
 export default function User() {
 	const { user } = useUser();
 	const { push } = useRouter();
 
 	async function signOut() {
-		await deleteCookie("token")
-		await push("/")
+		deleteCookie("token");
+		push("/");
 	}
 
 	async function deleteUser() {
-		let id = user!.id
+		const id = user!.id;
 
 		await removeUser(id);
-		await push("/")
-		await signOut()
+		push("/");
+
+		await signOut();
 	}
 
 	return (
-		<div className={"flex flex-col gap-[36px]"}>
+		<div className={"flex flex-col w-full gap-[36px]"}>
 			<AppHeader
 				title={"User profile"}
 				description={`Manage the different properties of your account.`}
@@ -43,7 +42,7 @@ export default function User() {
 				<Subtitle>
 					Settings
 				</Subtitle>
-				<Button onClick={async () => await push(`/app/user/${user?.id}`)} className={"items-center justify-between"} type={"square"} usage={"form"} intent={"tertiary"}>
+				<Button onClick={async () => push(`/app/user/${user?.id}`)} className={"items-center justify-between"} type={"square"} usage={"form"} intent={"tertiary"}>
 					<div className={"flex flex-row gap-[8px]"}>
 						<UserIcon className={"w-[18px] h-[18px]"}/>
 						Personal information
@@ -64,5 +63,5 @@ export default function User() {
 				</Button>
 			</div>
 		</div>
-	)
+	);
 }

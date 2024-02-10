@@ -20,5 +20,5 @@ export default function Loader() {
 		>
 			<LoaderIcon className={"w-[36px] h-[36px] text-zinc-400"}/>
 		</motion.div>
-	)
+	);
 }

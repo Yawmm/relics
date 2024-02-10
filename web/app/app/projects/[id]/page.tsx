@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {useQuery} from "@apollo/client";
 import {GET_PROJECT_QUERY, removeProject} from "@/lib/projects";
@@ -12,29 +12,44 @@ import Description from "@/components/Text/Description";
 import Subtitle from "@/components/Text/Subtitle";
 import CategoryItem from "@/components/App/Projects/CategoryItem";
 import {useUser} from "@/lib/hooks";
-import CreateTaskDialog from "@/components/App/Dialogs/CreateTaskDialog";
-import CategoryDialog from "@/components/App/Dialogs/CreateCategoryDialog";
+import CreateTaskDialog from "@/components/App/Dialogs/Tasks/CreateTaskDialog";
+import CategoryDialog from "@/components/App/Dialogs/Projects/Categories/CreateCategoryDialog";
 import LoadScreen from "@/components/Login/LoadScreen";
-import TeamIcon from "@/components/Icons/TeamIcon";
 import EditIcon from "@/components/Icons/EditIcon";
-import TeamDialog from "@/components/App/Dialogs/TeamDialog";
+import MemberDialog from "@/components/App/Dialogs/Members/MemberDialog";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import {useRouter} from "next/navigation";
 import ItemDialog from "@/components/App/Dialogs/ItemDialog";
-import EditProjectDialog from "@/components/App/Dialogs/EditProjectDialog";
+import EditProjectDialog from "@/components/App/Dialogs/Projects/EditProjectDialog";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
 import TaskItem from "@/components/App/Projects/TaskItem";
+import UserIcon from "@/components/Icons/UserIcon";
+import TeamDialog from "@/components/App/Dialogs/Teams/TeamDialog";
+import TeamIcon from "@/components/Icons/TeamIcon";
 
-export default function Project({ params } : any) {
+export default function Project({ params: { id } }: { params: { id: string }}) {
+	const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+
 	const itemDialogRef = useRef<DialogModalHandle>(null);
 	const categoryDialogRef = useRef<DialogModalHandle>(null);
 	const taskDialogRef = useRef<DialogModalHandle>(null);
+	const memberDialogRef = useRef<DialogModalHandle>(null);
 	const teamDialogRef = useRef<DialogModalHandle>(null);
-	
-	const editProjectDialogRef = useRef<DialogModalHandle>(null);
-	const confirmationDialogRef = useRef<ConfirmationDialogHandle>(null)
 
-	const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+	const editProjectDialogRef = useRef<DialogModalHandle>(null);
+	const confirmationDialogRef = useRef<ConfirmationDialogHandle>(null);
+
+	const { user } = useUser();
+	const { push } = useRouter();
+
+	const { data, loading, refetch } = useQuery<{ project: Project }>(GET_PROJECT_QUERY, {
+		variables: {
+			id: id
+		},
+		skip: id === null
+	});
+
+	const isOwner = useCallback(() => data?.project.owner.userId == user?.id, [data, user]);
 
 	const items = [
 		{
@@ -45,51 +60,36 @@ export default function Project({ params } : any) {
 			name: "Task",
 			onSelect: () => taskDialogRef.current?.show()
 		}
-	]
-
-	const { push } = useRouter();
-	const { user } = useUser();
+	];
 	
-	const { data, loading, refetch } = useQuery<{ project: Project }>(GET_PROJECT_QUERY, {
-		variables: {
-			id: params.id
-		},
-		skip: params.id === null
-	})
-
-	const isOwner = useCallback(() => data?.project.owner.userId == user?.id, [data, user]);
-
 	function createTask(category: Category) {
-		setCurrentCategory(category)
+		setCurrentCategory(category);
 		taskDialogRef.current?.show();
 	}
 	
 	async function deleteProject() {
-		if (!data)
-			return;
-
+		if (!data) return;
 		confirmationDialogRef.current?.show(
 			"Remove project",
 			"Are you sure you want to remove the given project indefinitely?",
 			async () => {
-				await removeProject(data?.project.id)
-				await push("/app/projects")
+				await removeProject(data?.project.id);
+				push("/app/projects");
 			}
-		)
+		);
 	}
 
 	useEffect(() => {
 		(async () => {
-			if (!user)
-				return;
-
-			await refetch()
-		})()
-	}, [user])
+			if (!user) return;
+			await refetch();
+		})();
+	}, [user]);
 
 	return (
 		<>
 			<LoadScreen isShown={loading} />
+
 			<div className={"flex flex-col min-h-full gap-[36px]"}>
 				<div className={"flex flex-col gap-[12px]"}>
 					<AppHeader
@@ -101,6 +101,10 @@ export default function Project({ params } : any) {
 						<Button onClick={() => itemDialogRef.current?.show()} type={"rounded"} usage={"form"} intent={"primary"}>
 							<AddIcon className={"w-[16px] h-[16px]"}/>
 							Create item
+						</Button>
+
+						<Button onClick={() => memberDialogRef.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
+							<UserIcon className={"w-[16px] h-[16px]"}/>
 						</Button>
 
 						<Button onClick={() => teamDialogRef.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
@@ -135,7 +139,7 @@ export default function Project({ params } : any) {
 												category={c}
 												confirmationDialog={confirmationDialogRef}
 
-												onChange={async () => await refetch()}
+												onUpdate={async () => await refetch()}
 												onAdd={createTask}
 											/>
 										)}
@@ -165,7 +169,7 @@ export default function Project({ params } : any) {
 										task={t}
 										confirmationDialog={confirmationDialogRef}
 										className={"w-full h-fit"}
-										onChange={async () => await refetch()}
+										onUpdate={refetch}
 									/>
 								)) : (
 									<Description>
@@ -176,44 +180,53 @@ export default function Project({ params } : any) {
 						</div>
 					</div>
 				</div>
-
-				<ConfirmationDialog ref={confirmationDialogRef} />
-				
-				<TeamDialog
-					dialog={teamDialogRef}
-					project={data?.project}
-
-					onUpdate={async () => await refetch()}
-				/>
-
-				<ItemDialog
-					dialog={itemDialogRef}
-					items={items}
-				/>
-
-				<CategoryDialog
-					dialog={categoryDialogRef}
-					project={data?.project}
-
-					onUpdate={async () => await refetch()}
-				/>
-
-				<CreateTaskDialog
-					dialog={taskDialogRef}
-					user={user}
-					project={data?.project}
-					category={currentCategory}
-
-					onUpdate={async () => await refetch()}
-				/>
-				
-				<EditProjectDialog
-					dialog={editProjectDialogRef}
-					project={data?.project}
-					
-					onUpdate={async () => await refetch()}
-				/>
 			</div>
+
+			<ConfirmationDialog ref={confirmationDialogRef} />
+
+			<MemberDialog
+				dialog={memberDialogRef}
+				project={data?.project}
+
+				onUpdate={refetch}
+			/>
+
+			<TeamDialog
+				dialog={teamDialogRef}
+				user={user}
+				project={data?.project}
+				confirmationDialog={confirmationDialogRef}
+
+				onUpdate={refetch}
+			/>
+
+			<ItemDialog
+				dialog={itemDialogRef}
+				items={items}
+			/>
+
+			<CategoryDialog
+				dialog={categoryDialogRef}
+				project={data?.project}
+
+				onUpdate={refetch}
+			/>
+
+			<CreateTaskDialog
+				dialog={taskDialogRef}
+				user={user}
+				project={data?.project}
+				category={currentCategory}
+
+				onUpdate={refetch}
+			/>
+
+			<EditProjectDialog
+				dialog={editProjectDialogRef}
+				project={data?.project}
+
+				onUpdate={refetch}
+			/>
 		</>
-	)
+	);
 }

@@ -1,6 +1,6 @@
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import {RefObject} from "react";
-import {Category, Project} from "@/lib/types";
+import {FormEvent, RefObject} from "react";
+import {Category} from "@/lib/types";
 import Title from "@/components/Text/Title";
 import Description from "@/components/Text/Description";
 import InputField from "@/components/Input/InputField";
@@ -13,25 +13,25 @@ type EditCategoryDialogProps = {
     dialog: RefObject<DialogModalHandle>,
     category: Category | undefined
 
-    onUpdate: () => void,
+    onUpdate?: () => void,
 }
 
 export default function EditCategoryDialog({ dialog, category, onUpdate } : EditCategoryDialogProps) {
-    async function submit(event: any) {
-        event.preventDefault()
+    async function submit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
 
         if (!category)
             return;
 
-        let data = {
+        const data = {
             name: String(event.currentTarget.Name.value),
-        }
+        };
 
         dialog.current?.hide();
-        event.target.reset();
+        event.currentTarget?.reset();
 
         await editCategory(category.id, data.name);
-        await onUpdate()
+        if (onUpdate) onUpdate();
     }
 
     return (
@@ -73,5 +73,5 @@ export default function EditCategoryDialog({ dialog, category, onUpdate } : Edit
                 </Dialog.Form>
             </Dialog.Container>
         </Dialog.Modal>
-        )
+    );
 }

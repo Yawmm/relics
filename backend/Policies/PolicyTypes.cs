@@ -49,12 +49,39 @@ public class PolicyTypes
     /// <summary>
     /// Whether or not the user is able to kick other members from the given project.
     /// </summary>
-    public const string KickMember = "KickMember";
+    public const string KickProjectMember = "KickProjectMember";
+    
     
     /// <summary>
-    /// Whether or not the user is able to invite other users as members to the given project.
+    /// Whether or not the user is able to read the given team.
     /// </summary>
-    public const string InviteMember = "InviteMember";
+    public const string ReadTeam = "ReadTeam";
+    
+    /// <summary>
+    /// Whether or not the user is able to retrieve their teams.
+    /// </summary>
+    public const string ReadTeams = "ReadTeams";
+    
+    /// <summary>
+    /// Whether or not the user is able to write to the given team.
+    /// </summary>
+    public const string WriteTeam = "WriteTeam";
+    
+    /// <summary>
+    /// Whether or not the user is able to delete the given team.
+    /// </summary>
+    public const string DeleteTeam = "DeleteTeam";
+    
+    /// <summary>
+    /// Whether or not the user is able to leave the given team.
+    /// </summary>
+    public const string LeaveTeam = "LeaveTeam";
+    
+    /// <summary>
+    /// Whether or not the user is able to kick other members from the given team.
+    /// </summary>
+    public const string KickTeamMember = "KickTeamMember";
+    
     
     /// <summary>
     /// Whether or not the user is able to accept or decline invites to the given project.

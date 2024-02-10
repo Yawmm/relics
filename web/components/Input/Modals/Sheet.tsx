@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, {forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState} from "react";
 import {AnimatePresence, motion, PanInfo, useDragControls} from "framer-motion";
@@ -6,12 +6,12 @@ import {AnimatePresence, motion, PanInfo, useDragControls} from "framer-motion";
 /*
 Used to group together common components for sheet functionality in the application.
  */
-const Sheet = () => { return (<></>); }
+const Sheet = () => { return (<></>); };
 
 /*
 The types of functions available to sheet modals.
  */
-type SheetModalHandle = {
+export type SheetModalHandle = {
 	/* Make the sheet modal appear. */
 	show: () => void,
 	/* Make the sheet modal disappear. */
@@ -37,7 +37,7 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 	const [height, setHeight] = useState<number>(200);
 
 	/* The reference to the root element of the content element of the sheet, for animations. */
-	const rootRef = useRef<any>(null);
+	const rootRef = useRef<HTMLDivElement>(null);
 	/* Drag controls from framer to control animations. */
 	const barDragControls = useDragControls();
 
@@ -60,8 +60,8 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 	 */
 	useLayoutEffect(() => {
 		if (rootRef.current !== null)
-			setHeight(rootRef.current.offsetHeight)
-	})
+			setHeight(rootRef.current.offsetHeight);
+	});
 
 	/*
 	Define the functions available to references to the modal.
@@ -71,8 +71,8 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 			show: () => setIsShown(true),
 			hide: () => setIsShown(false),
 			toggle: () => setIsShown(prev => !prev),
-		}
-	})
+		};
+	});
 
 	return (
 		<AnimatePresence>
@@ -118,8 +118,8 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 				</div>
 			)}
 		</AnimatePresence>
-	)
-})
+	);
+});
 
 
 /*
@@ -137,8 +137,8 @@ const SheetColumn = ({ children } : SheetSectionProps) => {
 		<div className={"flex flex-col gap-[12px]"}>
 			{children}
 		</div>
-	)
-}
+	);
+};
 
 /*
 Used to define a constant style of horizontal item separation which should be used in sheet modals.
@@ -148,8 +148,8 @@ const SheetRow = ({ children } : SheetSectionProps) => {
 		<div className={"flex flex-row gap-[12px]"}>
 			{children}
 		</div>
-	)
-}
+	);
+};
 
 /*
 The properties of sheet containers (columns, rows, etc.).
@@ -166,8 +166,8 @@ const SheetContainer = ({ children } : SheetContainerProps) => {
 		<div className={"flex flex-col gap-[24px]"}>
 			{children}
 		</div>
-	)
-}
+	);
+};
 
 // Assign all the components to the properties of the sheet object.
 Sheet.Modal = SheetModal;

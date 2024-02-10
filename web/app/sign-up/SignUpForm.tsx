@@ -1,52 +1,52 @@
-"use client"
+"use client";
 
 import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
-import GoogleIcon from "@/components/Icons/GoogleIcon";
-import GithubIcon from "@/components/Icons/GithubIcon";
 import {loginPasswordUser, registerUser} from "@/lib/users";
 import {setCookie} from "cookies-next";
 import {useRouter} from "next/navigation";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
-import {useState} from "react";
+import {FormEvent, useState} from "react";
 
 export function SignUpForm() {
 	const [error, setError] = useState<string | null>(null);
 	const { push } = useRouter();
 
-	async function handleSubmit(event: any) {
-		event.preventDefault()
+	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
 
-		let data = {
+		const data = {
 			username: String(event.currentTarget.Username.value),
 			email: String(event.currentTarget.Email.value),
 			password: String(event.currentTarget.Password.value),
-		}
+		};
 
 		registerUser(data.username, data.email, data.password)
 			.then(async result => {
-				let root = result.data.registerPasswordUser;
+				const root = result.data.registerPasswordUser;
 				if (root.errors) {
-					setError(root.errors[0].message)
-				} else {
-					await loginUser(data.email, data.password);
+					setError(root.errors[0].message);
+					return;
 				}
+
+				await loginUser(data.email, data.password);
 			});
 	}
 
 	async function loginUser(email: string, password: string) {
 		loginPasswordUser(email, password)
 			.then(async result => {
-				let root = result.data.loginPasswordUser;
+				const root = result.data.loginPasswordUser;
 				if (root.errors) {
-					setError(root.errors[0].message)
-				} else {
-					let token = root.userLoginResult.jwt;
-					await setCookie("token", token)
-					await push("/app")
+					setError(root.errors[0].message);
+					return;
 				}
-			})
+
+				const token = root.userLoginResult.jwt;
+				setCookie("token", token);
+				push("/app");
+			});
 	}
 
 	return (
@@ -71,5 +71,5 @@ export function SignUpForm() {
 				</Button>
 			</div>
 		</form>
-	)
+	);
 }

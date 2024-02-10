@@ -26,5 +26,5 @@ export default function AppHeader({ title, description, icon } : AppHeaderProps)
 				{description}
 			</Description>
 		</div>
-	)
+	);
 }

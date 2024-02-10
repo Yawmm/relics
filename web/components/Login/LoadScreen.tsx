@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {AnimatePresence, motion} from "framer-motion";
 import React from "react";
@@ -41,5 +41,5 @@ export default function LoadScreen ({ isShown } : LoadScreenProps) {
 				</div>
 			)}
 		</AnimatePresence>
-	)
+	);
 }

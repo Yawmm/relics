@@ -70,8 +70,8 @@ const PopoverModal = forwardRef<PopoverModalHandle, PopoverModalProps>(({ classN
 			show: () => setIsShown(true),
 			hide: () => setIsShown(false),
 			toggle: () => setIsShown(prev => !prev)
-		}
-	})
+		};
+	});
 
 	return (
 		<AnimatePresence>
@@ -97,7 +97,7 @@ const PopoverModal = forwardRef<PopoverModalHandle, PopoverModalProps>(({ classN
 				</div>
 			)}
 		</AnimatePresence>
-	)
+	);
 });
 
 /*
@@ -120,8 +120,8 @@ const PopoverButton = ({ onClick, focus, children }: PopoverButtonProps) => {
 		<Button focus={focus} onClick={() => onClick && onClick()} className={"justify-between min-w-[200px]"} intent={"primary"} type={"square"} usage={"form"}>
 			{children}
 		</Button>
-	)
-}
+	);
+};
 
 /*
 The properties of a popover container.
@@ -138,8 +138,8 @@ const PopoverContainer = ({ children } : PopoverContainerProps) => {
 		<div className={"flex flex-col gap-[12px]"}>
 			{children}
 		</div>
-	)
-}
+	);
+};
 
 // Assign all the components to the properties of the popover object.
 Popover.Modal = PopoverModal;

@@ -2,6 +2,7 @@ using System.Data;
 using Backend.Errors;
 using Backend.Models.General;
 using Backend.Models.Projects;
+using Backend.Models.Teams;
 using Backend.Models.Users;
 using Backend.Utility;
 using Dapper;
@@ -106,7 +107,7 @@ public class ProjectService : IProjectService
 
         _connection.Execute(
             """
-            INSERT INTO "Member" (UserId, ProjectID)
+            INSERT INTO "ProjectMember" (UserId, ProjectID)
             VALUES (@UserId, @ProjectId)
             """,
             new
@@ -139,19 +140,30 @@ public class ProjectService : IProjectService
                 pc.*,
                 pct.*,                
                 pcto.Id, pcto.Username, pcto.Email,
+                
                 pt.*,
                 pto.Id, pto.Username, pto.Email,
+                
+                plt.*,
+                plto.Id, plto.Username, plto.Email,
+                pltmu.Id, pltmu.Username, pltmu.Email,
+                
                 po.Id, po.Username, po.Email, 
                 pmu.Id, pmu.Username, pmu.Email,
                 piu.Id, piu.Username, piu.Email
             FROM "Project" p
                 LEFT JOIN "User" po ON p.OwnerId = po.Id
-                LEFT JOIN "Member" pm ON pm.ProjectId = p.Id 
+                LEFT JOIN "ProjectMember" pm ON pm.ProjectId = p.Id 
                     LEFT JOIN "User" pmu ON pm.UserId = pmu.Id
-                LEFT JOIN "Invite" pi ON pi.ProjectId = p.Id
+                LEFT JOIN "ProjectInvite" pi ON pi.ProjectId = p.Id
                     LEFT JOIN "User" piu ON pi.UserId = piu.Id
                 LEFT JOIN "Task" pt ON pt.ProjectId = p.Id AND pt.CategoryId IS NULL
                     LEFT JOIN "User" pto ON pt.OwnerId = pto.Id
+                LEFT JOIN "Link" pl ON pl.ProjectId = p.id
+                    LEFT JOIN "Team" plt ON pl.TeamId = plt.Id
+                        LEFT JOIN "User" plto ON plt.OwnerId = plto.Id
+                        LEFT JOIN "TeamMember" pltm ON pltm.TeamId = plt.Id
+                            LEFT JOIN "User" pltmu ON pltm.UserId = pltmu.Id
                 LEFT JOIN "Category" pc ON pc.ProjectId = p.Id
                     LEFT JOIN "Task" pct ON pct.CategoryId = pc.Id
                         LEFT JOIN "User" pcto ON pct.OwnerId = pcto.Id
@@ -162,6 +174,7 @@ public class ProjectService : IProjectService
                 typeof(Project),
                 typeof(Category), typeof(Task), typeof(User),
                 typeof(Task), typeof(User),
+                typeof(Team), typeof(User), typeof(User),
                 typeof(User),
                 typeof(User),
                 typeof(User)
@@ -212,31 +225,45 @@ public class ProjectService : IProjectService
                 pc.*,
                 pct.*,
                 pcto.Id, pcto.Username, pcto.Email,
+                
                 pt.*,
                 pto.Id, pto.Username, pto.Email,
+                
+                plt.*,
+                plto.Id, plto.Username, plto.Email,
+                pltmu.Id, pltmu.Username, pltmu.Email,
+                
                 po.Id, po.Username, po.Email,
                 pmu.Id, pmu.Username, pmu.Email,
                 piu.Id, piu.Username, piu.Email
             FROM "Project"
                 LEFT JOIN "User" u ON u.Id = @UserId
-                LEFT JOIN "Member" m ON m.UserId = u.Id
-                    LEFT JOIN "Project" p ON m.ProjectId = p.Id
+                LEFT JOIN "TeamMember" ptm ON ptm.UserId = u.Id
+                LEFT JOIN "Link" l ON ptm.TeamId = l.TeamId
+                LEFT JOIN "ProjectMember" ppm ON ppm.UserId = u.Id
+                    LEFT JOIN "Project" p ON ppm.ProjectId = p.Id OR l.ProjectId = p.Id
                         LEFT JOIN "User" po ON p.OwnerId = po.Id
-                        LEFT JOIN "Member" pm ON pm.ProjectId = p.Id
+                        LEFT JOIN "ProjectMember" pm ON pm.ProjectId = p.Id
                             LEFT JOIN "User" pmu ON pm.UserId = pmu.Id
-                        LEFT JOIN "Invite" pi ON pi.ProjectId = p.Id
+                        LEFT JOIN "ProjectInvite" pi ON pi.ProjectId = p.Id
                             LEFT JOIN "User" piu ON pi.UserId = piu.Id
+                        LEFT JOIN "Task" pt ON pt.ProjectId = p.Id AND pt.CategoryId IS NULL
+                            LEFT JOIN "User" pto ON pt.OwnerId = pto.Id
+                        LEFT JOIN "Link" pl ON pl.ProjectId = p.id
+                            LEFT JOIN "Team" plt ON pl.TeamId = plt.Id
+                                LEFT JOIN "User" plto ON plt.OwnerId = plto.Id
+                                LEFT JOIN "TeamMember" pltm ON pltm.TeamId = plt.Id
+                                    LEFT JOIN "User" pltmu ON pltm.UserId = pltmu.Id
                         LEFT JOIN "Category" pc ON pc.ProjectId = p.Id
                             LEFT JOIN "Task" pct ON pct.CategoryId = pc.Id
                                 LEFT JOIN "User" pcto ON pct.OwnerId = pcto.Id
-                        LEFT JOIN "Task" pt ON pt.ProjectId = p.Id AND pt.CategoryId IS NULL
-                            LEFT JOIN "User" pto ON pt.OwnerId = pto.Id
             """,
             types: new []
             {
                 typeof(Project),
                 typeof(Category), typeof(Task), typeof(User),
                 typeof(Task), typeof(User),
+                typeof(Team), typeof(User), typeof(User),
                 typeof(User),
                 typeof(User),
                 typeof(User)
@@ -275,6 +302,34 @@ public class ProjectService : IProjectService
                     configuration.OwnerId
                 }
             );
+
+        if (configuration.Links is not null)
+        {
+            // Update links
+            foreach (var (change, team) in configuration.Links)
+            {
+                var command = change switch
+                {
+                    ChangeType.Add => """
+                                      INSERT INTO "Link" (TeamId, ProjectId)
+                                      VALUES (@TeamId, @ProjectId);
+                                      """,
+                    ChangeType.Remove => """
+                                         DELETE FROM "Link" m
+                                         WHERE
+                                             m.TeamId = @TeamId AND
+                                             m.ProjectId = @ProjectId
+                                         """,
+                    _ => throw new ArgumentOutOfRangeException(nameof(configuration.Invites))
+                };
+
+                try
+                {
+                    _connection.Execute(command, new { TeamId = team, ProjectId = id });
+                }
+                catch { /* ignored */ }
+            }
+        }
         
         if (configuration.Invites is not null)
         {
@@ -284,11 +339,11 @@ public class ProjectService : IProjectService
                 var command = change switch
                 {
                     ChangeType.Add => """
-                    INSERT INTO "Invite" (UserId, ProjectId)
+                    INSERT INTO "ProjectInvite" (UserId, ProjectId)
                     VALUES (@UserId, @ProjectId);
                     """,
                     ChangeType.Remove => """
-                    DELETE FROM "Invite" m
+                    DELETE FROM "ProjectInvite" m
                     WHERE 
                         m.UserId = @UserId AND
                         m.ProjectId = @ProjectId
@@ -312,11 +367,11 @@ public class ProjectService : IProjectService
                 var command = change switch
                 {
                     ChangeType.Add => """
-                    INSERT INTO "Member" (UserId, ProjectId)
+                    INSERT INTO "ProjectMember" (UserId, ProjectId)
                     VALUES (@UserId, @ProjectId);
                     """,
                     ChangeType.Remove => """
-                    DELETE FROM "Member" m
+                    DELETE FROM "ProjectMember" m
                     WHERE 
                         m.UserId = @UserId AND
                         m.ProjectId = @ProjectId
@@ -390,17 +445,36 @@ public class ProjectService : IProjectService
             if (objects[5] is User taskOwner)
                 taskRef.Owner = new Member(taskOwner);
         }
+
+        if (objects[6] is Team team)
+        {
+            var link = new Link
+            {
+                Id = team.Id,
+                Name = team.Name,
+            };
+            
+            var linkRef = mapCache.Retrieve(link.Id,link);
+            if (projectRef.Links.All(t => t.Id != linkRef.Id))
+                projectRef.Links.Add(linkRef);
+
+            if (objects[7] is User teamOwner)
+                linkRef.Owner = new Member(teamOwner);
+            
+            if (objects[8] is User teamMember && linkRef.Members.All(m => m.UserId != teamMember.Id))
+                linkRef.Members.Add(new Member(teamMember));
+        }
         
         // Link owner of project to project reference
-        if (objects[6] is User owner) 
+        if (objects[9] is User owner) 
             projectRef.Owner = new Member(owner);
         
         // Add member to project reference
-        if (objects[7] is User member && projectRef.Members.All(m => m.UserId != member.Id))
+        if (objects[10] is User member && projectRef.Members.All(m => m.UserId != member.Id))
             projectRef.Members.Add(new Member(member));
         
         // Add invite to project reference
-        if (objects[8] is User invite && projectRef.Invites.All(i => i.UserId != invite.Id))
+        if (objects[11] is User invite && projectRef.Invites.All(i => i.UserId != invite.Id))
             projectRef.Invites.Add(new Invite(invite));
 
         return projectRef;

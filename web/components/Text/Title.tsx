@@ -27,5 +27,5 @@ export default function Title({ context = "default", children, ...params } : Tit
 		<h1 className={style} {...params}>
 			{children}
 		</h1>
-	)
+	);
 }

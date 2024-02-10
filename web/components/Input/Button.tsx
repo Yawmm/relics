@@ -47,18 +47,18 @@ export default function Button(
 		...props
 	} : ButtonProps) {
 	/* The definitive style of the button/link. */
-	const style = `flex flex-row items-center gap-[4px] text-zinc-200 text-sm focus:outline-none focus:ring-2 focus:ring-main-500`
+	const style = `flex flex-row items-center gap-[4px] text-zinc-200 text-sm focus:outline-none focus:ring-4 focus:ring-zinc-500`
 		+ (type == "square" ? " justify-center w-full px-[24px] py-[16px] rounded-lg" : "")
 		+ (type == "rounded" ? " px-[24px] py-[8px] rounded-2xl" : "")
 		+ (type == "circle" ? " rounded-3xl aspect-square" : "")
 		+ (disabled ? " bg-zinc-900"
-			: "" + (intent == "primary" ? " p-[10px] bg-main-700 hover:bg-main-600 active:bg-main-900" : "")
+			: "" + (intent == "primary" ? " p-[10px] bg-zinc-50 hover:bg-zinc-200 active:bg-zinc-400 text-zinc-700" : "")
 			+ (intent == "secondary" ? " p-[8px] bg-zinc-800 border-zinc-700 border-2 hover:bg-zinc-700 active:bg-zinc-900" : "")
 			+ (intent == "tertiary" ? " p-[10px] bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-700" : "")
 			+ (intent == "other" ? " p-[10px]" : "")
 			+ (intent == "warn" ? " p-[10px] bg-red-700 hover:bg-red-600 active:bg-red-900" : ""))
 		+ (disabled ? " text-zinc-400" : "")
-		+ (className ? ` ${className}` : "")
+		+ (className ? ` ${className}` : "");
 
 	switch (usage) {
 		case "link":
@@ -71,7 +71,7 @@ export default function Button(
 				>
 					{children}
 				</Link>
-			)
+			);
 
 		case "other":
 		case "form":
@@ -86,6 +86,6 @@ export default function Button(
 				>
 					{children}
 				</button>
-			)
+			);
 	}
 }

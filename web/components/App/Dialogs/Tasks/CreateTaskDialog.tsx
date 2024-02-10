@@ -1,4 +1,4 @@
-import React, {Dispatch, RefObject, SetStateAction, useEffect, useRef, useState} from "react";
+import React, {Dispatch, FormEvent, RefObject, SetStateAction, useEffect, useRef, useState} from "react";
 import {Category, Project, User} from "@/lib/types";
 import {addTask} from "@/lib/tasks";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
@@ -16,27 +16,27 @@ type TaskDialogProps = {
 	dialog: RefObject<DialogModalHandle>,
 	user: User | undefined | null,
 	project: Project | undefined | null,
-	category?: Category | undefined |null,
 
-	onUpdate: () => void,
+	category?: Category | undefined |null,
+	onUpdate?: () => void,
 }
 
 export default function CreateTaskDialog({ dialog, user, project, category, onUpdate } : TaskDialogProps) {
-	const [selectedCategory, setSelectedCategory] = useState<Category | null>(category ?? null)
+	const [selectedCategory, setSelectedCategory] = useState<Category | null>(category ?? null);
 
 	const choiceDialogRef = useRef<DialogModalHandle>(null);
 
-	async function createTask(event: any) {
-		event.preventDefault()
+	async function createTask(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
 		
 		if (!user || !project)
 			return;
 		
-		let data = {
+		const data = {
 			name: String(event.currentTarget.Name.value),
 			description: String(event.currentTarget.Description.value),
 			isFinished: Boolean(event.currentTarget.Finished.checked),
-		}
+		};
 
 		await addTask(
 			data.name,
@@ -47,20 +47,22 @@ export default function CreateTaskDialog({ dialog, user, project, category, onUp
 			selectedCategory?.id
 		);
 
-		await onUpdate()
+		if (onUpdate) onUpdate();
 
 		dialog.current?.hide();
-		event.target.reset();
+		event.currentTarget?.reset();
 	}
 
 	useEffect(() => {
-		if (!project?.categories.find(c => c.id == selectedCategory?.id))
-			setSelectedCategory(null);
-	}, [project])
+		if (project?.categories.find(c => c.id == selectedCategory?.id))
+			return;
+
+		setSelectedCategory(null);
+	}, [project]);
 
 	useEffect(() => {
-		setSelectedCategory(category ?? null)
-	}, [category])
+		setSelectedCategory(category ?? null);
+	}, [category]);
 
 	return (
 		<>
@@ -125,6 +127,7 @@ export default function CreateTaskDialog({ dialog, user, project, category, onUp
 					</Dialog.Form>
 				</Dialog.Container>
 			</Dialog.Modal>
+
 			<ChoiceDialog
 				dialog={choiceDialogRef}
 				options={project?.categories.map(c => ({ id: c.id, name: c.name })) ?? []}
@@ -133,5 +136,5 @@ export default function CreateTaskDialog({ dialog, user, project, category, onUp
 				onResetOption={() => setSelectedCategory(null)}
 			/>
 		</>
-	)
+	);
 }

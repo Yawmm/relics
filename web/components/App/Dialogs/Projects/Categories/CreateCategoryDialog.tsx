@@ -1,4 +1,4 @@
-import React, {RefObject} from "react";
+import React, {FormEvent, RefObject} from "react";
 import {addCategory} from "@/lib/projects";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import Title from "@/components/Text/Title";
@@ -13,25 +13,25 @@ type CategoryDialogProps = {
 	dialog: RefObject<DialogModalHandle>
 	project: Project | undefined
 
-	onUpdate: () => void,
+	onUpdate?: () => void,
 }
 
 export default function CategoryDialog({ dialog, project, onUpdate } : CategoryDialogProps) {
-	async function createCategory(event: any) {
-		event.preventDefault()
+	async function createCategory(event: FormEvent<HTMLFormElement>) {
+		event.preventDefault();
 		
 		if (!project)
 			return;
 
-		let data = {
-			name: String(event.currentTarget.Name.value),
-		}
+		const data = {
+			name: String(event.currentTarget.Name.value)
+		};
 
 		await addCategory(data.name, project.id);
-		await onUpdate()
+		if (onUpdate) onUpdate();
 
 		dialog.current?.hide();
-		event.target.reset();
+		event.currentTarget?.reset();
 	}
 
 	return (
@@ -73,5 +73,5 @@ export default function CategoryDialog({ dialog, project, onUpdate } : CategoryD
 				</Dialog.Form>
 			</Dialog.Container>
 		</Dialog.Modal>
-	)
+	);
 }

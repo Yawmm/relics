@@ -1,5 +1,5 @@
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import {RefObject} from "react";
+import {FormEvent, RefObject} from "react";
 import {Project} from "@/lib/types";
 import Title from "@/components/Text/Title";
 import Description from "@/components/Text/Description";
@@ -17,22 +17,22 @@ type EditProjectDialogProps = {
 }
 
 export default function EditProjectDialog({ dialog, project, onUpdate } : EditProjectDialogProps) {
-    async function submit(event: any) {
-        event.preventDefault()
+    async function submit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
         
         if (!project)
             return;
 
-        let data = {
+        const data = {
             name: String(event.currentTarget.Name.value),
-            description: String(event.currentTarget.Description.value),
-        }
+            description: String(event.currentTarget.Description.value)
+        };
 
         dialog.current?.hide();
-        event.target.reset();
+        event.currentTarget?.reset();
         
         await editProject(project.id, data.name, data.description);
-        await onUpdate()
+        onUpdate();
     }
     
     return (
@@ -81,5 +81,5 @@ export default function EditProjectDialog({ dialog, project, onUpdate } : EditPr
                 </Dialog.Form>
             </Dialog.Container>
         </Dialog.Modal>
-    )
+    );
 }

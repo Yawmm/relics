@@ -11,12 +11,21 @@ export const GET_USER_QUERY = gql`
 	}
 `
 
-export const GET_INVITES_QUERY = gql`
-	query Invites($id: ID!) {
-		invites(user: $id) {
+export const GET_PROJECT_INVITES_QUERY = gql`
+	query ProjectInvites($id: ID!) {
+		projectInvites(user: $id) {
 			id
 			name
 			description
+		}
+	}
+`
+
+export const GET_TEAM_INVITES_QUERY = gql`
+	query TeamInvites($id: ID!) {
+		teamInvites(user: $id) {
+			id
+			name
 		}
 	}
 `

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import AppHeader from "@/components/App/AppHeader";
 import UserIcon from "@/components/Icons/UserIcon";
@@ -8,16 +8,16 @@ import {User} from "@/lib/types";
 import {GET_USER_QUERY} from "@/lib/users";
 import InputField from "@/components/Input/InputField";
 
-export default function UserInformation({ params } : any) {
+export default function UserInformation({ params: { id } } : { params: { id: string }}) {
 	const { data } = useQuery<{ user: User }>(GET_USER_QUERY, {
 		variables: {
-			id: params.id
+			id: id
 		},
-		skip: !params || !params.id
-	})
+		skip: !id
+	});
 
 	return (
-		<div className={"flex flex-col gap-[36px]"}>
+		<div className={"flex flex-col w-full gap-[36px]"}>
 			<AppHeader
 				title={"Personal information"}
 				description={`Inspect the personal information of the current user.`}
@@ -35,5 +35,5 @@ export default function UserInformation({ params } : any) {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

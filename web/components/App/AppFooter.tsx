@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import HomeIcon from "@/components/Icons/HomeIcon";
 import React from "react";
@@ -22,7 +22,7 @@ export default function AppFooter() {
 				<NavigationItem icon={<UserIcon />} isSelected={path.startsWith("/app/user")} href={"/app/user"} />
 			</div>
 		</nav>
-	)
+	);
 }
 
 type NavigationItemProps = {
@@ -33,12 +33,12 @@ type NavigationItemProps = {
 
 function NavigationItem({ href, icon, isSelected } : NavigationItemProps) {
 	const iconStyle = `w-[24px] h-[24px] ${isSelected ? "text-zinc-200" : "text-zinc-500"}`;
-	const lineStyle = `w-[28px] h-[2px] ${isSelected ? "bg-zinc-200" : "bg-zinc-500"}`
+	const lineStyle = `w-[28px] h-[2px] ${isSelected ? "bg-zinc-200" : "bg-zinc-500"}`;
 
 	return (
 		<Link
 			href={href}
-			className={"flex flex-col justify-center items-center gap-[2px] p-[8px] m-[-8px] focus:outline-none focus:rounded-md focus:ring-2 focus:ring-main-500"}
+			className={"flex flex-col justify-center items-center gap-[2px] p-[8px] m-[-8px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
 		>
 			<div className={iconStyle}>
 				{icon}
@@ -47,5 +47,5 @@ function NavigationItem({ href, icon, isSelected } : NavigationItemProps) {
 				<div className={lineStyle} />
 			}
 		</Link>
-	)
+	);
 }

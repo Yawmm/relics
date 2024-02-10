@@ -38,7 +38,9 @@ public class IsTaskProjectMemberPermissionHandler : IPermissionHandler<IsTaskPro
         var project = _projectService.Get((Guid)projectId);
 
         // Check if the authenticated user is a member of the found project
-        if (project.Members.All(m => m.UserId != userId))
+        var isDirectMember = project.Members.Any(m => m.UserId == userId);
+        var isIndirectMember = project.Links.Any(l => l.Members.Any(m => m.UserId == userId)); 
+        if (!isDirectMember && !isIndirectMember)
             return;
         
         context.Succeed(permission);

@@ -26,6 +26,20 @@ const CORE_PROJECT_FIELDS = gql`
 				}
 			}
 		}
+		links {
+			id,
+			name,
+			owner {
+				userId,
+				username,
+				email
+			},
+			members {
+				userId,
+				username,
+				email
+			}
+		}
 		tasks {
 			id
 			name
@@ -226,6 +240,48 @@ export async function leaveProject(
 		variables: {
 			id,
 			user
+		}
+	})
+}
+
+export async function linkTeam(
+	team: string,
+	project: string
+) {
+	return client.mutate({
+		mutation: gql`
+		mutation AddProjectLink($team: ID!, $project: ID!) {
+			addProjectLink(input: {team: $team, project: $project}) {
+				result {
+					success
+				}
+			}
+		}
+		`,
+		variables: {
+			team,
+			project
+		}
+	})
+}
+
+export async function unlinkTeam(
+	team: string,
+	project: string
+) {
+	return client.mutate({
+		mutation: gql`
+		mutation RemoveProjectLink($team: ID!, $project: ID!) {
+			removeProjectLink(input: {team: $team, project: $project}) {
+				result {
+					success
+				}
+			}
+		}
+		`,
+		variables: {
+			team,
+			project
 		}
 	})
 }
