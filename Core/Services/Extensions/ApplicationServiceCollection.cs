@@ -3,6 +3,7 @@ using Backend.Core.Database;
 using Backend.Core.Services.Authentication;
 using Backend.Core.Services.Projects;
 using Backend.Core.Services.Tasks;
+using Backend.Core.Services.Teams;
 using Backend.Core.Services.Users;
 using Npgsql;
 
@@ -34,6 +35,7 @@ internal static class ApplicationServiceCollection
         // Add migrations
         services.AddTransient<IDatabaseMigrator, UserDatabaseMigrator>();
         services.AddTransient<IDatabaseMigrator, ProjectDatabaseMigrator>();
+        services.AddTransient<IDatabaseMigrator, TeamDatabaseMigrator>();
         services.AddTransient<IDatabaseMigrator, TaskDatabaseMigrator>();
     }
     
@@ -53,6 +55,7 @@ internal static class ApplicationServiceCollection
         services.AddTransient<IProjectService, ProjectService>();
         services.AddTransient<ICategoryService, CategoryService>();
         services.AddTransient<ITaskService, TaskService>();
+        services.AddTransient<ITeamService, TeamService>();
         
         // Add authentication service
         services.AddTransient<IAuthenticationService, AuthenticationService>();

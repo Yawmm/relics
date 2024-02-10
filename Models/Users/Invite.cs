@@ -1,7 +1,7 @@
 namespace Backend.Models.Users;
 
 /// <summary>
-/// An object class representing an invite to a <see cref="Projects.Project"/> in the application.
+/// An object class representing an invite to a <see cref="Projects.Project"/> or <see cref="Teams.Team"/> in the application.
 /// </summary>
 public class Invite
 {

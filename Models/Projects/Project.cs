@@ -1,3 +1,4 @@
+using Backend.Models.Teams;
 using Backend.Models.Users;
 using HotChocolate.Authorization;
 using Task = Backend.Models.Tasks.Task;
@@ -33,20 +34,25 @@ public class Project
     /// <summary>
     /// The range of members in the project.
     /// </summary>
-    public List<Member> Members { get; set; } = new List<Member>();
+    public List<Member> Members { get; set; } = new();
+    
+    /// <summary>
+    /// The range of teams in the project.
+    /// </summary>
+    public List<Link> Links { get; set; } = new();
     
     /// <summary>
     /// The range of outgoing invites of the project.
     /// </summary>
-    public List<Invite> Invites { get; set; } = new List<Invite>();
+    public List<Invite> Invites { get; set; } = new();
     
     /// <summary>
     /// The range of tasks of the project, not linked to a category.
     /// </summary>
-    public List<Task> Tasks { get; set; } = new List<Task>();
+    public List<Task> Tasks { get; set; } = new();
     
     /// <summary>
     /// The range of categories of the project.
     /// </summary>
-    public List<Category> Categories { get; set; } = new List<Category>();
+    public List<Category> Categories { get; set; } = new();
 }

@@ -1,6 +1,7 @@
 using Backend.Core.Services.Users;
 using Backend.Errors;
 using Backend.Models.Projects;
+using Backend.Models.Teams;
 using Backend.Models.Users;
 using Backend.Policies;
 using Microsoft.AspNetCore.Authorization;
@@ -26,14 +27,26 @@ public class UserQuery
         => userService.Get(user);
     
     /// <summary>
-    /// Retrieve all the incoming invites a user has.
+    /// Retrieve all the incoming invites a user has to a project.
     /// </summary>
     /// <param name="userService">The current user service.</param>
     /// <param name="user">The target user from which the invites should be retrieved.</param>
     /// <returns>The retrieved range of incoming invites of the given user.</returns>
     [Authorize(Policy = PolicyTypes.ReadInvites)]
-    public List<Project> GetInvites(
+    public List<ProjectInvite> GetProjectInvites(
         [Service] IUserService userService, 
         [ID] Guid user)
-        => userService.Invites(user);
+        => userService.ProjectInvites(user);
+    
+    /// <summary>
+    /// Retrieve all the incoming invites a user has to a project.
+    /// </summary>
+    /// <param name="userService">The current user service.</param>
+    /// <param name="user">The target user from which the invites should be retrieved.</param>
+    /// <returns>The retrieved range of incoming invites of the given user.</returns>
+    [Authorize(Policy = PolicyTypes.ReadInvites)]
+    public List<TeamInvite> GetTeamInvites(
+        [Service] IUserService userService, 
+        [ID] Guid user)
+        => userService.TeamInvites(user);
 }

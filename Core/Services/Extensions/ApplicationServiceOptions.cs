@@ -13,12 +13,12 @@ public class AuthenticationOptions
     /// <summary>
     /// The token settings for authentication.
     /// </summary>
-    public TokenOptions Token { get; set; } = new TokenOptions();
+    public TokenOptions Token { get; set; } = new();
     
     /// <summary>
     /// The hashing settings for authentication.
     /// </summary>
-    public HashingOptions Hashing { get; } = new HashingOptions();
+    public HashingOptions Hashing { get; } = new();
 }
 
 /// <summary>

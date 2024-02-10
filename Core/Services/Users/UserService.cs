@@ -2,6 +2,7 @@ using Backend.Models.Users;
 using System.Data;
 using Backend.Errors;
 using Backend.Models.Projects;
+using Backend.Models.Teams;
 using Dapper;
 
 namespace Backend.Core.Services.Users;
@@ -51,8 +52,15 @@ public interface IUserService
     /// </summary>
     /// <param name="id">The <see cref="Guid"/> of the <see cref="User"/>.</param>
     /// <returns>The retrieved <see cref="User"/>.</returns>
-    List<Project> Invites(Guid id);
+    List<ProjectInvite> ProjectInvites(Guid id);
 
+    /// <summary>
+    /// Retrieve the invites to other teams the <see cref="User"/> has by the given <see cref="Guid"/>.
+    /// </summary>
+    /// <param name="id">The <see cref="Guid"/> of the <see cref="User"/>.</param>
+    /// <returns>The retrieved <see cref="User"/>.</returns>
+    List<TeamInvite> TeamInvites(Guid id);
+    
     /// <summary>
     /// Update an existing <see cref="User"/>.
     /// </summary>
@@ -161,14 +169,32 @@ public class UserService : IUserService
         return result;
     }
 
-    public List<Project> Invites(Guid id)
-        => _connection.Query<Project>(
+    /// <inheritdoc cref="IUserService.ProjectInvites"/>
+    public List<ProjectInvite> ProjectInvites(Guid id)
+        => _connection.Query<ProjectInvite>(
             """
             SELECT 
                 p.Id, p.Name, p.Description
             FROM "Project" p  
-                INNER JOIN "Invite" i ON i.ProjectId = p.Id
+                INNER JOIN "ProjectInvite" i ON i.ProjectId = p.Id
                     INNER JOIN "User" u ON i.UserId = u.Id
+            WHERE u.Id = @UserId
+            """,
+            new { UserId = id }
+        ).ToList();
+
+    /// <inheritdoc cref="IUserService.TeamInvites"/>
+    public List<TeamInvite> TeamInvites(Guid id)
+        => _connection.Query<TeamInvite>(
+            """
+            SELECT
+                t.Id, t.Name  
+            FROM "Team" t
+                INNER JOIN "TeamInvite" i ON i.TeamId = t.Id
+                    INNER JOIN "User" u ON i.UserId = u.Id
+                    INNER JOIN "User" o ON t.OwnerId = o.Id
+                    INNER JOIN "TeamMember" m ON m.TeamId = t.Id
+                        INNER JOIN "User" mu ON m.UserId = mu.Id
             WHERE u.Id = @UserId
             """,
             new { UserId = id }

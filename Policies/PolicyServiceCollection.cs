@@ -2,10 +2,12 @@ using Backend.Policies.Permissions;
 using Backend.Policies.Permissions.Handlers.Categories;
 using Backend.Policies.Permissions.Handlers.Projects;
 using Backend.Policies.Permissions.Handlers.Tasks;
+using Backend.Policies.Permissions.Handlers.Teams;
 using Backend.Policies.Permissions.Handlers.Users;
 using Backend.Policies.Permissions.Variants.Categories;
 using Backend.Policies.Permissions.Variants.Projects;
 using Backend.Policies.Permissions.Variants.Tasks;
+using Backend.Policies.Permissions.Variants.Teams;
 using Backend.Policies.Permissions.Variants.Users;
 using Microsoft.AspNetCore.Authorization;
 
@@ -33,8 +35,14 @@ public static class PolicyServiceCollection
         services.AddTransient<IPermissionHandler<IsUserPermission>, IsUserPermissionHandler>();
         
         // Project handlers
-        services.AddTransient<IPermissionHandler<IsProjectMemberPermission>, IsProjectMemberPremissionHandler>();
+        services.AddTransient<IPermissionHandler<IsProjectDirectMemberPermission>, IsProjectDirectMemberPermissionHandler>();
+        services.AddTransient<IPermissionHandler<IsProjectIndirectMemberPermission>, IsProjectIndirectMemberPermissionHandler>();
+        services.AddTransient<IPermissionHandler<IsProjectMemberPermission>, IsProjectMemberPermissionHandler>();
         services.AddTransient<IPermissionHandler<IsProjectOwnerPermission>, IsProjectOwnerPermissionHandler>();
+        
+        // Team handlers
+        services.AddTransient<IPermissionHandler<IsTeamMemberPermission>, IsTeamMemberPermissionHandler>();
+        services.AddTransient<IPermissionHandler<IsTeamOwnerPermission>, IsTeamOwnerPermissionHandler>();
         
         // Category handlers
         services.AddTransient<IPermissionHandler<IsCategoryProjectOwnerPermission>, IsCategoryProjectOwnerPermissionHandler>();
@@ -60,14 +68,25 @@ public static class PolicyServiceCollection
         options.AddPolicy(PolicyTypes.ReadProjects, policy => policy.Requirements.Add(new IsUserPermission()));
         options.AddPolicy(PolicyTypes.WriteProject, policy => policy.Requirements.Add(new IsProjectMemberPermission()));
         options.AddPolicy(PolicyTypes.DeleteProject, policy => policy.Requirements.Add(new IsProjectOwnerPermission()));
-        options.AddPolicy(PolicyTypes.LeaveProject, policy => policy.Requirements.Add(new IsProjectMemberPermission()));
-        options.AddPolicy(PolicyTypes.InviteMember, policy => policy.Requirements.Add(new IsProjectOwnerPermission()));
-        options.AddPolicy(PolicyTypes.InviteMemberResponse, policy => policy.Requirements.Add(new IsUserPermission()));
-        options.AddPolicy(PolicyTypes.KickMember, policy =>
+        
+        options.AddPolicy(PolicyTypes.LeaveProject, policy => policy.Requirements.Add(new IsProjectDirectMemberPermission()));
+        options.AddPolicy(PolicyTypes.KickProjectMember, policy =>
         {
-            policy.Requirements.Add(new IsProjectMemberPermission());
+            policy.Requirements.Add(new IsProjectDirectMemberPermission());
             policy.Requirements.Add(new IsProjectOwnerPermission());
         });
+        
+        // Team policies
+        options.AddPolicy(PolicyTypes.ReadTeam, policy => policy.Requirements.Add(new IsTeamMemberPermission()));
+        options.AddPolicy(PolicyTypes.ReadTeams, policy => policy.Requirements.Add(new IsUserPermission()));
+        options.AddPolicy(PolicyTypes.WriteTeam, policy => policy.Requirements.Add(new IsTeamMemberPermission()));
+        options.AddPolicy(PolicyTypes.DeleteTeam, policy => policy.Requirements.Add(new IsTeamOwnerPermission()));
+        
+        options.AddPolicy(PolicyTypes.LeaveTeam, policy => policy.Requirements.Add(new IsTeamMemberPermission()));
+        options.AddPolicy(PolicyTypes.KickTeamMember, policy =>policy.Requirements.Add(new IsTeamOwnerPermission()));
+        
+        // Member policies
+        options.AddPolicy(PolicyTypes.InviteMemberResponse, policy => policy.Requirements.Add(new IsUserPermission()));
 
         // Category policies
         options.AddPolicy(PolicyTypes.DeleteCategory, policy => policy.Requirements.Add(new IsCategoryProjectOwnerPermission()));

@@ -22,5 +22,5 @@ public class Category
     /// <summary>
     /// The range of tasks of the category.
     /// </summary>
-    public List<Task> Tasks { get; set; } = new List<Task>();
+    public List<Task> Tasks { get; set; } = new();
 }

@@ -8,17 +8,17 @@ using Microsoft.AspNetCore.Authorization;
 namespace Backend.Policies.Permissions.Handlers.Projects;
 
 /// <inheritdoc cref="IPermissionHandler{T}"/>
-public class IsProjectMemberPremissionHandler : IPermissionHandler<IsProjectMemberPermission>
+public class IsProjectIndirectMemberPermissionHandler : IPermissionHandler<IsProjectIndirectMemberPermission>
 {
     private readonly IProjectService _projectService;
     
-    public IsProjectMemberPremissionHandler(IProjectService projectService)
+    public IsProjectIndirectMemberPermissionHandler(IProjectService projectService)
     {
         _projectService = projectService;
     }
     
     /// <inheritdoc cref="IPermissionHandler{T}.Handle"/>
-    public void Handle(IsProjectMemberPermission permission, IMiddlewareContext middleware, AuthorizationHandlerContext context)
+    public void Handle(IsProjectIndirectMemberPermission permission, IMiddlewareContext middleware, AuthorizationHandlerContext context)
     {
         // Retrieve the id of the authenticated user
         var idClaim = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
@@ -33,7 +33,8 @@ public class IsProjectMemberPremissionHandler : IPermissionHandler<IsProjectMemb
         var project = _projectService.Get(projectId);
         
         // Check if the authenticated user is a member of the project
-        if (project.Members.All(m => m.UserId != userId))
+        var isIndirectMember = project.Links.Any(l => l.Members.Any(m => m.UserId == userId)); 
+        if (!isIndirectMember)
             return;
         
         context.Succeed(permission);

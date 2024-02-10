@@ -33,25 +33,25 @@ public class ProjectDatabaseMigrator : IDatabaseMigrator
             );
 
             CREATE TABLE IF NOT EXISTS
-            "Member" (
+            "ProjectMember" (
                 UserId UUID NOT NULL REFERENCES "User"(Id) ON DELETE CASCADE,
                 ProjectId UUID NOT NULL REFERENCES "Project"(Id) ON DELETE CASCADE
             );
 
-            ALTER TABLE "Member" DROP CONSTRAINT IF EXISTS Member_unique_user_project_constraint;
-            ALTER TABLE "Member"
-                ADD CONSTRAINT Member_unique_user_project_constraint
+            ALTER TABLE "ProjectMember" DROP CONSTRAINT IF EXISTS Project_member_unique_user_project_constraint;
+            ALTER TABLE "ProjectMember"
+                ADD CONSTRAINT Project_member_unique_user_project_constraint
                     UNIQUE(UserId, ProjectID);
 
             CREATE TABLE IF NOT EXISTS
-            "Invite" (
+            "ProjectInvite" (
                 UserId UUID NOT NULL REFERENCES "User"(Id) ON DELETE CASCADE,
                 ProjectId UUID NOT NULL REFERENCES "Project"(Id) ON DELETE CASCADE
             );
 
-            ALTER TABLE "Invite" DROP CONSTRAINT IF EXISTS Invite_unique_user_project_constraint;
-            ALTER TABLE "Invite"
-                ADD CONSTRAINT Invite_unique_user_project_constraint
+            ALTER TABLE "ProjectInvite" DROP CONSTRAINT IF EXISTS Project_invite_unique_user_project_constraint;
+            ALTER TABLE "ProjectInvite"
+                ADD CONSTRAINT Project_invite_unique_user_project_constraint
                     UNIQUE(UserId, ProjectID);
 
             CREATE TABLE IF NOT EXISTS
@@ -72,8 +72,8 @@ public class ProjectDatabaseMigrator : IDatabaseMigrator
     {
         _connection.Execute("""
             DROP TABLE IF EXISTS "Project";
-            DROP TABLE IF EXISTS "Member";
-            DROP TABLE IF EXISTS "Invite";
+            DROP TABLE IF EXISTS "ProjectMember";
+            DROP TABLE IF EXISTS "ProjectInvite";
             DROP TABLE IF EXISTS "Category";
             """
         );

@@ -1,4 +1,5 @@
 using Backend.Core.Services.Projects;
+using Backend.Core.Services.Teams;
 using Backend.Core.Services.Users;
 using Backend.Errors;
 using Backend.Models.General;
@@ -83,7 +84,7 @@ public class ProjectMutation
     [Error<ItemNotFoundError>]
     [Error<ProjectDuplicateMemberError>]
     [Error<ProjectDuplicateInviteError>]
-    [Authorize(Policy = PolicyTypes.InviteMember)]
+    [Authorize(Policy = PolicyTypes.WriteProject)]
     public Result SendProjectInvitation(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
@@ -96,13 +97,13 @@ public class ProjectMutation
         var proj = projectService.Get(project);
         
         // Project member and invite checks
-        if (proj.Members.Any(m => m.Email == user)) throw new ProjectDuplicateMemberError();
+        if (proj.Members.Any(m => m.Email == user) || proj.Links.Any(l => l.Members.Any(m => m.Email == user))) throw new ProjectDuplicateMemberError();
         if (proj.Invites.Any(i => i.Email == user)) throw new ProjectDuplicateInviteError();
 
         // Update the project in the database with the new invite
         var changes = new List<InviteChange>
         {
-            new InviteChange(ChangeType.Add, userService.Get(user).Id)
+            new(ChangeType.Add, userService.Get(user).Id)
         };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: changes));
@@ -119,7 +120,7 @@ public class ProjectMutation
     /// <returns>Whether or not the invite was successfully revoked.</returns>
     /// <exception cref="ItemNotFoundError">Thrown when the given user could not be found, or when the user hasn't received an invite to the given project.</exception>
     [Error<ItemNotFoundError>]
-    [Authorize(Policy = PolicyTypes.InviteMember)]
+    [Authorize(Policy = PolicyTypes.WriteProject)]
     public Result RevokeProjectInvitation(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
@@ -136,7 +137,7 @@ public class ProjectMutation
         // Update the project in the database with the invite removed
         var changes = new List<InviteChange>
         {
-            new InviteChange(ChangeType.Remove, user)
+            new(ChangeType.Remove, user)
         };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: changes));
@@ -164,12 +165,12 @@ public class ProjectMutation
         if (!userService.Exists(user)) throw new ItemNotFoundError($"User {user}");
         
         // Project invite check
-        var invites = userService.Invites(user);
+        var invites = userService.ProjectInvites(user);
         if (invites.All(i => i.Id != project)) throw new ItemNotFoundError($"Invite {project}");
         
         // Remove the standing invite in the project and add the user as a member to the project
-        var inviteChanges = new List<InviteChange> { new InviteChange(ChangeType.Remove, user) };
-        var memberChanges = new List<MemberChange> { new MemberChange(ChangeType.Add, user) };
+        var inviteChanges = new List<InviteChange> { new(ChangeType.Remove, user) };
+        var memberChanges = new List<MemberChange> { new(ChangeType.Add, user) };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: inviteChanges, members: memberChanges));
         return new Result(true);
@@ -196,11 +197,11 @@ public class ProjectMutation
         if (!userService.Exists(user)) throw new ItemNotFoundError($"User {user}");
         
         // Project invite check
-        var invites = userService.Invites(user);
+        var invites = userService.ProjectInvites(user);
         if (invites.All(i => i.Id != project)) throw new ItemNotFoundError($"Invite {project}");
         
         // Remove the standing invite in the project
-        var inviteChanges = new List<InviteChange> { new InviteChange(ChangeType.Remove, user) };
+        var inviteChanges = new List<InviteChange> { new(ChangeType.Remove, user) };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: inviteChanges));
         return new Result(true);
@@ -215,7 +216,7 @@ public class ProjectMutation
     /// <param name="user">The guid of the user who should be kicked.</param>
     /// <returns>Whether or not the user has been successfully kicked out of the project</returns>
     [Error<ItemNotFoundError>]
-    [Authorize(Policy = PolicyTypes.KickMember)]
+    [Authorize(Policy = PolicyTypes.KickProjectMember)]
     public Result KickProjectMember(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
@@ -248,12 +249,62 @@ public class ProjectMutation
         if (proj.Members.All(m => m.UserId != user)) throw new ItemNotFoundError($"Member {user}");
         
         // Remove user as a member from the project
-        var memberChanges = new List<MemberChange> { new MemberChange(ChangeType.Remove, user) };
+        var memberChanges = new List<MemberChange> { new(ChangeType.Remove, user) };
         
         projectService.Update(project, new ProjectUpdateConfiguration(members: memberChanges));
         return new Result(true);
     }
 
+    /// <summary>
+    /// Add a link to a given project.
+    /// </summary>
+    /// <param name="projectService">The current project service.</param>
+    /// <param name="teamService">The current team service.</param>
+    /// <param name="team">The guid of the team which should be added to the project.</param>
+    /// <param name="project">The guid of the project to which the team should be added.</param>
+    /// <returns>Whether or not the project has been successfully updated.</returns>
+    [Authorize(Policy = PolicyTypes.WriteProject)]
+    public Result AddProjectLink(
+        [Service] IProjectService projectService,
+        [Service] ITeamService teamService,
+        [ID] Guid team,
+        [ID] Guid project)
+    {
+        // Team guard
+        if (!teamService.Exists(team)) throw new ItemNotFoundError($"Team {team}");
+
+        // Add team to the project.
+        var linkChanges = new List<LinkChange> { new(ChangeType.Add, team) };
+        
+        projectService.Update(project, new ProjectUpdateConfiguration(links: linkChanges));
+        return new Result(true);
+    }
+    
+    /// <summary>
+    /// Remove a link to a given project.
+    /// </summary>
+    /// <param name="projectService">The current project service.</param>
+    /// <param name="teamService">The current team service.</param>
+    /// <param name="team">The guid of the team which should be removed to the project.</param>
+    /// <param name="project">The guid of the project to which the team should be removed.</param>
+    /// <returns>Whether or not the project has been successfully updated.</returns>
+    [Authorize(Policy = PolicyTypes.WriteProject)]
+    public Result RemoveProjectLink(
+        [Service] IProjectService projectService,
+        [Service] ITeamService teamService,
+        [ID] Guid team,
+        [ID] Guid project)
+    {
+        // Team guard
+        if (!teamService.Exists(team)) throw new ItemNotFoundError($"Team {team}");
+
+        // Add team to the project.
+        var linkChanges = new List<LinkChange> { new(ChangeType.Remove, team) };
+        
+        projectService.Update(project, new ProjectUpdateConfiguration(links: linkChanges));
+        return new Result(true);
+    }
+    
     /// <summary>
     /// Remove a project from the database.
     /// </summary>

@@ -19,6 +19,7 @@ public static class GraphServiceCollection
         builder.AddQueryType<Query>()
             .AddTypeExtension<UserQuery>()
             .AddTypeExtension<ProjectQuery>()
+            .AddTypeExtension<TeamQuery>()
             .AddTypeExtension<TaskQuery>();
 
         return builder;
@@ -35,6 +36,7 @@ public static class GraphServiceCollection
             .AddTypeExtension<UserMutation>()
             .AddTypeExtension<ProjectMutation>()
             .AddTypeExtension<CategoryMutation>()
+            .AddTypeExtension<TeamMutation>()
             .AddTypeExtension<TaskMutation>();
         
         return builder;

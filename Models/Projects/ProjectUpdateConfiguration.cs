@@ -21,6 +21,11 @@ public class ProjectUpdateConfiguration
     /// The id of the new owner of the project.
     /// </summary>
     public Guid? OwnerId { get; }
+    
+    /// <summary>
+    /// The range of changes to the links of the project.
+    /// </summary>
+    public List<LinkChange>? Links { get; init; }
 
     /// <summary>
     /// The range of changes to the members of the project.
@@ -36,6 +41,7 @@ public class ProjectUpdateConfiguration
         string? name = null, 
         string? description = null, 
         Guid? ownerId = null, 
+        List<LinkChange>? links = default,
         List<MemberChange>? members = default,
         List<InviteChange>? invites = default)
     {
@@ -43,7 +49,8 @@ public class ProjectUpdateConfiguration
         Description = description;
 
         OwnerId = ownerId;
-        
+
+        Links = links;
         Members = members;
         Invites = invites;
     }
