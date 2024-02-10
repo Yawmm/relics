@@ -438,10 +438,14 @@ public class ProjectService : IProjectService
 
         if (objects[4] is Task task)
         {
+            // Retrieve task reference
             var taskRef = mapCache.Retrieve(task.Id, task);
+            
+            // Add task to project reference
             if (projectRef.Tasks.All(t => t.Id != taskRef.Id))
                 projectRef.Tasks.Add(taskRef);
 
+            // Link owner of task to task reference
             if (objects[5] is User taskOwner)
                 taskRef.Owner = new Member(taskOwner);
         }
@@ -454,13 +458,18 @@ public class ProjectService : IProjectService
                 Name = team.Name,
             };
             
+            // Retrieve link reference
             var linkRef = mapCache.Retrieve(link.Id,link);
+            
+            // Add link to project reference
             if (projectRef.Links.All(t => t.Id != linkRef.Id))
                 projectRef.Links.Add(linkRef);
 
+            // Link owner of link to link reference
             if (objects[7] is User teamOwner)
                 linkRef.Owner = new Member(teamOwner);
             
+            // Add member to link reference
             if (objects[8] is User teamMember && linkRef.Members.All(m => m.UserId != teamMember.Id))
                 linkRef.Members.Add(new Member(teamMember));
         }

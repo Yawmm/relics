@@ -121,6 +121,7 @@ public class TeamService : ITeamService
 
         var cache = new MapCache();
         
+        // Same thing as the project mapping applies here.
         var result = _connection.Query(
             sql: """
             SELECT t.*,
@@ -178,7 +179,7 @@ public class TeamService : ITeamService
                 typeof(User),
                 typeof(User)
             },
-            map: objects => MapProject(cache, objects),
+            map: objects => MapTeam(cache, objects),
             param: new { id }
         ).FirstOrDefault();
         
@@ -194,6 +195,7 @@ public class TeamService : ITeamService
     {
         var cache = new MapCache();
         
+        // Same thing as the single get applies here.
         var result = _connection.Query(
             sql: """
             SELECT t.*,
@@ -253,7 +255,7 @@ public class TeamService : ITeamService
                 typeof(User),
                 typeof(User)
             },
-            map: objects => MapProject(cache, objects),
+            map: objects => MapTeam(cache, objects),
             param: new { userId }
         ) ?? new List<Team>();
         
@@ -358,23 +360,32 @@ public class TeamService : ITeamService
     /// <param name="mapCache">The used cache for the mapping.</param>
     /// <param name="objects">The range of objects returned from the SQL-query.</param>
     /// <returns>The fully mapped project.</returns>
-    private Team MapProject(MapCache mapCache, object[] objects)
+    private Team MapTeam(MapCache mapCache, object[] objects)
     {
         if (objects[0] is not Team team)
             throw new ArgumentNullException(nameof(objects));
 
+        // Retrieve team reference
         var teamRef = mapCache.Retrieve(team.Id, team);
 
         if (objects[1] is Project project)
         {
+            // Retrieve project reference
             var projectRef = mapCache.Retrieve(project.Id, project);
+            
+            // Add project to team reference
+            if (teamRef.Projects.All(p => p.Id != projectRef.Id))
+                teamRef.Projects.Add(projectRef);
 
+            // Link owner of project to project reference
             if (objects[2] is User projectOwner)
                 projectRef.Owner = new Member(projectOwner);
             
+            // Add member to project reference
             if (objects[3] is User projectMember && projectRef.Members.All(m => m.UserId != projectMember.Id))
                 projectRef.Members.Add(new Member(projectMember));
             
+            // Add invite to project reference
             if (objects[4] is User projectInvite && projectRef.Invites.All(i => i.UserId != projectInvite.Id))
                 projectRef.Invites.Add(new Invite(projectInvite));
 
@@ -386,28 +397,38 @@ public class TeamService : ITeamService
                     Name = projectTeam.Name
                 };
                 
+                // Retrieve link reference
                 var projectLinkRef = mapCache.Retrieve(projectLink.Id, projectLink);
+                
+                // Add link to project reference
                 if (projectRef.Links.All(l => l.Id != projectLinkRef.Id))
                     projectRef.Links.Add(projectLinkRef);
                 
+                // Link owner of link to link reference
                 if (objects[6] is User projectLinkOwner)
                     projectLinkRef.Owner = new Member(projectLinkOwner);
                 
+                // Add member to link reference
                 if (objects[7] is User projectLinkMember && projectLinkRef.Members.All(m => m.UserId != projectLinkMember.Id))
                     projectLinkRef.Members.Add(new Member(projectLinkMember));
             }
 
             if (objects[8] is Category projectCategory && project.Categories.All(c => c.Id != projectCategory.Id))
             {
+                // Retrieve category reference
                 var projectCategoryRef = mapCache.Retrieve(projectCategory.Id, projectCategory);
                 if (projectRef.Categories.All(l => l.Id != projectCategoryRef.Id))
                     projectRef.Categories.Add(projectCategoryRef);
 
                 if (objects[9] is Task projectCategoryTask && projectCategoryRef.Tasks.All(t => t.Id != projectCategoryTask.Id))
                 {
+                    // Retrieve task reference
                     var projectCategoryTaskRef = mapCache.Retrieve(projectCategoryTask.Id, projectCategoryTask);
+                   
+                    // Add task to category reference
                     projectCategoryRef.Tasks.Add(projectCategoryTaskRef);
 
+                    // Link owner of task to task reference
                     if (objects[10] is User categoryTaskOwner)
                         projectCategoryTaskRef.Owner = new Member(categoryTaskOwner);
                 }
@@ -415,20 +436,27 @@ public class TeamService : ITeamService
 
             if (objects[11] is Task projectTask && project.Tasks.All(t => t.Id != projectTask.Id))
             {
+                // Retrieve task reference
                 var projectTaskRef = mapCache.Retrieve(projectTask.Id, projectTask);
+                
+                // Add task to project reference
                 projectRef.Tasks.Add(projectTaskRef);
 
+                // Link owner of task to task reference
                 if (objects[12] is User projectTaskOwner)
                     projectTaskRef.Owner = new Member(projectTaskOwner);
             }
         }
         
+        // Link owner of team to team reference
         if (objects[13] is User owner) 
             teamRef.Owner = new Member(owner);
         
+        // Add member to team reference
         if (objects[14] is User member && teamRef.Members.All(m => m.UserId != member.Id))
             teamRef.Members.Add(new Member(member));
         
+        // Add invite to team reference
         if (objects[15] is User invite && teamRef.Invites.All(i => i.UserId != invite.Id))
             teamRef.Invites.Add(new Invite(invite));
 
