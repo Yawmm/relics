@@ -15,12 +15,10 @@ import InviteMemberDialog from "@/components/App/Dialogs/Members/InviteMemberDia
 
 type TeamDialogProps = {
 	dialog: RefObject<DialogModalHandle>
-	project: Project |  undefined
-
-	onUpdate: () => void,
+	project: Project | null
 }
 
-export default function MemberDialog({ dialog, onUpdate, project } : TeamDialogProps) {
+export default function MemberDialog({ dialog, project } : TeamDialogProps) {
 	const inviteDialogRef = useRef<DialogModalHandle>(null);
 	const [inviteError, setInviteError] = useState<string | null>();
 
@@ -46,7 +44,6 @@ export default function MemberDialog({ dialog, onUpdate, project } : TeamDialogP
 				}
 
 				inviteDialogRef.current?.hide();
-				onUpdate();
 			});
 	}
 
@@ -62,6 +59,7 @@ export default function MemberDialog({ dialog, onUpdate, project } : TeamDialogP
 					.then(async result => {
 						const root = result.data.leaveProject;
 						if (root.errors) return;
+
 						push("/app/projects");
 					});
 			}
@@ -75,14 +73,7 @@ export default function MemberDialog({ dialog, onUpdate, project } : TeamDialogP
 		dialog.current?.show(
 			"Kick member",
 			"Are you sure you want to kick the given member from the project?",
-			() => {
-				kickProjectMember(project.id, member.userId)
-					.then(async result => {
-						const root = result.data.kickProjectMember;
-						if (root.errors) return;
-						onUpdate();
-					});
-			}
+			async () => await kickProjectMember(project.id, member.userId)
 		);
 	}
 
@@ -93,15 +84,7 @@ export default function MemberDialog({ dialog, onUpdate, project } : TeamDialogP
 		dialog.current?.show(
 			"Revoke invite",
 			"Are you sure you want to revoke the given invite?",
-			() => {
-				revokeProjectInvite(project.id, invite.userId)
-					.then(async result => {
-						const root = result.data.revokeProjectInvitation;
-						if (root.errors) return;
-
-						onUpdate();
-					});
-			}
+			async () => await revokeProjectInvite(project.id, invite.userId)
 		);
 	}
 

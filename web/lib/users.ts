@@ -9,7 +9,7 @@ export const GET_USER_QUERY = gql`
 			email
 		}
 	}
-`
+`;
 
 export const GET_PROJECT_INVITES_QUERY = gql`
 	query ProjectInvites($id: ID!) {
@@ -19,7 +19,7 @@ export const GET_PROJECT_INVITES_QUERY = gql`
 			description
 		}
 	}
-`
+`;
 
 export const GET_TEAM_INVITES_QUERY = gql`
 	query TeamInvites($id: ID!) {
@@ -28,7 +28,32 @@ export const GET_TEAM_INVITES_QUERY = gql`
 			name
 		}
 	}
-`
+`;
+
+export const PROJECT_INVITES_SUBSCRIPTION = gql`
+	subscription ProjectInvitesSubscription($userId: ID!) {
+		userProjectInvites(user: $userId) {
+			type,
+			projectInvite {
+				id,
+				name,
+				description
+			}
+		}
+	}
+`;
+
+export const TEAM_INVITES_SUBSCRIPTION = gql`
+	subscription TeamInvitesSubscription($userId: ID!) {
+		userTeamInvites(user: $userId) {
+			type,
+			teamInvite {
+				id,
+				name
+			}
+		}
+	}
+`;
 
 export async function getUser(
 	uuid: string
@@ -120,6 +145,4 @@ export async function removeUser(
 			id,
 		}
 	});
-
-	console.log(data)
 }

@@ -12,11 +12,9 @@ import {User} from "@/lib/types";
 type CreateProjectDialogProps = {
     dialog: RefObject<DialogModalHandle>
     user: User | null,
-
-    onUpdate?: () => void,
 }
 
-export default function CreateProjectDialog({ dialog, user, onUpdate } : CreateProjectDialogProps) {
+export default function CreateProjectDialog({ dialog, user } : CreateProjectDialogProps) {
     async function createProject(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         
@@ -28,10 +26,8 @@ export default function CreateProjectDialog({ dialog, user, onUpdate } : CreateP
             description: String(event.currentTarget.Description.value),
         };
 
-        await addProject(data.name, data.description, user.id);
-        if (onUpdate) onUpdate();
-
         dialog.current?.hide();
+        await addProject(data.name, data.description, user.id);
         event.currentTarget?.reset();
     }
     

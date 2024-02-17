@@ -1,25 +1,49 @@
 import client from "@/apollo-client";
 import {gql} from "@apollo/client";
 
+const CORE_TEAM_FIELDS = gql`
+	fragment CoreTeamFields on Team {
+		id
+		name
+		owner {
+			userId,
+			username,
+			email
+		}
+		members {
+			userId,
+			username,
+			email
+		}
+	}
+`;
+
 export const GET_TEAMS_QUERY = gql`
+	${CORE_TEAM_FIELDS}
 	query Teams($id: ID!) {
 		teams(user: $id) {
-			id
-			name
-			owner {
-				userId,
-				username,
-				email
-			}
-			members {
-				userId,
-				username,
-				email
-			}
+			...CoreTeamFields
 			invites {
 				userId,
 				username,
 				email
+			}
+		}
+	}
+`;
+
+export const TEAMS_SUBSCRIPTION = gql`
+	${CORE_TEAM_FIELDS}
+	subscription TeamsSubscription($userId: ID!) {
+		userTeams(user: $userId) {
+			type,
+			team {
+				...CoreTeamFields
+				invites {
+					userId,
+					username,
+					email
+				}
 			}
 		}
 	}

@@ -14,11 +14,9 @@ type LinkItemProps = {
 	isOwner: boolean
 	className?: string
 	editable?: boolean
-
-	onChange?: () => void
 }
 
-export default function LinkItem({ link, project, isOwner, className, editable = true, onChange } : LinkItemProps) {
+export default function LinkItem({ link, project, isOwner, className, editable = true } : LinkItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
 	const confirmationDialog = useRef<ConfirmationDialogHandle>(null);
 
@@ -31,7 +29,6 @@ export default function LinkItem({ link, project, isOwner, className, editable =
 					return;
 
 				await unlinkTeam(link.id, project?.id);
-				if (onChange) onChange();
 				popoverRef.current?.hide();
 			}
 		);

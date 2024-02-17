@@ -2,10 +2,8 @@
 
 import LoadScreen from "@/components/Login/LoadScreen";
 import AppHeader from "@/components/App/AppHeader";
-import React, {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import TeamIcon from "@/components/Icons/TeamIcon";
-import {useQuery} from "@apollo/client";
-import {GET_TEAM_INVITES_QUERY} from "@/lib/users";
 import {useUser} from "@/lib/hooks";
 import {Team, TeamInvite} from "@/lib/types";
 import {ReceivedInviteItem} from "@/components/App/Projects/ProjectInviteItem";
@@ -15,61 +13,71 @@ import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
 import {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import CreateTeamDialog from "@/components/App/Dialogs/Teams/CreateTeamDialog";
-import {acceptTeamInvite, declineTeamInvite, GET_TEAMS_QUERY} from "@/lib/teams";
+import {acceptTeamInvite, declineTeamInvite} from "@/lib/teams";
 import TeamItem from "@/components/App/Teams/TeamItem";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
 import Header from "@/components/Text/Header";
+import {useTeamInvitesQuery, useTeamsQuery} from "@/hooks/queryHooks";
+import {updateNotificationEvent, useTeamInvitesSubscription, useTeamsSubscription} from "@/hooks/subscriptionHooks";
 
 export default function Teams() {
+	const [teams, setTeams] = useState<Team[]>([]);
+	const [teamInvites, setTeamInvites] = useState<TeamInvite[]>([]);
+
 	const confirmationDialogRef = useRef<ConfirmationDialogHandle>(null);
 	const createDialogRef = useRef<DialogModalHandle>(null);
 
 	const { user } = useUser();
-	const { data: teams, loading: teamsLoading, refetch: refetchTeams } = useQuery<{ teams: Team[] }>(GET_TEAMS_QUERY, {
-		variables: {
-			id: user?.id
-		},
-		skip: user === null
-	});
 
-	const { data: teamInvites, loading: teamInvitesLoading, refetch: refetchTeamInvites } = useQuery<{ teamInvites: TeamInvite[] }>(GET_TEAM_INVITES_QUERY, {
-		variables: {
-			id: user?.id
-		},
-		skip: user === null,
-	});
+	const { data: userTeams } = useTeamsSubscription(user);
+	const { data: userTeamInvites } = useTeamInvitesSubscription(user);
+
+	const { data: getTeams, loading: getTeamsLoading } = useTeamsQuery(user);
+	const { data: getTeamInvites, loading: getTeamInvitesLoading } = useTeamInvitesQuery(user);
 
 	async function acceptTeam(team: TeamInvite) {
 		if (!user || !team)
 			return;
 
-		acceptTeamInvite(team.id, user?.id)
-			.then(async result => {
-				const root = result.data.acceptTeamInvitation;
-				if (root.errors) return;
-
-				await refetchTeamInvites();
-				await refetchTeams();
-			});
+		await acceptTeamInvite(team.id, user?.id);
 	}
 
 	async function declineTeam(team: TeamInvite) {
 		if (!user || !team)
 			return;
 
-		declineTeamInvite(team.id, user.id)
-			.then(async result => {
-				const root = result.data.declineProjectInvitation;
-				if (root.errors) return;
-
-				await refetchTeamInvites();
-				await refetchTeams();
-			});
+		await declineTeamInvite(team.id, user.id);
 	}
+
+	useEffect(() => updateNotificationEvent(
+		userTeams?.userTeams.type,
+		userTeams?.userTeams.team,
+		setTeams
+	), [userTeams]);
+
+	useEffect(() => updateNotificationEvent(
+		userTeamInvites?.userTeamInvites.type,
+		userTeamInvites?.userTeamInvites.teamInvite,
+		setTeamInvites
+	), [userTeamInvites]);
+
+	useEffect(() => {
+		const data = getTeams?.teams;
+		if (!data) return;
+
+		setTeams(data);
+	}, [getTeams]);
+
+	useEffect(() => {
+		const data = getTeamInvites?.teamInvites;
+		if (!data) return;
+
+		setTeamInvites(data);
+	}, [getTeamInvites]);
 
 	return (
 		<>
-			<LoadScreen isShown={teamsLoading || teamInvitesLoading} />
+			<LoadScreen isShown={getTeamsLoading || getTeamInvitesLoading} />
 			<div className={"flex flex-col gap-[36px]"}>
 				<div className={"flex flex-col gap-[12px]"}>
 					<AppHeader
@@ -93,12 +101,9 @@ export default function Teams() {
 					</Subtitle>
 
 					<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
-						{teams?.teams && teams.teams.length > 0
-							? teams?.teams?.map((team: Team) => (
-								<TeamItem
-									team={team}
-									onUpdate={async () => await refetchTeams()}
-								/>
+						{teams.length > 0
+							? teams.map((team: Team) => (
+								<TeamItem team={team} />
 							)) : (
 								<Description>
 									You aren't in any teams yet.
@@ -114,8 +119,8 @@ export default function Teams() {
 					</Subtitle>
 
 					<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
-						{teamInvites?.teamInvites && teamInvites?.teamInvites?.length > 0
-							? teamInvites?.teamInvites?.map((i: TeamInvite) => (
+						{teamInvites.length > 0
+							? teamInvites.map((i: TeamInvite) => (
 								<ReceivedInviteItem
 									key={i.id}
 									onAccept={() => acceptTeam(i)}
@@ -149,8 +154,6 @@ export default function Teams() {
 			<CreateTeamDialog
 				dialog={createDialogRef}
 				user={user}
-
-				onUpdate={refetchTeams}
 			/>
 		</>
 	);

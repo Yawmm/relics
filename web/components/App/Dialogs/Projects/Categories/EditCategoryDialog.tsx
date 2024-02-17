@@ -12,11 +12,9 @@ import {editCategory} from "@/lib/projects";
 type EditCategoryDialogProps = {
     dialog: RefObject<DialogModalHandle>,
     category: Category | undefined
-
-    onUpdate?: () => void,
 }
 
-export default function EditCategoryDialog({ dialog, category, onUpdate } : EditCategoryDialogProps) {
+export default function EditCategoryDialog({ dialog, category } : EditCategoryDialogProps) {
     async function submit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -28,10 +26,8 @@ export default function EditCategoryDialog({ dialog, category, onUpdate } : Edit
         };
 
         dialog.current?.hide();
-        event.currentTarget?.reset();
-
         await editCategory(category.id, data.name);
-        if (onUpdate) onUpdate();
+        event.currentTarget?.reset();
     }
 
     return (

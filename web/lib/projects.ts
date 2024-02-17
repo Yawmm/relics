@@ -52,7 +52,7 @@ const CORE_PROJECT_FIELDS = gql`
 			}
 		}
 	}
-`
+`;
 
 export const GET_PROJECT_QUERY = gql`
 	${CORE_PROJECT_FIELDS}
@@ -71,7 +71,7 @@ export const GET_PROJECT_QUERY = gql`
 			}
 		}
 	}
-`
+`;
 
 export const GET_PROJECTS_QUERY = gql`
 	${CORE_PROJECT_FIELDS}
@@ -80,7 +80,41 @@ export const GET_PROJECTS_QUERY = gql`
 			...CoreProjectFields
 		}
 	}
-`
+`;
+
+export const PROJECT_SUBSCRIPTION = gql`
+	${CORE_PROJECT_FIELDS}
+	subscription ProjectSubscription($id: ID!) {
+		project(project: $id) {
+			type,
+			project {
+				...CoreProjectFields
+				members {
+					userId
+					username
+					email
+				}
+				invites {
+					userId
+					username
+					email
+				}
+			}
+		}
+	}
+`;
+
+export const PROJECTS_SUBSCRIPTION = gql`
+	${CORE_PROJECT_FIELDS}
+	subscription ProjectsSubscription($userId: ID!) {
+		userProjects(user: $userId) {
+			type,
+			project {
+				...CoreProjectFields
+			}
+		}
+	}
+`;
 
 export async function sendProjectInvite(
 	id: string,
@@ -111,7 +145,7 @@ export async function sendProjectInvite(
 			id,
 			email
 		}
-	})
+	});
 }
 
 export async function revokeProjectInvite(
@@ -137,7 +171,7 @@ export async function revokeProjectInvite(
 			id,
 			user
 		}
-	})
+	});
 }
 
 export async function acceptProjectInvite(
@@ -163,7 +197,7 @@ export async function acceptProjectInvite(
 			id,
 			user
 		}
-	})
+	});
 }
 
 export async function declineProjectInvite(
@@ -189,7 +223,7 @@ export async function declineProjectInvite(
 			id,
 			user
 		}
-	})
+	});
 }
 
 export async function kickProjectMember(
@@ -215,7 +249,7 @@ export async function kickProjectMember(
 			id,
 			user
 		}
-	})
+	});
 }
 
 export async function leaveProject(
@@ -241,7 +275,7 @@ export async function leaveProject(
 			id,
 			user
 		}
-	})
+	});
 }
 
 export async function linkTeam(
@@ -262,7 +296,7 @@ export async function linkTeam(
 			team,
 			project
 		}
-	})
+	});
 }
 
 export async function unlinkTeam(
@@ -283,7 +317,7 @@ export async function unlinkTeam(
 			team,
 			project
 		}
-	})
+	});
 }
 
 export async function addProject(
@@ -336,7 +370,7 @@ export async function editProject(
 			description,
 			owner
 		}
-	})
+	});
 }
 
 export async function removeProject(

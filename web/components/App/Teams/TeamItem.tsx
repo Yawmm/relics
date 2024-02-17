@@ -29,10 +29,9 @@ type TeamItemProps = {
 	editable?: boolean,
 
 	onClick?: () => void,
-	onUpdate?: () => void
 }
 
-export default function TeamItem({ team, className, editable = true, onClick, onUpdate } : TeamItemProps) {
+export default function TeamItem({ team, className, editable = true, onClick } : TeamItemProps) {
 	const [inviteError, setInviteError] = useState<string | null>();
 
 	const popoverRef = useRef<PopoverModalHandle>(null);
@@ -58,7 +57,6 @@ export default function TeamItem({ team, className, editable = true, onClick, on
 				await removeTeam(team.id);
 				sheetRef.current?.hide();
 				popoverRef.current?.hide();
-				if (onUpdate) onUpdate();
 			}
 		);
 	}
@@ -75,7 +73,6 @@ export default function TeamItem({ team, className, editable = true, onClick, on
 				await leaveTeam(team.id, user.id);
 				sheetRef.current?.hide();
 				popoverRef.current?.hide();
-				if (onUpdate) onUpdate();
 			}
 		);
 	}
@@ -86,14 +83,7 @@ export default function TeamItem({ team, className, editable = true, onClick, on
 		dialog.current?.show(
 			"Kick member",
 			"Are you sure you want to kick the given member from the team?",
-			() => {
-				kickTeamMember(team.id, member.userId)
-					.then(async result => {
-						const root = result.data.kickTeamMember;
-						if (root.errors || !onUpdate) return;
-						onUpdate();
-					});
-			}
+			async () => await kickTeamMember(team.id, member.userId)
 		);
 	}
 
@@ -117,7 +107,6 @@ export default function TeamItem({ team, className, editable = true, onClick, on
 				}
 
 				inviteDialogRef.current?.hide();
-				if (onUpdate) onUpdate();
 			});
 	}
 
@@ -125,15 +114,7 @@ export default function TeamItem({ team, className, editable = true, onClick, on
 		dialog.current?.show(
 			"Revoke invite",
 			"Are you sure you want to revoke the given invite?",
-			() => {
-				revokeTeamInvite(team.id, invite.userId)
-					.then(async result => {
-						const root = result.data.revokeTeamInvitation;
-						if (root.errors || !onUpdate) return;
-
-						onUpdate();
-					});
-			}
+			async () => await revokeTeamInvite(team.id, invite.userId)
 		);
 	}
 
@@ -263,8 +244,6 @@ export default function TeamItem({ team, className, editable = true, onClick, on
 			<EditTeamDialog
 				dialog={editDialogRef}
 				team={team}
-
-				onUpdate={() => onUpdate && onUpdate()}
 			/>
 		</>
 	);

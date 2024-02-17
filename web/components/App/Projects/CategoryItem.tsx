@@ -1,4 +1,4 @@
-import {Category} from "@/lib/types";
+import {Category, Project} from "@/lib/types";
 import Subtitle from "@/components/Text/Subtitle";
 import AddIcon from "@/components/Icons/AddIcon";
 import MoreIcon from "@/components/Icons/MoreIcon";
@@ -16,13 +16,13 @@ import {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDia
 
 type CategoryItemProps = {
 	category: Category,
+	project: Project,
 	confirmationDialog: RefObject<ConfirmationDialogHandle>,
-	
+
 	onAdd?: (category: Category) => void,
-	onUpdate?: () => void
 }
 
-export default function CategoryItem({ category, confirmationDialog, onAdd, onUpdate } : CategoryItemProps) {
+export default function CategoryItem({ category, project, confirmationDialog, onAdd } : CategoryItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
 	const editDialogRef = useRef<DialogModalHandle>(null);
 
@@ -32,7 +32,6 @@ export default function CategoryItem({ category, confirmationDialog, onAdd, onUp
 			"Are you sure you want to remove the given category indefinitely?",
 			async () => {
 				await removeCategory(category.id);
-				if (onUpdate) onUpdate();
 			}
 		);
 	}
@@ -80,9 +79,9 @@ export default function CategoryItem({ category, confirmationDialog, onAdd, onUp
 							<TaskItem
 								key={t.id}
 								task={t}
+								category={category}
+								project={project}
 								confirmationDialog={confirmationDialog}
-								
-								onUpdate={onUpdate}
 							/>
 							)
 						: (
@@ -97,8 +96,6 @@ export default function CategoryItem({ category, confirmationDialog, onAdd, onUp
 			<EditCategoryDialog
 				dialog={editDialogRef}
 				category={category}
-				
-				onUpdate={() => onUpdate && onUpdate()}
 			/>
 		</>
 	);

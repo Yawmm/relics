@@ -13,12 +13,10 @@ import CreateTaskDialog from "@/components/App/Dialogs/Tasks/CreateTaskDialog";
 import {useUser} from "@/lib/hooks";
 
 type TaskDialogProps = {
-	dialog: RefObject<DialogModalHandle>,
-
-	onUpdate: () => void,
+	dialog: RefObject<DialogModalHandle>
 }
 
-export default function CreateStandaloneTaskDialog({ dialog, onUpdate } : TaskDialogProps) {
+export default function CreateStandaloneTaskDialog({ dialog } : TaskDialogProps) {
 	const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
 	const chooseProjectDialogRef = useRef<DialogModalHandle>(null);
@@ -26,17 +24,12 @@ export default function CreateStandaloneTaskDialog({ dialog, onUpdate } : TaskDi
 
 	const { user } = useUser();
 
-	const { data: projects, refetch: refetchProjects } = useQuery<{ projects: Project[] }>(GET_PROJECTS_QUERY, {
+	const { data: projects} = useQuery<{ projects: Project[] }>(GET_PROJECTS_QUERY, {
 		variables: {
 			userId: user?.id
 		},
 		skip: !user,
 	});
-
-	async function update() {
-		await refetchProjects();
-		onUpdate();
-	}
 
 	return (
 		<>
@@ -106,8 +99,6 @@ export default function CreateStandaloneTaskDialog({ dialog, onUpdate } : TaskDi
 
 				user={user}
 				project={selectedProject}
-
-				onUpdate={update}
 			/>
 		</>
 	);

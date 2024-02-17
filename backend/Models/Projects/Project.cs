@@ -1,6 +1,5 @@
 using Backend.Models.Teams;
 using Backend.Models.Users;
-using HotChocolate.Authorization;
 using Task = Backend.Models.Tasks.Task;
 
 namespace Backend.Models.Projects;
@@ -8,7 +7,6 @@ namespace Backend.Models.Projects;
 /// <summary>
 /// An object class used to represent the project data model in the application.
 /// </summary>
-[Authorize]
 public class Project
 {
     /// <summary>

@@ -193,8 +193,10 @@ public class ProjectService : IProjectService
     /// <inheritdoc cref="IProjectService.Get"/>>
     public Guid? Identify(Guid? task = null, Guid? category = null)
     {
+        Guid? result = null;
+        
         if (task is not null)
-            return _connection.QuerySingle<Guid>(
+            result = _connection.QuerySingleOrDefault<Guid>(
                 """
                 SELECT t.ProjectId
                 FROM "Task" t
@@ -203,14 +205,17 @@ public class ProjectService : IProjectService
                 new { task }
             );
         
-        return _connection.QuerySingle<Guid>(
-                """
-            SELECT c.ProjectId
-            FROM "Category" c
-            WHERE c.Id = @Category;
-            """, 
-            new { category }
-        );
+        if (category is not null)
+            result = _connection.QuerySingleOrDefault<Guid>(
+                    """
+                SELECT c.ProjectId
+                FROM "Category" c
+                WHERE c.Id = @Category;
+                """, 
+                new { category }
+            );
+
+        return result == Guid.Empty ? null : result;
     }
 
     /// <inheritdoc cref="IProjectService.All"/>>

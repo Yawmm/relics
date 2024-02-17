@@ -21,11 +21,10 @@ type ProjectItemProps = {
 	className?: string,
 	editable?: boolean,
 
-	onClick?: () => void,
-	onUpdate?: () => void
+	onClick?: () => void
 }
 
-export default function ProjectItem({ project, confirmationDialog, className, editable = true, onClick, onUpdate } : ProjectItemProps) {
+export default function ProjectItem({ project, confirmationDialog, className, editable = true, onClick } : ProjectItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
 	const editDialogRef = useRef<DialogModalHandle>(null);
 	
@@ -37,10 +36,7 @@ export default function ProjectItem({ project, confirmationDialog, className, ed
 		confirmationDialog?.current?.show(
 			"Remove project",
 			"Are you sure you want to remove the given project indefinitely?",
-			async () => {
-				await removeProject(project.id);
-				if (onUpdate) onUpdate();
-			}
+			async () => await removeProject(project.id)
 		);
 	}
 
@@ -49,10 +45,7 @@ export default function ProjectItem({ project, confirmationDialog, className, ed
 		confirmationDialog?.current?.show(
 			"Leave project",
 			"Are you sure you want to leave the given project?",
-			async () => {
-				await leaveProject(project.id, user.id);
-				if (onUpdate) onUpdate();
-			}
+			async () => await leaveProject(project.id, user.id)
 		);
 	}
 
@@ -111,8 +104,6 @@ export default function ProjectItem({ project, confirmationDialog, className, ed
 			<EditProjectDialog
 				dialog={editDialogRef}
 				project={project}
-				
-				onUpdate={() => onUpdate && onUpdate()}
 			/>
 		</>
 	);

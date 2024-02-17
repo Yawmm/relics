@@ -1,7 +1,7 @@
 import Title from "@/components/Text/Title";
 import Description from "@/components/Text/Description";
 import Link from "next/link";
-import {SignInForm} from "@/app/sign-in/SignInForm";
+import {SignInForm} from "@/components/App/Forms/SignInForm";
 
 export default function SignIn() {
 	return (

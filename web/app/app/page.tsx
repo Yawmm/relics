@@ -4,37 +4,57 @@ import {useUser} from "@/lib/hooks";
 import HomeIcon from "@/components/Icons/HomeIcon";
 import Subtitle from "@/components/Text/Subtitle";
 import AppHeader from "@/components/App/AppHeader";
-import {useQuery} from "@apollo/client";
-import {GET_PROJECTS_QUERY} from "@/lib/projects";
 import {Project, Task} from "@/lib/types";
 import ProjectItem from "@/components/App/Projects/ProjectItem";
 import Description from "@/components/Text/Description";
-import React, {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/navigation";
-import {GET_TASKS_QUERY} from "@/lib/tasks";
 import TaskItem from "@/components/App/Projects/TaskItem";
 import LoadScreen from "@/components/Login/LoadScreen";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
+import {updateNotificationEvent, useProjectsSubscription, useTasksSubscription} from "@/hooks/subscriptionHooks";
+import {useProjectsQuery, useTasksQuery} from "@/hooks/queryHooks";
 
 export default function Home() {
+	const [projects, setProjects] = useState<Project[]>([]);
+	const [tasks, setTasks] = useState<Task[]>([]);
+
 	const confirmationDialogRef = useRef<ConfirmationDialogHandle>(null);
 
 	const { push } = useRouter();
-
 	const { user } = useUser();
-	const { data: projects, loading: projectsLoading, refetch: refetchProjects } = useQuery<{ projects: Project[] }>(GET_PROJECTS_QUERY, {
-		variables: {
-			userId: user?.id
-		},
-		skip: user === null
-	});
 
-	const { data: tasks, loading: tasksLoading, refetch: refetchTasks } = useQuery<{ tasks: Task[] }>(GET_TASKS_QUERY, {
-		variables: {
-			id: user?.id
-		},
-		skip: user === null,
-	});
+	const { data: userProjects } = useProjectsSubscription(user);
+	const { data: userTasks } = useTasksSubscription(user);
+
+	const { data: getProjects, loading: projectsLoading } = useProjectsQuery(user);
+	const { data: getTasks, loading: tasksLoading } = useTasksQuery(user);
+
+	useEffect(() => updateNotificationEvent(
+		userProjects?.userProjects.type,
+		userProjects?.userProjects.project,
+		setProjects
+	), [userProjects]);
+
+	useEffect(() => updateNotificationEvent(
+		userTasks?.userTasks.type,
+		userTasks?.userTasks.task,
+		setTasks
+	), [userTasks]);
+
+	useEffect(() => {
+		const data = getProjects?.projects;
+		if (!data) return;
+
+		setProjects(data);
+	}, [getProjects]);
+
+	useEffect(() => {
+		const data = getTasks?.tasks;
+		if (!data) return;
+
+		setTasks(data);
+	}, [getTasks]);
 
 	return (
 		<>
@@ -52,8 +72,8 @@ export default function Home() {
 					</Subtitle>
 
 					<div className={"flex flex-row gap-[12px] w-full overflow-x-auto px-[var(--gutter-x-margin)] py-[8px] my-[-8px]"}>
-						{projects?.projects && projects.projects.length > 0
-							? projects?.projects?.map((p: Project) => (
+						{projects.length > 0
+							? projects.map((p: Project) => (
 								<ProjectItem
 									key={p.id}
 									project={p}
@@ -61,7 +81,6 @@ export default function Home() {
 									editable={false}
 
 									onClick={async () => push(`/app/projects/${p.id}`)}
-									onUpdate={refetchProjects}
 								/>
 							))
 							: (
@@ -79,16 +98,13 @@ export default function Home() {
 					</Subtitle>
 
 					<div className={"flex flex-col gap-[12px] w-full overflow-x-auto px-[var(--gutter-x-margin)] py-[8px] my-[-8px]"}>
-						{tasks?.tasks && tasks.tasks.length > 0
-							? tasks?.tasks?.map((t: Task) => (
+						{tasks.length > 0
+							? tasks.map((t: Task) => (
 								<TaskItem
 									key={t.id}
 									task={t}
 									confirmationDialog={confirmationDialogRef}
 									className={"w-full h-fit"}
-									editable={false}
-
-									onUpdate={refetchTasks}
 								/>
 							)) : (
 								<Description>

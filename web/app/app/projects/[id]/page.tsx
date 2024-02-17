@@ -1,7 +1,6 @@
 "use client";
 
-import {useQuery} from "@apollo/client";
-import {GET_PROJECT_QUERY, removeProject} from "@/lib/projects";
+import {removeProject} from "@/lib/projects";
 import AppHeader from "@/components/App/AppHeader";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
@@ -26,8 +25,11 @@ import TaskItem from "@/components/App/Projects/TaskItem";
 import UserIcon from "@/components/Icons/UserIcon";
 import TeamDialog from "@/components/App/Dialogs/Teams/TeamDialog";
 import TeamIcon from "@/components/Icons/TeamIcon";
+import {useProjectQuery} from "@/hooks/queryHooks";
+import {useProjectSubscription} from "@/hooks/subscriptionHooks";
 
 export default function Project({ params: { id } }: { params: { id: string }}) {
+	const [project, setProject] = useState<Project | null>(null);
 	const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
 
 	const itemDialogRef = useRef<DialogModalHandle>(null);
@@ -42,14 +44,10 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 	const { user } = useUser();
 	const { push } = useRouter();
 
-	const { data, loading, refetch } = useQuery<{ project: Project }>(GET_PROJECT_QUERY, {
-		variables: {
-			id: id
-		},
-		skip: id === null
-	});
+	const { data: getProject, loading, refetch } = useProjectQuery(id);
+	const { data: listenProject } = useProjectSubscription(project);
 
-	const isOwner = useCallback(() => data?.project.owner.userId == user?.id, [data, user]);
+	const isOwner = useCallback(() => project?.owner.userId == user?.id, [project, user]);
 
 	const items = [
 		{
@@ -68,16 +66,40 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 	}
 	
 	async function deleteProject() {
-		if (!data) return;
+		if (!project) return;
 		confirmationDialogRef.current?.show(
 			"Remove project",
 			"Are you sure you want to remove the given project indefinitely?",
 			async () => {
-				await removeProject(data?.project.id);
+				await removeProject(project.id);
 				push("/app/projects");
 			}
 		);
 	}
+
+	useEffect(() => {
+		const project = listenProject?.project.project;
+		const type = listenProject?.project.type;
+		if (!project || type === undefined) return;
+
+		switch (type) {
+			case "UPDATED":
+				setProject(project);
+				break;
+			case "REMOVED":
+				push("/app/projects", {
+					forceOptimisticNavigation: true
+				});
+				break;
+		}
+	}, [listenProject]);
+
+	useEffect(() => {
+		const data = getProject?.project;
+		if (!data) return;
+
+		setProject(data);
+	}, [getProject]);
 
 	useEffect(() => {
 		(async () => {
@@ -93,8 +115,8 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 			<div className={"flex flex-col min-h-full gap-[36px]"}>
 				<div className={"flex flex-col gap-[12px]"}>
 					<AppHeader
-						title={data?.project.name}
-						description={data?.project.description}
+						title={project?.name}
+						description={project?.description}
 					/>
 
 					<div className={"flex flex-row gap-[12px] px-[var(--gutter-x-margin)]"}>
@@ -112,7 +134,7 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 						</Button>
 
 						{isOwner() && (
-							<Button onClick={async () => await deleteProject()} type={"circle"} usage={"form"} intent={"secondary"}>
+							<Button onClick={deleteProject} type={"circle"} usage={"form"} intent={"secondary"}>
 								<DeleteIcon className={"w-[16px] h-[16px]"}/>
 							</Button>						
 						)}
@@ -130,16 +152,16 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 						</Subtitle>
 
 						<div className={"flex flex-row w-screen"}>
-							{data?.project.categories?.length && data?.project.categories.length > 0
+							{project?.categories?.length && project?.categories.length > 0
 								? (
 									<div className={"flex flex-row w-screen overflow-x-auto snap-always snap-x gap-[12px] px-[var(--gutter-x-margin)] pb-[24px]"}>
-										{data?.project.categories?.map((c: Category) =>
+										{project?.categories?.map((c: Category) =>
 											<CategoryItem
 												key={c.id}
 												category={c}
+												project={project}
 												confirmationDialog={confirmationDialogRef}
 
-												onUpdate={async () => await refetch()}
 												onAdd={createTask}
 											/>
 										)}
@@ -162,14 +184,15 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 						</Subtitle>
 
 						<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
-							{data?.project.tasks?.length && data.project.tasks.length > 0
-								? data?.project.tasks?.map((t: Task) => (
+							{project?.tasks?.length && project.tasks.length > 0
+								? project?.tasks?.map((t: Task) => (
 									<TaskItem
 										key={t.id}
 										task={t}
+										project={project}
+
 										confirmationDialog={confirmationDialogRef}
 										className={"w-full h-fit"}
-										onUpdate={refetch}
 									/>
 								)) : (
 									<Description>
@@ -186,18 +209,13 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 
 			<MemberDialog
 				dialog={memberDialogRef}
-				project={data?.project}
-
-				onUpdate={refetch}
+				project={project}
 			/>
 
 			<TeamDialog
 				dialog={teamDialogRef}
 				user={user}
-				project={data?.project}
-				confirmationDialog={confirmationDialogRef}
-
-				onUpdate={refetch}
+				project={project}
 			/>
 
 			<ItemDialog
@@ -207,25 +225,19 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 
 			<CategoryDialog
 				dialog={categoryDialogRef}
-				project={data?.project}
-
-				onUpdate={refetch}
+				project={project}
 			/>
 
 			<CreateTaskDialog
 				dialog={taskDialogRef}
 				user={user}
-				project={data?.project}
+				project={project}
 				category={currentCategory}
-
-				onUpdate={refetch}
 			/>
 
 			<EditProjectDialog
 				dialog={editProjectDialogRef}
-				project={data?.project}
-
-				onUpdate={refetch}
+				project={project}
 			/>
 		</>
 	);

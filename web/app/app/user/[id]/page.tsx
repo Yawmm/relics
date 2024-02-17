@@ -3,18 +3,11 @@
 import AppHeader from "@/components/App/AppHeader";
 import UserIcon from "@/components/Icons/UserIcon";
 import Subtitle from "@/components/Text/Subtitle";
-import {useQuery} from "@apollo/client";
-import {User} from "@/lib/types";
-import {GET_USER_QUERY} from "@/lib/users";
 import InputField from "@/components/Input/InputField";
+import {useUserQuery} from "@/hooks/queryHooks";
 
 export default function UserInformation({ params: { id } } : { params: { id: string }}) {
-	const { data } = useQuery<{ user: User }>(GET_USER_QUERY, {
-		variables: {
-			id: id
-		},
-		skip: !id
-	});
+	const { data } = useUserQuery(id);
 
 	return (
 		<div className={"flex flex-col w-full gap-[36px]"}>

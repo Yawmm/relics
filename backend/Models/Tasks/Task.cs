@@ -1,12 +1,10 @@
 using Backend.Models.Users;
-using HotChocolate.Authorization;
 
 namespace Backend.Models.Tasks;
 
 /// <summary>
 /// An object class used to represent a task data model in the application.
 /// </summary>
-[Authorize]
 public class Task
 {
     /// <summary>

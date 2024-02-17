@@ -1,4 +1,4 @@
-import {Task} from "@/lib/types";
+import {Category, Project, Task} from "@/lib/types";
 import TaskIcon from "@/components/Icons/TaskIcon";
 import Header from "@/components/Text/Header";
 import Description from "@/components/Text/Description";
@@ -20,11 +20,12 @@ type TaskItemProps = {
 	task: Task,
 	confirmationDialog: RefObject<ConfirmationDialogHandle>,
 
+	category?: Category | undefined,
+	project?: Project | undefined,
 	className?: string,
-	onUpdate?: () => void
 }
 
-export default function TaskItem({ task, confirmationDialog, className, onUpdate } : TaskItemProps) {
+export default function TaskItem({ task, category, project, confirmationDialog, className } : TaskItemProps) {
 	const sheetRef = useRef<SheetModalHandle>(null);
 	const editTaskDialog = useRef<DialogModalHandle>(null);
 	
@@ -36,21 +37,17 @@ export default function TaskItem({ task, confirmationDialog, className, onUpdate
 		await editTask(
 			task.id,
 			{
-				isFinished: !task.isFinished 
+				isFinished: !task.isFinished,
+				categoryId: category?.id
 			}
 		);
-		
-		if (onUpdate) onUpdate();
 	}
 	
 	function deleteTask() {
 		confirmationDialog.current?.show(
 			"Remove task",
 			"Are you sure you want to remove the given task indefinitely?",
-			async () => {
-				await removeTask(task.id);
-				if (onUpdate) onUpdate();
-			}
+			async () => await removeTask(task.id)
 		);
 	}
 
@@ -75,8 +72,8 @@ export default function TaskItem({ task, confirmationDialog, className, onUpdate
 			<EditTaskDialog
 				dialog={editTaskDialog}
 				task={task}
-				
-				onUpdate={async () => onUpdate && await onUpdate()}
+				category={category}
+				project={project}
 			/>
 		
 			<Sheet.Modal ref={sheetRef}>
@@ -97,9 +94,11 @@ export default function TaskItem({ task, confirmationDialog, className, onUpdate
 								<DeleteIcon className={"w-[16px] h-[16px] text-zinc-200"}/>
 							</Button>
 						)}
-						<Button onClick={() => editTaskDialog.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
-							<EditIcon className={"w-[16px] h-[16px] text-zinc-200"}/>
-						</Button>
+						{project && (
+							<Button onClick={() => editTaskDialog.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
+								<EditIcon className={"w-[16px] h-[16px] text-zinc-200"}/>
+							</Button>
+						)}
 						<Button onClick={async () => await finishTask()} type={"circle"} usage={"form"} intent={task.isFinished ? "primary" : "secondary"}>
 							<ConfirmIcon className={"w-[16px] h-[16px]"}/>
 						</Button>

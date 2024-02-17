@@ -1,7 +1,7 @@
 import Title from "@/components/Text/Title";
 import Description from "@/components/Text/Description";
 import Link from "next/link";
-import {SignUpForm} from "@/app/sign-up/SignUpForm";
+import {SignUpForm} from "@/components/App/Forms/SignUpForm";
 
 export default function SignUp() {
 	return (

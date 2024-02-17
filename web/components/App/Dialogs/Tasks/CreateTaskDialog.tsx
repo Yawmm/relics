@@ -18,10 +18,9 @@ type TaskDialogProps = {
 	project: Project | undefined | null,
 
 	category?: Category | undefined |null,
-	onUpdate?: () => void,
 }
 
-export default function CreateTaskDialog({ dialog, user, project, category, onUpdate } : TaskDialogProps) {
+export default function CreateTaskDialog({ dialog, user, project, category } : TaskDialogProps) {
 	const [selectedCategory, setSelectedCategory] = useState<Category | null>(category ?? null);
 
 	const choiceDialogRef = useRef<DialogModalHandle>(null);
@@ -38,6 +37,7 @@ export default function CreateTaskDialog({ dialog, user, project, category, onUp
 			isFinished: Boolean(event.currentTarget.Finished.checked),
 		};
 
+		dialog.current?.hide();
 		await addTask(
 			data.name,
 			data.description,
@@ -46,10 +46,6 @@ export default function CreateTaskDialog({ dialog, user, project, category, onUp
 			project.id,
 			selectedCategory?.id
 		);
-
-		if (onUpdate) onUpdate();
-
-		dialog.current?.hide();
 		event.currentTarget?.reset();
 	}
 

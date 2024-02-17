@@ -1,4 +1,4 @@
-import {MemoryMeasurement} from "node:vm";
+export type NotificationType = "ADDED" | "UPDATED" | "REMOVED";
 
 export type User = {
 	id: string,
@@ -43,6 +43,16 @@ export type Project = {
 	categories: Category[]
 }
 
+export type ProjectNotification = {
+	type: NotificationType,
+	project: Project
+}
+
+export type ProjectInviteNotification = {
+	type : NotificationType,
+	projectInvite: ProjectInvite
+}
+
 export type Team = {
 	id: string,
 	name: string,
@@ -50,6 +60,16 @@ export type Team = {
 	owner: Member,
 	members: Member[],
 	invites: Invite[]
+}
+
+export type TeamNotification = {
+	type: NotificationType,
+	team: Team
+}
+
+export type TeamInviteNotification = {
+	type : NotificationType,
+	teamInvite: TeamInvite
 }
 
 export type Link = {
@@ -74,4 +94,9 @@ export type Task = {
 	isFinished: boolean,
 
 	owner: Member
+}
+
+export type TaskNotification = {
+	type: NotificationType,
+	task: Task
 }

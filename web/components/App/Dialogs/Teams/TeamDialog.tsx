@@ -15,15 +15,13 @@ import LinkItem from "@/components/App/Teams/LinkItem";
 type TeamDialogProps = {
 	dialog: RefObject<DialogModalHandle>
 	user: User | null
-	project: Project |  undefined,
-
-	onUpdate?: () => void,
+	project: Project | null,
 }
 
-export default function TeamDialog({ dialog, onUpdate, user, project } : TeamDialogProps) {
+export default function TeamDialog({ dialog, user, project } : TeamDialogProps) {
 	const linkTeamDialogRef = useRef<DialogModalHandle>(null);
 
-	const { data, refetch: refetchTeams } = useQuery<{ teams: Team[] }>(GET_TEAMS_QUERY, {
+	const { data } = useQuery<{ teams: Team[] }>(GET_TEAMS_QUERY, {
 		variables: {
 			id: user?.id
 		},
@@ -43,14 +41,8 @@ export default function TeamDialog({ dialog, onUpdate, user, project } : TeamDia
 			return;
 
 		await linkTeam(team.id, project?.id);
-		await refresh();
 
 		linkTeamDialogRef.current?.hide();
-	}
-
-	async function refresh() {
-		if (onUpdate) onUpdate();
-		await refetchTeams();
 	}
 
 	return (
@@ -74,7 +66,6 @@ export default function TeamDialog({ dialog, onUpdate, user, project } : TeamDia
 									link={link}
 									project={project}
 									isOwner={isOwner()}
-									onChange={refresh}
 								/>
 							))) : (
 								<Description>

@@ -11,12 +11,10 @@ import {Project} from "@/lib/types";
 
 type CategoryDialogProps = {
 	dialog: RefObject<DialogModalHandle>
-	project: Project | undefined
-
-	onUpdate?: () => void,
+	project: Project | null
 }
 
-export default function CategoryDialog({ dialog, project, onUpdate } : CategoryDialogProps) {
+export default function CategoryDialog({ dialog, project } : CategoryDialogProps) {
 	async function createCategory(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		
@@ -27,10 +25,8 @@ export default function CategoryDialog({ dialog, project, onUpdate } : CategoryD
 			name: String(event.currentTarget.Name.value)
 		};
 
-		await addCategory(data.name, project.id);
-		if (onUpdate) onUpdate();
-
 		dialog.current?.hide();
+		await addCategory(data.name, project.id);
 		event.currentTarget?.reset();
 	}
 

@@ -11,12 +11,10 @@ import {editProject} from "@/lib/projects";
 
 type EditProjectDialogProps = {
     dialog: RefObject<DialogModalHandle>,
-    project: Project | undefined
-
-    onUpdate: () => void,
+    project: Project | null
 }
 
-export default function EditProjectDialog({ dialog, project, onUpdate } : EditProjectDialogProps) {
+export default function EditProjectDialog({ dialog, project } : EditProjectDialogProps) {
     async function submit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         
@@ -29,10 +27,8 @@ export default function EditProjectDialog({ dialog, project, onUpdate } : EditPr
         };
 
         dialog.current?.hide();
-        event.currentTarget?.reset();
-        
         await editProject(project.id, data.name, data.description);
-        onUpdate();
+        event.currentTarget?.reset();
     }
     
     return (

@@ -12,11 +12,9 @@ import {editTeam} from "@/lib/teams";
 type EditTeamDialogProps = {
 	dialog: RefObject<DialogModalHandle>,
 	team: Team | undefined
-
-	onUpdate: () => void,
 }
 
-export default function EditTeamDialog({ dialog, team, onUpdate } : EditTeamDialogProps) {
+export default function EditTeamDialog({ dialog, team } : EditTeamDialogProps) {
 	async function submit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 
@@ -28,10 +26,8 @@ export default function EditTeamDialog({ dialog, team, onUpdate } : EditTeamDial
 		};
 
 		dialog.current?.hide();
-		event.currentTarget?.reset();
-
 		await editTeam(team.id, data.name);
-		onUpdate();
+		event.currentTarget?.reset();
 	}
 
 	return (
