@@ -1,4 +1,5 @@
 using Backend.Graph.Mutations;
+using Backend.Graph.Notifications;
 using Backend.Graph.Queries;
 using HotChocolate.Execution.Configuration;
 
@@ -38,6 +39,23 @@ public static class GraphServiceCollection
             .AddTypeExtension<CategoryMutation>()
             .AddTypeExtension<TeamMutation>()
             .AddTypeExtension<TaskMutation>();
+        
+        return builder;
+    }
+    
+    /// <summary>
+    /// Add the range of available subscription types to the builder.
+    /// </summary>
+    /// <param name="builder">The current hot chocolate <see cref="IRequestExecutorBuilder"/>.</param>
+    /// <returns>The same <see cref="IRequestExecutorBuilder"/> with the added type extensions.</returns>
+    public static IRequestExecutorBuilder AddSubscriptions(this IRequestExecutorBuilder builder)
+    {
+        builder.AddSubscriptionType<Subscription>()
+            .AddTypeExtension<TaskSubscription>()
+            .AddTypeExtension<TeamSubscription>()
+            .AddTypeExtension<ProjectSubscription>();
+
+        builder.AddInMemorySubscriptions();
         
         return builder;
     }

@@ -19,4 +19,13 @@ public class ProjectInvite
     /// The description of the project.
     /// </summary>
     public string Description { get; set; } = null!;
+
+    public ProjectInvite() { }
+
+    public ProjectInvite(Project project)
+    {
+        Id = project.Id;
+        Name = project.Name;
+        Description = project.Description;
+    }
 }

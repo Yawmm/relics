@@ -7,6 +7,7 @@ using Backend.Models.Projects;
 using Backend.Models.Users;
 using Backend.Policies;
 using HotChocolate.Authorization;
+using HotChocolate.Subscriptions;
 
 namespace Backend.Graph.Mutations;
 
@@ -21,15 +22,17 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="owner">The guid of the owner of the new project.</param>
     /// <param name="name">The name of the new project.</param>
     /// <param name="description">The description of the new project.</param>
     /// <returns>The guid of the newly created project.</returns>
     /// <exception cref="ItemNotFoundError">Thrown when the given owner could not be found in the database.</exception>
     [Error<ItemNotFoundError>]
-    public Guid AddProject(
+    public async Task<Guid> AddProject(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid owner,
         string name, 
         string description)
@@ -38,7 +41,13 @@ public class ProjectMutation
         if (!userService.Exists(owner)) throw new ItemNotFoundError($"User {owner}");
         
         // Create project in the database
-        return projectService.Create(new ProjectCreateConfiguration(name, owner) { Description = description });
+        var result = projectService.Create(new ProjectCreateConfiguration(name, owner) { Description = description });
+        
+        // Send notification event
+        var item = projectService.Get(result);
+        await eventSender.SendAsync($"{owner}/projects", new ProjectNotification(NotificationType.Added, item));
+
+        return result;
     }
 
     /// <summary>
@@ -46,6 +55,7 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project which should be updated.</param>
     /// <param name="owner">The guid of the new owner of the project.</param>
     /// <param name="name">The new name of the project.</param>
@@ -54,9 +64,10 @@ public class ProjectMutation
     /// <exception cref="ItemNotFoundError">Thrown when the given owner could not be found in the database.</exception>
     [Error<ItemNotFoundError>]
     [Authorize(Policy = PolicyTypes.WriteProject)]
-    public Result UpdateProject(
+    public async Task<Result> UpdateProject(
         [Service] IProjectService projectService,
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project,
         [ID] Guid? owner,
         string? name,
@@ -67,6 +78,13 @@ public class ProjectMutation
 
         // Update the project in the database
         projectService.Update(project, new ProjectUpdateConfiguration(name, description, owner));
+        
+        // Send notification event
+        var item = projectService.Get(project);
+        foreach (var member in item.Members)
+            await eventSender.SendAsync($"{member.UserId}/projects", new ProjectNotification(NotificationType.Updated, item));
+        await eventSender.SendAsync($"{item.Id}", new ProjectNotification(NotificationType.Updated, item));
+        
         return new Result(true);
     }
 
@@ -75,6 +93,7 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project to which the given user should be invited.</param>
     /// <param name="user">The user to whom the invite to the given project should be sent.</param>
     /// <returns>Whether or not the invite was successfully sent.</returns>
@@ -85,9 +104,10 @@ public class ProjectMutation
     [Error<ProjectDuplicateMemberError>]
     [Error<ProjectDuplicateInviteError>]
     [Authorize(Policy = PolicyTypes.WriteProject)]
-    public Result SendProjectInvitation(
+    public async Task<Result> SendProjectInvitation(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project, 
         string user)
     {
@@ -101,29 +121,41 @@ public class ProjectMutation
         if (proj.Invites.Any(i => i.Email == user)) throw new ProjectDuplicateInviteError();
 
         // Update the project in the database with the new invite
+        var recipient = userService.Get(user);
         var changes = new List<InviteChange>
         {
-            new(ChangeType.Add, userService.Get(user).Id)
+            new(ChangeType.Add, recipient.Id)
         };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: changes));
+        
+        // Send notification event
+        proj.Invites.Add(new Invite(recipient));
+        var invite = new ProjectInvite(proj);
+
+        await eventSender.SendAsync($"{proj.Owner.UserId}/projects", new ProjectNotification(NotificationType.Updated, proj));
+        await eventSender.SendAsync($"{recipient.Id}/projects/invites", new ProjectInviteNotification(NotificationType.Added, invite));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Updated, proj));
+        
         return new Result(true);
     }
     
     /// <summary>
-    /// Revoke a sent invitiation to a user from a project.
+    /// Revoke a sent invitation to a user from a project.
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project in which an invite to the given user exists.</param>
     /// <param name="user">The guid of the user to which an invite was sent.</param>
     /// <returns>Whether or not the invite was successfully revoked.</returns>
     /// <exception cref="ItemNotFoundError">Thrown when the given user could not be found, or when the user hasn't received an invite to the given project.</exception>
     [Error<ItemNotFoundError>]
     [Authorize(Policy = PolicyTypes.WriteProject)]
-    public Result RevokeProjectInvitation(
+    public async Task<Result> RevokeProjectInvitation(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project, 
         [ID] Guid user)
     {
@@ -141,6 +173,15 @@ public class ProjectMutation
         };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: changes));
+        
+        // Send notification event
+        proj.Invites.Remove(proj.Invites.First(p => p.UserId == user));
+        var invite = new ProjectInvite(proj);
+
+        await eventSender.SendAsync($"{proj.Owner.UserId}/projects", new ProjectNotification(NotificationType.Updated, proj));
+        await eventSender.SendAsync($"{user}/projects/invites", new ProjectInviteNotification(NotificationType.Removed, invite));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Updated, proj));
+
         return new Result(true);
     }
     
@@ -149,15 +190,17 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project to which the given user has been invited.</param>
     /// <param name="user">The guid of the user who has received the invite to the given project.</param>
     /// <returns>Whether or not the invite has been successfully accepted.</returns>
     /// <exception cref="ItemNotFoundError">Thrown when the given user could not be found, or when the user hasn't received an invite to the given project.</exception>
     [Error<ItemNotFoundError>]
     [Authorize(Policy = PolicyTypes.InviteMemberResponse)]
-    public Result AcceptProjectInvitation(
+    public async Task<Result> AcceptProjectInvitation(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project, 
         [ID] Guid user)
     {
@@ -173,6 +216,16 @@ public class ProjectMutation
         var memberChanges = new List<MemberChange> { new(ChangeType.Add, user) };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: inviteChanges, members: memberChanges));
+        
+        // Send notification event
+        var proj = projectService.Get(project);
+        var invite = new ProjectInvite(proj);
+
+        await eventSender.SendAsync($"{proj.Owner.UserId}/projects", new ProjectNotification(NotificationType.Updated, proj));
+        await eventSender.SendAsync($"{user}/projects", new ProjectNotification(NotificationType.Updated, proj));
+        await eventSender.SendAsync($"{user}/projects/invites", new ProjectInviteNotification(NotificationType.Removed, invite));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Updated, proj));
+        
         return new Result(true);
     }
     
@@ -181,15 +234,17 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project to which the given user has been invited.</param>
     /// <param name="user">The guid of the user who has received the invite to the given project.</param>
     /// <returns>Whether or not the invite has been successfully declined.</returns>
     /// <exception cref="ItemNotFoundError">Thrown when the given user could not be found, or when the user hasn't received an invite to the given project.</exception>
     [Error<ItemNotFoundError>]
     [Authorize(Policy = PolicyTypes.InviteMemberResponse)]
-    public Result DeclineProjectInvitation(
+    public async Task<Result> DeclineProjectInvitation(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project, 
         [ID] Guid user)
     {
@@ -204,6 +259,15 @@ public class ProjectMutation
         var inviteChanges = new List<InviteChange> { new(ChangeType.Remove, user) };
         
         projectService.Update(project, new ProjectUpdateConfiguration(invites: inviteChanges));
+        
+        // Send notification event
+        var proj = projectService.Get(project);
+        var invite = new ProjectInvite(proj);
+
+        await eventSender.SendAsync($"{proj.Owner.UserId}/projects", new ProjectNotification(NotificationType.Updated, proj));
+        await eventSender.SendAsync($"{user}/projects/invites", new ProjectInviteNotification(NotificationType.Removed, invite));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Updated, proj));
+
         return new Result(true);
     }
     
@@ -212,32 +276,36 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project in which the user who should be kicked resides.</param>
     /// <param name="user">The guid of the user who should be kicked.</param>
     /// <returns>Whether or not the user has been successfully kicked out of the project</returns>
     [Error<ItemNotFoundError>]
     [Authorize(Policy = PolicyTypes.KickProjectMember)]
-    public Result KickProjectMember(
+    public async Task<Result> KickProjectMember(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project, 
         [ID] Guid user)
-        => LeaveProject(projectService, userService, project, user);
+        => await LeaveProject(projectService, userService, eventSender, project, user);
     
     /// <summary>
     /// Leave a project as a member.
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project which the given user should leave.</param>
     /// <param name="user">The guid of the user who should leave.</param>
     /// <returns>Whether or not the user has successfully left.</returns>
     /// <exception cref="ItemNotFoundError">Thrown when the given user could not be found, or when the user isn't a member of the given project.</exception>
     [Error<ItemNotFoundError>]
     [Authorize(Policy = PolicyTypes.LeaveProject)]
-    public Result LeaveProject(
+    public async Task<Result> LeaveProject(
         [Service] IProjectService projectService, 
         [Service] IUserService userService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project, 
         [ID] Guid user)
     {
@@ -250,8 +318,15 @@ public class ProjectMutation
         
         // Remove user as a member from the project
         var memberChanges = new List<MemberChange> { new(ChangeType.Remove, user) };
-        
         projectService.Update(project, new ProjectUpdateConfiguration(members: memberChanges));
+        
+        // Send notification event
+        proj.Members.Remove(proj.Members.First(m => m.UserId == user));
+
+        await eventSender.SendAsync($"{proj.Owner.UserId}/projects", new ProjectNotification(NotificationType.Updated, proj));
+        await eventSender.SendAsync($"{user}/projects", new ProjectNotification(NotificationType.Removed, proj));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Updated, proj));
+
         return new Result(true);
     }
 
@@ -260,13 +335,15 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="teamService">The current team service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="team">The guid of the team which should be added to the project.</param>
     /// <param name="project">The guid of the project to which the team should be added.</param>
     /// <returns>Whether or not the project has been successfully updated.</returns>
     [Authorize(Policy = PolicyTypes.WriteProject)]
-    public Result AddProjectLink(
+    public async Task<Result> AddProjectLink(
         [Service] IProjectService projectService,
         [Service] ITeamService teamService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid team,
         [ID] Guid project)
     {
@@ -277,6 +354,15 @@ public class ProjectMutation
         var linkChanges = new List<LinkChange> { new(ChangeType.Add, team) };
         
         projectService.Update(project, new ProjectUpdateConfiguration(links: linkChanges));
+        
+        // Send notification event
+        var tea = teamService.Get(team);
+        var proj = projectService.Get(project);
+        
+        foreach (var member in tea.Members.Where(m => proj.Members.All(pm => pm.UserId != m.UserId)))
+            await eventSender.SendAsync($"{member.UserId}/projects", new ProjectNotification(NotificationType.Added, proj));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Updated, proj));
+
         return new Result(true);
     }
     
@@ -285,13 +371,15 @@ public class ProjectMutation
     /// </summary>
     /// <param name="projectService">The current project service.</param>
     /// <param name="teamService">The current team service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="team">The guid of the team which should be removed to the project.</param>
     /// <param name="project">The guid of the project to which the team should be removed.</param>
     /// <returns>Whether or not the project has been successfully updated.</returns>
     [Authorize(Policy = PolicyTypes.WriteProject)]
-    public Result RemoveProjectLink(
+    public async Task<Result> RemoveProjectLink(
         [Service] IProjectService projectService,
         [Service] ITeamService teamService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid team,
         [ID] Guid project)
     {
@@ -302,6 +390,15 @@ public class ProjectMutation
         var linkChanges = new List<LinkChange> { new(ChangeType.Remove, team) };
         
         projectService.Update(project, new ProjectUpdateConfiguration(links: linkChanges));
+        
+        // Send notification event
+        var tea = teamService.Get(team);
+        var proj = projectService.Get(project);
+        
+        foreach (var member in tea.Members.Where(m => proj.Members.All(pm => pm.UserId != m.UserId)))
+            await eventSender.SendAsync($"{member.UserId}/projects", new ProjectNotification(NotificationType.Removed, proj));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Updated, proj));
+
         return new Result(true);
     }
     
@@ -309,15 +406,24 @@ public class ProjectMutation
     /// Remove a project from the database.
     /// </summary>
     /// <param name="projectService">The current project service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="project">The guid of the project which should be removed from the database.</param>
     /// <returns>Whether or not the project has been successfully removed.</returns>
     [Authorize(Policy = PolicyTypes.DeleteProject)]
-    public Result RemoveProject(
+    public async Task<Result> RemoveProject(
         [Service] IProjectService projectService,
+        [Service] ITopicEventSender eventSender,
         [ID] Guid project)
     {
         // Remove the project from the database.
+        var proj = projectService.Get(project);
         projectService.Delete(project);
+        
+        // Send notification event
+        foreach (var member in proj.Members)
+            await eventSender.SendAsync($"{member.UserId}/projects", new ProjectNotification(NotificationType.Removed, proj));
+        await eventSender.SendAsync($"{proj.Id}", new ProjectNotification(NotificationType.Removed, proj));
+        
         return new Result(true);
     }
 }

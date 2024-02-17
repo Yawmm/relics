@@ -52,6 +52,7 @@ builder.Services.AddGraphQLServer()
     
     .AddQueries()
     .AddMutations()
+    .AddSubscriptions()
     
     .AddMutationConventions(applyToAllMutations: true)
     .ModifyRequestOptions(options => options.IncludeExceptionDetails = true);
@@ -73,6 +74,9 @@ app.UseDatabaseMigrations();
 // Use authentication/authorization
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Use websockets for subscriptions
+app.UseWebSockets();
 
 // Use graph endpoints
 app.MapGraphQL();

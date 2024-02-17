@@ -1,4 +1,3 @@
-using HotChocolate.Authorization;
 using Task = Backend.Models.Tasks.Task;
 
 namespace Backend.Models.Projects;
@@ -6,7 +5,6 @@ namespace Backend.Models.Projects;
 /// <summary>
 /// An object class used to represent the category data model in the application.
 /// </summary>
-[Authorize]
 public class Category
 {
     /// <summary>

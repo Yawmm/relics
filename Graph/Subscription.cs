@@ -1,8 +1,8 @@
 namespace Backend.Graph;
 
 /// <summary>
-/// The required notification type for hot chocolate, actual notifications
+/// The required subscription type for hot chocolate, actual subscriptions
 /// can be found in the extension methods.
 /// <seealso cref="GraphServiceCollection"/>
 /// </summary>
-public class Mutation { }
+public class Subscription { }

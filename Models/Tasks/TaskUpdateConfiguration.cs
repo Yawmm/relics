@@ -20,13 +20,20 @@ public class TaskUpdateConfiguration
     /// </summary>
     public bool? IsFinished { get; }
 
+    /// <summary>
+    /// The ID of the new category to which the task should be linked.
+    /// </summary>
+    public Guid? CategoryId { get; set; }
+
     public TaskUpdateConfiguration(
         string? name = null,
         string? description = null,
-        bool? finished = null)
+        bool? finished = null,
+        Guid? category = null)
     {
         Name = name;
         Description = description;
         IsFinished = finished;
+        CategoryId = category;
     }
 };

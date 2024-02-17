@@ -14,4 +14,12 @@ public class TeamInvite
     /// The name of the team.
     /// </summary>
     public string Name { get; set; } = null!;
+
+    public TeamInvite() { }
+    
+    public TeamInvite(Team team)
+    {
+        Id = team.Id;
+        Name = team.Name;
+    }
 }

@@ -167,12 +167,14 @@ public class TaskService : ITaskService
             SET 
                 Name = coalesce(@Name, Name),
                 Description = coalesce(@Description, Description),
-                IsFinished = coalesce(@IsFinished, IsFinished)
+                IsFinished = coalesce(@IsFinished, IsFinished),
+                CategoryId = @CategoryId
             WHERE t.Id = @Id
             """,
             new
             {
                 id,
+                configuration.CategoryId,
                 configuration.Name,
                 configuration.Description,
                 configuration.IsFinished,
