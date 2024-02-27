@@ -55,6 +55,7 @@ internal static class ApplicationServiceCollection
         services.AddTransient<IProjectService, ProjectService>();
         services.AddTransient<ICategoryService, CategoryService>();
         services.AddTransient<ITaskService, TaskService>();
+        services.AddTransient<ICommentService, CommentService>();
         services.AddTransient<ITeamService, TeamService>();
         
         // Add authentication service

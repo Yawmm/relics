@@ -50,6 +50,7 @@ public static class PolicyServiceCollection
         // Task handlers
         services.AddTransient<IPermissionHandler<IsTaskProjectMemberPermission>, IsTaskProjectMemberPermissionHandler>();
         services.AddTransient<IPermissionHandler<IsTaskOwnerPermission>, IsTaskOwnerPermissionHandler>();
+        services.AddTransient<IPermissionHandler<IsCommentOwnerPermission>, IsCommentOwnerPermissionHandler>();
     }
 
     /// <summary>
@@ -95,5 +96,6 @@ public static class PolicyServiceCollection
         options.AddPolicy(PolicyTypes.ReadTasks, policy => policy.Requirements.Add(new IsUserPermission()));
         options.AddPolicy(PolicyTypes.WriteTask, policy => policy.Requirements.Add(new IsTaskProjectMemberPermission()));
         options.AddPolicy(PolicyTypes.DeleteTask, policy => policy.Requirements.Add(new IsTaskOwnerPermission()));
+        options.AddPolicy(PolicyTypes.DeleteComment, policy => policy.Requirements.Add(new IsCommentOwnerPermission()));
     }
 }

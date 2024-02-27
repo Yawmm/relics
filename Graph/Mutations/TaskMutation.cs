@@ -107,6 +107,93 @@ public class TaskMutation
     }
 
     /// <summary>
+    /// Add a new comment to the given task in the database.
+    /// </summary>
+    /// <param name="commentService">The current comment service.</param>
+    /// <param name="taskService">The current task service.</param>
+    /// <param name="projectService">The current project service.</param>
+    /// <param name="userService">The current user service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
+    /// <param name="task">The parent task of the comment.</param>
+    /// <param name="owner">The owner of the comment.</param>
+    /// <param name="content">The content of the comment.</param>
+    /// <returns>The guid of the newly created comment.</returns>
+    /// <exception cref="ItemNotFoundError">Thrown when the task/owner could not be found in the database.</exception>
+    [Error<ItemNotFoundError>]
+    [Authorize(Policy = PolicyTypes.WriteTask)]
+    public async Task<Guid> AddComment(
+        [Service] ICommentService commentService,
+        [Service] ITaskService taskService, 
+        [Service] IUserService userService, 
+        [Service] IProjectService projectService, 
+        [Service] ITopicEventSender eventSender,
+        [ID] Guid task,
+        [ID] Guid owner,
+        string content)
+    {
+        // Check whether or not all the given items exist.
+        if (!userService.Exists(owner)) throw new ItemNotFoundError($"User {owner}");
+        if (!taskService.Exists(task)) throw new ItemNotFoundError($"Task {task}");
+        
+        // Create the task in the database
+        var result = commentService.Create(new CommentCreateConfiguration(content, owner, task));
+        
+        // Send notification event
+        var item = taskService.Get(task);
+        await eventSender.SendAsync($"{item.Owner.UserId}/tasks", new TaskNotification(NotificationType.Updated, item));
+       
+        var project = projectService.Identify(task: item.Id);
+        if (project is not null)
+        {
+            var proj = projectService.Get((Guid)project);
+            await eventSender.SendAsync($"{project}", new ProjectNotification(NotificationType.Updated, proj));
+        }
+        
+        return result;
+    }
+    
+    /// <summary>
+    /// Remove a comment from the database.
+    /// </summary>
+    /// <param name="commentService">The current project service.</param>
+    /// <param name="projectService">The current project service.</param>
+    /// <param name="taskService">The current task service.</param>
+    /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
+    /// <param name="comment">The guid of the comment which should be removed.</param>
+    /// <returns>Whether or not the remove action was successful.</returns>
+    [Authorize(Policy = PolicyTypes.DeleteComment)]
+    public async Task<Result> RemoveComment(
+        [Service] ICommentService commentService,
+        [Service] IProjectService projectService,
+        [Service] ITaskService taskService,
+        [Service] ITopicEventSender eventSender,
+        [ID] Guid comment)
+    {
+        // Retrieve task parent for notification event
+        var taskId = taskService.Identify(comment: comment);
+        
+        // Remove the task from the database
+        var item = commentService.Get(comment);
+        commentService.Delete(comment);
+        
+        // Send notification event
+        if (taskId is null)
+            return new Result(true);
+
+        var task = taskService.Get((Guid)taskId); 
+        await eventSender.SendAsync($"{item.Owner.UserId}/tasks", new TaskNotification(NotificationType.Updated, task));
+        
+        var project = projectService.Identify(task: taskId);
+        if (project is not null)
+        {
+            var proj = projectService.Get((Guid)project);
+            await eventSender.SendAsync($"{project}", new ProjectNotification(NotificationType.Updated, proj));
+        }
+        
+        return new Result(true);
+    }
+
+    /// <summary>
     /// Remove a task from the database.
     /// </summary>
     /// <param name="projectService">The current project service.</param>

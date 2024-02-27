@@ -2,6 +2,7 @@ using System.Data;
 using Backend.Errors;
 using Backend.Models.General;
 using Backend.Models.Projects;
+using Backend.Models.Tasks;
 using Backend.Models.Teams;
 using Backend.Models.Users;
 using Backend.Utility;
@@ -121,7 +122,9 @@ public class TeamService : ITeamService
 
         var cache = new MapCache();
         
-        // Same thing as the project mapping applies here.
+        // Same thing as the project mapping applies here. This sucks, but migrating to EF core sucks more.
+        // We need to fetch ALL the data because we're using this service for a GraphQL API where fields can be picked.
+        // Optimizing just becomes a lot harder.
         var result = _connection.Query(
             sql: """
             SELECT t.*,
@@ -136,8 +139,12 @@ public class TeamService : ITeamService
                    tlpc.*,
                    tlpct.*,
                    tlpctu.Id, tlpctu.Username, tlpctu.Email,
+                   tlpctc.Id, tlpctc.Content, tlpctc.Timestamp,
+                   tlpctcu.Id, tlpctcu.Username, tlpctcu.Email,
                    tlpt.*,
                    tlptu.Id, tlptu.Username, tlptu.Email,
+                   tlptc.Id, tlptc.Content, tlptc.Timestamp,
+                   tlptcu.Id, tlptcu.Username, tlptcu.Email,
                    
                    tu.Id, tu.Username, tu.Email,
                    tmu.Id, tmu.Username, tmu.Email,
@@ -163,9 +170,13 @@ public class TeamService : ITeamService
                                     LEFT JOIN "User" tlpltmu ON tlpltm.UserId = tlpltmu.Id
                         LEFT JOIN "Task" tlpt ON tlpt.ProjectId = tlp.Id AND tlpt.CategoryId IS NULL
                             LEFT JOIN "User" tlptu ON tlpt.OwnerId = tlptu.Id
+                            LEFT JOIN "Comment" tlptc ON tlptc.TaskId = tlpt.Id
+                                LEFT JOIN "User" tlptcu ON tlptc.OwnerId = tlptcu.Id
                         LEFT JOIN "Category" tlpc ON tlpc.ProjectId = tlp.Id
                             LEFT JOIN "Task" tlpct ON tlpct.CategoryId = tlpc.Id
                                 LEFT JOIN "User" tlpctu ON tlpct.OwnerId = tlpctu.Id
+                                LEFT JOIN "Comment" tlpctc ON tlpctc.TaskId = tlpct.Id
+                                    LEFT JOIN "User" tlpctcu ON tlpctc.OwnerId = tlpctcu.Id
             WHERE t.Id = @Id
             """,
             types: new []
@@ -173,8 +184,8 @@ public class TeamService : ITeamService
                 typeof(Team),
                 typeof(Project), typeof(User), typeof(User), typeof(User), 
                     typeof(Team), typeof(User), typeof(User),
-                    typeof(Category), typeof(Task), typeof(User),
-                    typeof(Task), typeof(User),
+                    typeof(Category), typeof(Task), typeof(User), typeof(Comment), typeof(User),
+                    typeof(Task), typeof(User), typeof(Comment), typeof(User),
                 typeof(User),
                 typeof(User),
                 typeof(User)
@@ -210,8 +221,12 @@ public class TeamService : ITeamService
                    tlpc.*,
                    tlpct.*,
                    tlpctu.Id, tlpctu.Username, tlpctu.Email,
+                   tlpctc.Id, tlpctc.Content, tlpctc.Timestamp,
+                   tlpctcu.Id, tlpctcu.Username, tlpctcu.Email,
                    tlpt.*,
                    tlptu.Id, tlptu.Username, tlptu.Email,
+                   tlptc.Id, tlptc.Content, tlptc.Timestamp,
+                   tlptcu.Id, tlptcu.Username, tlptcu.Email,
                    
                    tu.Id, tu.Username, tu.Email,
                    tmu.Id, tmu.Username, tmu.Email,
@@ -240,17 +255,21 @@ public class TeamService : ITeamService
                                             LEFT JOIN "User" tlpltmu ON tlpltm.UserId = tlpltmu.Id
                                 LEFT JOIN "Task" tlpt ON tlpt.ProjectId = tlp.Id AND tlpt.CategoryId IS NULL
                                     LEFT JOIN "User" tlptu ON tlpt.OwnerId = tlptu.Id
+                                LEFT JOIN "Comment" tlptc ON tlptc.TaskId = tlpt.Id
+                                        LEFT JOIN "User" tlptcu ON tlptc.OwnerId = tlptcu.Id
                                 LEFT JOIN "Category" tlpc ON tlpc.ProjectId = tlp.Id
                                     LEFT JOIN "Task" tlpct ON tlpct.CategoryId = tlpc.Id
                                         LEFT JOIN "User" tlpctu ON tlpct.OwnerId = tlpctu.Id
+                                        LEFT JOIN "Comment" tlpctc ON tlpctc.TaskId = tlpct.Id
+                                            LEFT JOIN "User" tlpctcu ON tlpctc.OwnerId = tlpctcu.Id
             """,
             types: new []
             {
                 typeof(Team),
                 typeof(Project), typeof(User), typeof(User), typeof(User), 
                     typeof(Team), typeof(User), typeof(User),
-                    typeof(Category), typeof(Task), typeof(User),
-                    typeof(Task), typeof(User),
+                    typeof(Category), typeof(Task), typeof(User), typeof(Comment), typeof(User),
+                    typeof(Task), typeof(User), typeof(Comment), typeof(User),
                 typeof(User),
                 typeof(User),
                 typeof(User)
@@ -420,21 +439,35 @@ public class TeamService : ITeamService
                 if (projectRef.Categories.All(l => l.Id != projectCategoryRef.Id))
                     projectRef.Categories.Add(projectCategoryRef);
 
-                if (objects[9] is Task projectCategoryTask && projectCategoryRef.Tasks.All(t => t.Id != projectCategoryTask.Id))
+                if (objects[9] is Task projectCategoryTask)
                 {
                     // Retrieve task reference
                     var projectCategoryTaskRef = mapCache.Retrieve(projectCategoryTask.Id, projectCategoryTask);
                    
                     // Add task to category reference
-                    projectCategoryRef.Tasks.Add(projectCategoryTaskRef);
+                    if (projectCategoryRef.Tasks.All(t => t.Id != projectCategoryTaskRef.Id))
+                        projectCategoryRef.Tasks.Add(projectCategoryTaskRef);
 
                     // Link owner of task to task reference
                     if (objects[10] is User categoryTaskOwner)
                         projectCategoryTaskRef.Owner = new Member(categoryTaskOwner);
+
+                    if (objects[11] is Comment categoryTaskComment && projectCategoryTaskRef.Comments.All(c => c.Id != categoryTaskComment.Id)) 
+                    {
+                        // Retrieve comment reference
+                        var categoryTaskCommentRef = mapCache.Retrieve(categoryTaskComment.Id, categoryTaskComment);
+                        
+                        // Add comment to task reference
+                        projectCategoryTaskRef.Comments.Add(categoryTaskComment);
+
+                        // Link owner of comment to comment reference
+                        if (objects[12] is User categoryTaskCommentOwner)
+                            categoryTaskCommentRef.Owner = new Member(categoryTaskCommentOwner);
+                    }
                 }
             }
 
-            if (objects[11] is Task projectTask && project.Tasks.All(t => t.Id != projectTask.Id))
+            if (objects[13] is Task projectTask && project.Tasks.All(t => t.Id != projectTask.Id))
             {
                 // Retrieve task reference
                 var projectTaskRef = mapCache.Retrieve(projectTask.Id, projectTask);
@@ -443,21 +476,34 @@ public class TeamService : ITeamService
                 projectRef.Tasks.Add(projectTaskRef);
 
                 // Link owner of task to task reference
-                if (objects[12] is User projectTaskOwner)
+                if (objects[14] is User projectTaskOwner)
                     projectTaskRef.Owner = new Member(projectTaskOwner);
+                
+                if (objects[15] is Comment projectTaskComment && projectTaskRef.Comments.All(c => c.Id != projectTaskComment.Id)) 
+                {
+                    // Retrieve comment reference
+                    var projectTaskCommentRef = mapCache.Retrieve(projectTaskComment.Id, projectTaskComment);
+                        
+                    // Add comment to task reference
+                    projectTaskRef.Comments.Add(projectTaskComment);
+
+                    // Link owner of comment to comment reference
+                    if (objects[16] is User projectTaskCommentOwner)
+                        projectTaskCommentRef.Owner = new Member(projectTaskCommentOwner);
+                }
             }
         }
         
         // Link owner of team to team reference
-        if (objects[13] is User owner) 
+        if (objects[17] is User owner) 
             teamRef.Owner = new Member(owner);
         
         // Add member to team reference
-        if (objects[14] is User member && teamRef.Members.All(m => m.UserId != member.Id))
+        if (objects[18] is User member && teamRef.Members.All(m => m.UserId != member.Id))
             teamRef.Members.Add(new Member(member));
         
         // Add invite to team reference
-        if (objects[15] is User invite && teamRef.Invites.All(i => i.UserId != invite.Id))
+        if (objects[19] is User invite && teamRef.Invites.All(i => i.UserId != invite.Id))
             teamRef.Invites.Add(new Invite(invite));
 
         return teamRef;
