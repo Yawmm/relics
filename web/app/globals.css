@@ -2,6 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  h1 {
+    @apply text-3xl md:text-4xl text-zinc-200 font-black
+  }
+  h2 {
+    @apply text-2xl md:text-3xl text-zinc-200 font-bold
+  }
+  h3 {
+    @apply text-xl md:text-2xl text-zinc-200 font-semibold
+  }
+  h4 {
+    @apply text-lg md:text-xl text-zinc-200 font-semibold
+  }
+  p {
+    @apply text-base md:text-lg text-zinc-400
+  }
+  label, button {
+    @apply text-sm md:text-lg text-zinc-400 font-normal
+  }
+  input {
+    @apply text-base md:text-xl text-zinc-200 bg-transparent placeholder:text-zinc-500 autofill:fill-zinc-800 autofill:rounded-md focus:outline-none
+  }
+}
+
+@layer components {
+  .px-gutter {
+    @apply pl-gutter pr-gutter
+  }
+  .pl-gutter {
+    @apply pl-[theme(margin.gutter-x)] md:pl-[calc(theme(margin.gutter-x)*2)]
+  }
+  .pr-gutter {
+    @apply pr-[theme(margin.gutter-x)] md:pr-[calc(theme(margin.gutter-x)*2)]
+  }
+  .py-gutter {
+    @apply pt-gutter pb-gutter
+  }
+  .pt-gutter {
+    @apply pt-[theme(margin.gutter-y)]
+  }
+  .pb-gutter {
+    @apply pb-[theme(margin.gutter-y)]
+  }
+
+  .card {
+    @apply p-[16px] md:p-[24px]
+  }
+  .dialog {
+    @apply p-[24px] md:p-[36px]
+  }
+  .icon {
+    @apply w-[24px] md:w-[36px] h-[24px] md:h-[36px]
+  }
+  .small-icon {
+    @apply w-[16px] md:w-[24px] h-[16px] md:h-[24px]
+  }
+}
+
 :root {
   --gutter-x-margin: 36px;
   --gutter-y-margin: 48px;

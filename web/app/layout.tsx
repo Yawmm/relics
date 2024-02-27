@@ -32,34 +32,43 @@ export default function RootLayout({
 
     return (
         <html lang="en" className={"flex flex-col min-h-screen"}>
-            <body className={inter.className + " flex flex-col min-h-screen"}>
-                <ApolloProvider client={client}>
-                    <main className={`flex flex-col flex-grow w-full h-full bg-zinc-800
-                        selection:bg-zinc-500`
-                    }>
-                        {isApp()
-                            ? !authentication.isLoggedIn || loading
-                                ? (
-                                    <div className={"flex flex-grow w-full min-h-full justify-center items-center px-[var(--gutter-x-margin)]"}>
-                                        <Loader />
+            <body className={inter.className + " flex flex-col min-h-screen bg-zinc-800 selection:bg-zinc-500"}>
+            <ApolloProvider client={client}>
+                {isApp() ? (
+                    <>
+                        {!authentication.isLoggedIn || loading ? (
+                            <main className={"flex flex-grow w-full min-h-full justify-center items-center "}>
+                                <Loader/>
+                            </main>
+                        ) : (
+                            <main className={"inline-flex flex-col flex-grow w-full h-full"}>
+                                <HomeHeader/>
+                                <div className={"inline-flex flex-row w-full overscroll-contain"}>
+                                    <div className={"hidden lg:flex sticky left-0 bottom-0"}>
+                                        <AppFooter/>
                                     </div>
-                                ) : (
-                                    <div className={"flex flex-grow py-[var(--gutter-y-margin)]"}>
+                                    <div className={"flex w-full max-h-[calc(100vh-132px)] overflow-y-scroll overscroll-contain"}>
                                         {children}
                                     </div>
-                                )
-                            : (
-                                <>
-                                    <HomeHeader />
-                                    <div className={"pb-[var(--gutter-y-margin)] pt-[calc(var(--gutter-y-margin)/2)]"}>
-                                        {children}
-                                    </div>
-                                </>
-                            )
-                        }
+                                </div>
+                            </main>
+                        )}
+                        {authentication.isLoggedIn && (
+                            <div className={"sticky bottom-0 lg:hidden"}>
+                                <AppFooter/>
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <main className={"flex flex-col flex-grow w-full h-full"}>
+                        <HomeHeader/>
+
+                        <div className={"flex flex-grow w-full"}>
+                            {children}
+                        </div>
                     </main>
-                    {(isApp() && authentication?.isLoggedIn) && <AppFooter />}
-                </ApolloProvider>
+                )}
+            </ApolloProvider>
             </body>
         </html>
     );

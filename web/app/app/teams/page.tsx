@@ -6,7 +6,7 @@ import React, {useEffect, useRef, useState} from "react";
 import TeamIcon from "@/components/Icons/TeamIcon";
 import {useUser} from "@/lib/hooks";
 import {Team, TeamInvite} from "@/lib/types";
-import {ReceivedInviteItem} from "@/components/App/Projects/ProjectInviteItem";
+import {ReceivedInviteItem} from "@/components/App/Projects/InviteItem";
 import Subtitle from "@/components/Text/Subtitle";
 import Description from "@/components/Text/Description";
 import Button from "@/components/Input/Button";
@@ -78,47 +78,47 @@ export default function Teams() {
 	return (
 		<>
 			<LoadScreen isShown={getTeamsLoading || getTeamInvitesLoading} />
-			<div className={"flex flex-col gap-[36px]"}>
-				<div className={"flex flex-col gap-[12px]"}>
+			<div className={"flex flex-col w-full h-full gap-[36px] py-gutter"}>
+				<div className={"flex flex-col gap-[12px] md:gap-[24px]"}>
 					<AppHeader
 						title={"Teams"}
 						description={`Manage the invites you have to other projects and teams.`}
-						icon={<TeamIcon/>}
+						icon={<TeamIcon />}
 					/>
 
-					<div className={"flex flex-row px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-row px-gutter"}>
 						<Button onClick={() => createDialogRef.current?.show()} type={"rounded"} usage={"form"}
 								intent={"primary"}>
-							<AddIcon className={"w-[16px] h-[16px]"}/>
+							<AddIcon className={"small-icon"}/>
 							Create team
 						</Button>
 					</div>
 				</div>
 
 				<div className={"flex flex-col gap-[12px]"}>
-					<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+					<h3 className={"px-gutter"}>
 						Teams
-					</Subtitle>
+					</h3>
 
-					<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-col gap-[12px] h-full px-gutter"}>
 						{teams.length > 0
 							? teams.map((team: Team) => (
 								<TeamItem team={team} />
 							)) : (
-								<Description>
+								<p>
 									You aren't in any teams yet.
-								</Description>
+								</p>
 							)
 						}
 					</div>
 				</div>
 
 				<div className={"flex flex-col gap-[12px]"}>
-					<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+					<h3 className={"px-gutter"}>
 						Invites
-					</Subtitle>
+					</h3>
 
-					<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-col gap-[12px] h-full px-gutter"}>
 						{teamInvites.length > 0
 							? teamInvites.map((i: TeamInvite) => (
 								<ReceivedInviteItem
@@ -132,17 +132,17 @@ export default function Teams() {
 												<TeamIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
 											</div>
 											<div className={"flex flex-col flex-grow text-left"}>
-												<Header>
+												<h4>
 													{i.name}
-												</Header>
+												</h4>
 											</div>
 										</>
 									}
 								/>
 							)) : (
-								<Description>
+								<p>
 									You haven't received any invites to other teams yet.
-								</Description>
+								</p>
 							)
 						}
 					</div>

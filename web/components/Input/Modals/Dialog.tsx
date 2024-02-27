@@ -67,7 +67,7 @@ const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onOpen, o
 	return (
 		<AnimatePresence>
 			{isShown && (
-				<div className={"flex mt-[-12px] ml-[-12px]"}>
+				<div className={"fixed z-50 items-center"}>
 					<motion.div
 						onClick={onCloseModal}
 						className={"fixed top-0 left-0 w-full h-full bg-zinc-900 z-50 bg-opacity-70"}
@@ -83,8 +83,8 @@ const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onOpen, o
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 					>
-						<div className={"flex w-full h-full p-[24px] justify-center items-center"}>
-							<div className={"flex flex-col w-full gap-[24px] p-[24px] bg-zinc-800 rounded-2xl pointer-events-auto"}>
+						<div className={"dialog flex w-full h-full justify-center items-center"}>
+							<div className={"dialog flex flex-col w-full md:w-[80%] lg:w-[60%] xl:w-[40%] gap-[24px] bg-zinc-800 rounded-2xl pointer-events-auto"}>
 								{children}
 							</div>
 						</div>

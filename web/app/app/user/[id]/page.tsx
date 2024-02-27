@@ -10,17 +10,17 @@ export default function UserInformation({ params: { id } } : { params: { id: str
 	const { data } = useUserQuery(id);
 
 	return (
-		<div className={"flex flex-col w-full gap-[36px]"}>
+		<div className={"flex flex-col w-full gap-[36px] py-gutter"}>
 			<AppHeader
 				title={"Personal information"}
 				description={`Inspect the personal information of the current user.`}
 				icon={<UserIcon />}
 			/>
 
-			<div className={"flex flex-col gap-[12px] px-[var(--gutter-x-margin)]"}>
-				<Subtitle>
+			<div className={"flex flex-col gap-[12px] px-gutter"}>
+				<h3>
 					Properties
-				</Subtitle>
+				</h3>
 				<div className={"flex flex-col gap-[12px]"}>
 					<InputField disabled value={data?.user.id} title={"Id"} type={"text"} required />
 					<InputField disabled value={data?.user.username} title={"Username"} type={"text"} required />

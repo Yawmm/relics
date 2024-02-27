@@ -47,12 +47,12 @@ export default function Button(
 		...props
 	} : ButtonProps) {
 	/* The definitive style of the button/link. */
-	const style = `flex flex-row items-center gap-[4px] text-zinc-200 text-sm focus:outline-none focus:ring-4 focus:ring-zinc-500`
+	const style = `whitespace-nowrap flex flex-row items-center gap-[4px] text-zinc-200 focus:outline-none focus:ring-4 focus:ring-zinc-500`
 		+ (type == "square" ? " justify-center w-full px-[24px] py-[16px] rounded-lg" : "")
-		+ (type == "rounded" ? " px-[24px] py-[8px] rounded-2xl" : "")
-		+ (type == "circle" ? " rounded-3xl aspect-square" : "")
+		+ (type == "rounded" ? " px-[24px] py-[8px] md:py-[12px] rounded-2xl" : "")
+		+ (type == "circle" ? " md:p-[16px] rounded-full aspect-square" : "")
 		+ (disabled ? " bg-zinc-900"
-			: "" + (intent == "primary" ? " p-[10px] bg-zinc-50 hover:bg-zinc-200 active:bg-zinc-400 text-zinc-700" : "")
+			: "" + (intent == "primary" ? ` p-[10px]${type == "circle" ? " md:p-[18px] " : "  "}bg-zinc-50 hover:bg-zinc-200 active:bg-zinc-400 text-zinc-700` : "")
 			+ (intent == "secondary" ? " p-[8px] bg-zinc-800 border-zinc-700 border-2 hover:bg-zinc-700 active:bg-zinc-900" : "")
 			+ (intent == "tertiary" ? " p-[10px] bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-700" : "")
 			+ (intent == "other" ? " p-[10px]" : "")

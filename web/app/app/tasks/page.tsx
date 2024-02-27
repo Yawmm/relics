@@ -56,7 +56,7 @@ export default function Tasks() {
 	return (
 		<>
 			<LoadScreen isShown={loading} />
-			<div className={"flex flex-col gap-[36px]"}>
+			<div className={"flex flex-col w-full h-full gap-[36px] py-gutter"}>
 				<div className={"flex flex-col gap-[12px]"}>
 					<AppHeader
 						title={"Tasks"}
@@ -64,7 +64,7 @@ export default function Tasks() {
 						icon={<TaskIcon/>}
 					/>
 
-					<div className={"flex flex-row px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-row px-gutter"}>
 						<Button onClick={() => taskItemDialogRef.current?.show()} type={"rounded"} usage={"form"} intent={"primary"}>
 							<AddIcon className={"w-[16px] h-[16px]"}/>
 							Create task
@@ -73,11 +73,11 @@ export default function Tasks() {
 				</div>
 
 				<div className={"flex flex-col h-full gap-[12px]"}>
-					<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+					<Subtitle className={"px-gutter"}>
 						Tasks
 					</Subtitle>
 
-					<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-col gap-[12px] h-full px-gutter"}>
 						{tasks.length > 0
 							? tasks.map((t: Task) => (
 								<TaskItem

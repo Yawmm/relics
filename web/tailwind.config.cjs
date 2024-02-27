@@ -6,6 +6,16 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    screens: {
+      sm: '480px',
+      md: '768px',
+      lg: '976px',
+      xl: '1440px',
+    },
+    margin: {
+      "gutter-y": 'var(--gutter-y-margin)',
+      "gutter-x": 'var(--gutter-x-margin)'
+    },
     extend: {
       colors: {
         "main-50":  "#eef2ff",
@@ -19,8 +29,8 @@ module.exports = {
         "main-800": "#3730a3",
         "main-900": "#312e81",
         "main-950": "#1e1b4b",
-      }
-    }
+      },
+    },
   },
   plugins: [],
 }

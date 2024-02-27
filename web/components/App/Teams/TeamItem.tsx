@@ -19,7 +19,7 @@ import MemberItem from "@/components/App/Projects/MemberItem";
 import Subtitle from "@/components/Text/Subtitle";
 import AddIcon from "@/components/Icons/AddIcon";
 import InviteMemberDialog from "@/components/App/Dialogs/Members/InviteMemberDialog";
-import {SentInviteItem} from "@/components/App/Projects/ProjectInviteItem";
+import {SentInviteItem} from "@/components/App/Projects/InviteItem";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
 import EditTeamDialog from "@/components/App/Dialogs/Teams/EditTeamDialog";
 
@@ -121,53 +121,53 @@ export default function TeamItem({ team, className, editable = true, onClick } :
 	return (
 		<>
 			<div className={`flex flex-row items-center gap-[12px] bg-zinc-700 rounded-xl ${className}`}>
-				<button onClick={onClick ?? (() => sheetRef.current?.show())} className={"flex flex-row p-[16px] flex-grow items-center gap-[12px] rounded-xl focus:outline-none focus:ring-4 focus:ring-zinc-500"}>
+				<button onClick={onClick ?? (() => sheetRef.current?.show())} className={"card flex flex-row flex-grow items-center gap-[12px] rounded-xl focus:outline-none focus:ring-4 focus:ring-zinc-500"}>
 					<div>
-						<TeamIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
+						<TeamIcon className={"small-icon text-zinc-200"}/>
 					</div>
 					<div className={"flex flex-col flex-grow text-left"}>
-						<Header>
+						<h4>
 							{team.name}
-						</Header>
+						</h4>
 					</div>
 				</button>
 
 				{editable && (
 					<Popover>
 						<button className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
-							<MoreIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
+							<MoreIcon className={"icon text-zinc-200"}/>
 						</button>
 						<Popover.Modal ref={popoverRef}>
 							<Popover.Container>
 								{isOwner() ? (
 									<Popover.Button focus onClick={remove}>
-										<Header className={"text-zinc-700"}>
+										<h4 className={"text-zinc-700"}>
 											Remove
-										</Header>
-										<DeleteIcon className={"w-[24px] h-[24px]"}/>
+										</h4>
+										<DeleteIcon className={"icon"}/>
 									</Popover.Button>
 								) : (
 									<Popover.Button focus onClick={leave}>
-										<Header className={"text-zinc-700"}>
+										<h4 className={"text-zinc-700"}>
 											Leave
-										</Header>
-										<SignOutIcon className={"w-[24px] h-[24px]"}/>
+										</h4>
+										<SignOutIcon className={"icon"}/>
 									</Popover.Button>
 								)}
 
 
 								<Popover.Button onClick={() => inviteDialogRef.current?.show()}>
-									<Header className={"text-zinc-700"}>
+									<h4 className={"text-zinc-700"}>
 										Invite
-									</Header>
-									<UserIcon className={"w-[24px] h-[24px]"}/>
+									</h4>
+									<UserIcon className={"icon"}/>
 								</Popover.Button>
 
 								<Popover.Button onClick={() => editDialogRef.current?.show()}>
-									<Header className={"text-zinc-700"}>
+									<h4 className={"text-zinc-700"}>
 										Edit
-									</Header>
-									<EditIcon className={"w-[24px] h-[24px]"}/>
+									</h4>
+									<EditIcon className={"icon"}/>
 								</Popover.Button>
 							</Popover.Container>
 						</Popover.Modal>
@@ -178,15 +178,15 @@ export default function TeamItem({ team, className, editable = true, onClick } :
 			<Sheet.Modal ref={sheetRef}>
 				<Sheet.Container>
 					<Sheet.Column>
-						<Title>
+						<h1>
 							{team.name}
-						</Title>
+						</h1>
 					</Sheet.Column>
 
 					<Sheet.Column>
-						<Subtitle>
+						<h3>
 							Members
-						</Subtitle>
+						</h3>
 						{team.members?.toSorted((a, b) => owner(a) && owner(b) ? 0 : owner(a) ? -1 : 1).map(m => (
 							<MemberItem
 								member={m}
@@ -210,22 +210,22 @@ export default function TeamItem({ team, className, editable = true, onClick } :
 						{isOwner() ? (
 							<>
 								<Button focus onClick={remove} type={"circle"} usage={"form"} intent={"secondary"}>
-									<DeleteIcon className={"w-[16px] h-[16px]"}/>
+									<DeleteIcon className={"small-icon"}/>
 								</Button>
 								<Button onClick={() => editDialogRef.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
-									<EditIcon className={"w-[16px] h-[16px]"}/>
+									<EditIcon className={"small-icon"}/>
 								</Button>
 							</>
 						) : (
 							<Button focus onClick={leave} type={"circle"} usage={"form"} intent={"secondary"}>
-								<SignOutIcon className={"w-[16px] h-[16px]"}/>
+								<SignOutIcon className={"small-icon"}/>
 							</Button>
 						)}
 						<Button onClick={() => inviteDialogRef.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
-							<AddIcon className={"w-[16px] h-[16px]"}/>
+							<AddIcon className={"small-icon"}/>
 						</Button>
 						<Button onClick={() => sheetRef.current?.hide()} type={"rounded"} usage={"form"} intent={"primary"} className={"flex-grow justify-center"}>
-							<RemoveIcon className={"w-[16px] h-[16px]"}/>
+							<RemoveIcon className={"small-icon"}/>
 							Close
 						</Button>
 					</Sheet.Row>
@@ -237,6 +237,7 @@ export default function TeamItem({ team, className, editable = true, onClick } :
 			<InviteMemberDialog
 				dialog={inviteDialogRef}
 				error={inviteError}
+				setError={setInviteError}
 
 				onInvite={inviteUser}
 			/>

@@ -1,22 +1,19 @@
 "use client";
 
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import Button from "@/components/Input/Button";
 import RightArrowIcon from "@/components/Icons/RightArrowIcon";
-import Subtitle from "@/components/Text/Subtitle";
 
 export default function Home() {
     return (
-        <div className={"flex flex-col gap-[24px]"}>
-            <div className={"flex flex-col w-full gap-[24px] px-[var(--gutter-x-margin)]"}>
+        <div className={"flex flex-col gap-[24px] pb-gutter pt-[calc(theme(margin.gutter-y)/2)] md:pt-gutter"}>
+            <div className={"flex flex-col w-full gap-[24px] px-gutter"}>
                 <div className={"flex flex-col gap-[12px]"}>
-                    <Title>
+                    <h1>
                         Manage your events without hassle
-                    </Title>
-                    <Description>
+                    </h1>
+                    <p>
                         Easily create projects and tasks to manage big and complicated plans.
-                    </Description>
+                    </p>
                 </div>
 
                 <div className={"flex flex-row gap-[12px]"}>
@@ -32,24 +29,31 @@ export default function Home() {
             </div>
 
             <div className={"flex flex-col gap-[12px]"}>
-                <Subtitle className={"px-[var(--gutter-x-margin)]"}>
+                <h3 className={"px-gutter"}>
                     Projects
-                </Subtitle>
+                </h3>
 
-                <div className={"flex flex-row gap-[12px] w-full overflow-x-auto px-[var(--gutter-x-margin)]"}>
-                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"} />
-                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"} />
-                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"} />
-                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"} />
+                <div className={"flex flex-row gap-[12px] w-full overflow-x-clip px-gutter"}>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
+                    <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"}/>
                 </div>
             </div>
 
             <div className={"flex flex-col gap-[12px]"}>
-                <Subtitle className={"px-[var(--gutter-x-margin)]"}>
+            <h3 className={"px-gutter"}>
                     Tasks
-                </Subtitle>
+                </h3>
 
-                <div className={"flex flex-row gap-[12px] w-full overflow-x-auto px-[var(--gutter-x-margin)]"}>
+                <div className={"flex flex-row gap-[12px] w-full overflow-x-clip px-gutter"}>
                     <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"} />
                     <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"} />
                     <div className={"min-w-[200px] h-[250px] bg-zinc-700 rounded-xl"} />

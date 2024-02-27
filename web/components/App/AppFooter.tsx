@@ -13,8 +13,8 @@ export default function AppFooter() {
 	const path = usePathname();
 
 	return (
-		<nav className={"sticky bottom-0 w-full px-[var(--gutter-x-margin)] py-[28px] bg-zinc-700 border-t-zinc-600 border-t-2"}>
-			<div className={"flex flex-row justify-between"}>
+		<nav className={"sticky bottom-0 lg:left-0 w-full lg:h-[calc(100vh-132px)] px-gutter lg:px-[36px] py-[28px] lg:py-[calc(theme(margin.gutter-y)*2)] bg-zinc-700 border-zinc-600 border-t-2 lg:border-t-0 lg:border-r-4"}>
+			<div className={"flex flex-row lg:flex-col lg:h-full justify-between"}>
 				<NavigationItem icon={<HomeIcon />} isSelected={path.endsWith("/app")} href={"/app"} />
 				<NavigationItem icon={<TeamIcon />} isSelected={path.startsWith("/app/teams")} href={"/app/teams"} />
 				<NavigationItem icon={<ProjectIcon />} isSelected={path.startsWith("/app/projects")} href={"/app/projects"} />
@@ -32,13 +32,13 @@ type NavigationItemProps = {
 }
 
 function NavigationItem({ href, icon, isSelected } : NavigationItemProps) {
-	const iconStyle = `w-[24px] h-[24px] ${isSelected ? "text-zinc-200" : "text-zinc-500"}`;
-	const lineStyle = `w-[28px] h-[2px] ${isSelected ? "bg-zinc-200" : "bg-zinc-500"}`;
+	const iconStyle = `w-[24px] md:w-[36px] h-[24px] md:h-[36px] ${isSelected ? "text-zinc-200" : "text-zinc-500"}`;
+	const lineStyle = `w-[28px] md:w-[44px] h-[2px] md:h-[4px] ${isSelected ? "bg-zinc-200" : "bg-zinc-500"}`;
 
 	return (
 		<Link
 			href={href}
-			className={"flex flex-col justify-center items-center gap-[2px] p-[8px] m-[-8px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
+			className={"flex flex-col justify-center items-center gap-[2px] p-[8px] md:p-[16px] m-[-8px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
 		>
 			<div className={iconStyle}>
 				{icon}

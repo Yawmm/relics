@@ -1,8 +1,6 @@
 import React, {RefObject, useRef, useState} from "react";
 import {Project} from "@/lib/types";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import Button from "@/components/Input/Button";
 import RightArrowIcon from "@/components/Icons/RightArrowIcon";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
@@ -36,13 +34,13 @@ export default function CreateStandaloneTaskDialog({ dialog } : TaskDialogProps)
 			<Dialog.Modal ref={dialog}>
 				<Dialog.Container>
 					<Dialog.Column>
-						<Title context={"dialog"}>
+						<h2>
 							Create task
-						</Title>
+						</h2>
 
-						<Description>
+						<p>
 							Create a new task, with a required project to which the task is linked.
-						</Description>
+						</p>
 					</Dialog.Column>
 
 					<Dialog.Column>
@@ -54,7 +52,7 @@ export default function CreateStandaloneTaskDialog({ dialog } : TaskDialogProps)
 							intent={"primary"}
 						>
 							{selectedProject?.name ?? "Project"}
-							<RightArrowIcon className={"w-[16px] h-[16px]"}/>
+							<RightArrowIcon className={"small-icon"}/>
 						</Button>
 						<Button
 							focus
@@ -66,7 +64,7 @@ export default function CreateStandaloneTaskDialog({ dialog } : TaskDialogProps)
 							intent={"primary"}
 						>
 							Task
-							<RightArrowIcon className={"w-[16px] h-[16px]"}/>
+							<RightArrowIcon className={"small-icon"}/>
 						</Button>
 					</Dialog.Column>
 
@@ -78,7 +76,7 @@ export default function CreateStandaloneTaskDialog({ dialog } : TaskDialogProps)
 							usage={"form"}
 							intent={"secondary"}
 						>
-							<RemoveIcon className={"w-[16px] h-[16px]"}/>
+							<RemoveIcon className={"small-icon"}/>
 							Cancel
 						</Button>
 					</Dialog.Row>

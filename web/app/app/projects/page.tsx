@@ -16,7 +16,7 @@ import ProjectItem from "@/components/App/Projects/ProjectItem";
 import LoadScreen from "@/components/Login/LoadScreen";
 import CreateProjectDialog from "@/components/App/Dialogs/Projects/CreateProjectDialog";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
-import {ReceivedInviteItem} from "@/components/App/Projects/ProjectInviteItem";
+import {ReceivedInviteItem} from "@/components/App/Projects/InviteItem";
 import Header from "@/components/Text/Header";
 import {
 	updateNotificationEvent,
@@ -84,30 +84,30 @@ export default function Projects() {
 	return (
 		<>
 			<LoadScreen isShown={projectsLoading || projectInvitesLoading} />
-			<div className={"flex flex-col gap-[36px]"}>
-				<div className={"flex flex-col gap-[12px]"}>
+			<div className={"flex flex-col w-full h-full gap-[36px] py-gutter"}>
+				<div className={"flex flex-col gap-[12px] md:gap-[24px]"}>
 					<AppHeader
 						title={"Projects"}
 						description={`Create projects to manage your plans with tasks that describe individual operation that need to be done.`}
 						icon={<ProjectIcon/>}
 					/>
 
-					<div className={"flex flex-row px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-row px-gutter"}>
 						<Button onClick={() => createDialogRef.current?.show()} type={"rounded"} usage={"form"}
 								intent={"primary"}>
-							<AddIcon className={"w-[16px] h-[16px]"}/>
+							<AddIcon className={"small-icon"}/>
 							Create project
 						</Button>
 					</div>
 				</div>
 
 				<div className={"flex flex-col gap-[12px]"}>
-					<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+					<h3 className={"px-gutter"}>
 						Projects
-					</Subtitle>
+					</h3>
 
 					<div
-						className={"flex flex-col gap-[12px] pt-[8px] mt-[-8px] h-full w-full px-[var(--gutter-x-margin)]"}>
+						className={"flex flex-col gap-[12px] pt-[8px] mt-[-8px] h-full w-full px-gutter"}>
 						{projects.length > 0
 							? projects.map((p: Project) => (
 								<ProjectItem
@@ -121,20 +121,20 @@ export default function Projects() {
 								/>
 							))
 							: (
-								<Description>
+								<p>
 									You haven't created any projects yet.
-								</Description>
+								</p>
 							)
 						}
 					</div>
 				</div>
 
 				<div className={"flex flex-col gap-[12px]"}>
-					<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+					<h3 className={"px-gutter"}>
 						Invites
-					</Subtitle>
+					</h3>
 
-					<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-col gap-[12px] h-full px-gutter"}>
 						{projectInvites.length > 0
 							? projectInvites.map((i: ProjectInvite) => (
 								<ReceivedInviteItem
@@ -145,23 +145,23 @@ export default function Projects() {
 									content={
 										<>
 											<div>
-												<ProjectIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
+												<ProjectIcon className={"icon text-zinc-200"}/>
 											</div>
 											<div className={"flex flex-col flex-grow text-left"}>
-												<Header>
+												<h4>
 													{i.name}
-												</Header>
-												<Description>
+												</h4>
+												<p>
 													{i.description}
-												</Description>
+												</p>
 											</div>
 										</>
 									}
 								/>
 							)) : (
-								<Description>
+								<p>
 									You haven't received any invites to other projects yet.
-								</Description>
+								</p>
 							)
 						}
 					</div>

@@ -1,8 +1,6 @@
 import React, {FormEvent, RefObject} from "react";
 import {addCategory} from "@/lib/projects";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
@@ -34,13 +32,13 @@ export default function CategoryDialog({ dialog, project } : CategoryDialogProps
 		<Dialog.Modal ref={dialog}>
 			<Dialog.Container>
 				<Dialog.Column>
-					<Title context={"dialog"}>
+					<h2>
 						Create category
-					</Title>
+					</h2>
 
-					<Description>
+					<p>
 						Add categories to group and manager your tasks more efficiently.
-					</Description>
+					</p>
 				</Dialog.Column>
 
 				<Dialog.Form onSubmit={createCategory}>
@@ -57,12 +55,12 @@ export default function CategoryDialog({ dialog, project } : CategoryDialogProps
 
 					<Dialog.Row>
 						<Button onClick={() => dialog.current?.hide()} type={"rounded"} usage={"form"} intent={"secondary"}>
-							<RemoveIcon className={"w-[16px] h-[16px]"}/>
+							<RemoveIcon className={"small-icon"}/>
 							Cancel
 						</Button>
 
 						<Button className={"w-full justify-center"} type={"rounded"} usage={"form"} intent={"primary"}>
-							<ConfirmIcon className={"w-[16px] h-[16px]"}/>
+							<ConfirmIcon className={"small-icon"}/>
 							Confirm
 						</Button>
 					</Dialog.Row>

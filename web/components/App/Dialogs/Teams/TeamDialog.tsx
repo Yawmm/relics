@@ -1,8 +1,6 @@
 import {Project, Team, User} from "@/lib/types";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import React, {RefObject, useCallback, useRef} from "react";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
@@ -50,40 +48,36 @@ export default function TeamDialog({ dialog, user, project } : TeamDialogProps) 
 			<Dialog.Modal ref={dialog}>
 				<Dialog.Container>
 					<Dialog.Column>
-						<Title context={"dialog"}>
+						<h2>
 							Teams
-						</Title>
+						</h2>
 
-						<Description>
+						<p>
 							Adjust the teams linked to the project, adding or removing them.
-						</Description>
+						</p>
 					</Dialog.Column>
 
 					<Dialog.Column>
-						{project?.links && project.links.length > 0 ? (
+						{project?.links && project.links.length > 0 && (
 							project?.links?.map(link => (
 								<LinkItem
 									link={link}
 									project={project}
 									isOwner={isOwner()}
 								/>
-							))) : (
-								<Description>
-									No teams have been linked to this project yet.
-								</Description>
-							)
+							)))
 						}
 
 						{(hasTeams() && isOwner()) && (
 							<Button onClick={() => linkTeamDialogRef.current?.show()} type={"square"} usage={"form"} intent={"primary"} className={"flex flex-grow justify-center"}>
-								<AddIcon className={"w-[16px] h-[16px]"}/>
+								<AddIcon className={"small-icon"}/>
 							</Button>
 						)}
 					</Dialog.Column>
 					
 					<Dialog.Row>
 						<Button focus onClick={() => dialog.current?.hide()} type={"rounded"} usage={"form"} intent={"secondary"} className={"flex flex-grow justify-center"}>
-							<RemoveIcon className={"w-[16px] h-[16px]"}/>
+							<RemoveIcon className={"small-icon"}/>
 							Close
 						</Button>
 					</Dialog.Row>
@@ -93,13 +87,13 @@ export default function TeamDialog({ dialog, user, project } : TeamDialogProps) 
 			<Dialog.Modal ref={linkTeamDialogRef}>
 				<Dialog.Container>
 					<Dialog.Column>
-						<Title>
+						<h2>
 							Link team
-						</Title>
+						</h2>
 
-						<Description>
+						<p>
 							Link one of your teams to the current project.
-						</Description>
+						</p>
 					</Dialog.Column>
 
 					<Dialog.Column>
@@ -111,16 +105,16 @@ export default function TeamDialog({ dialog, user, project } : TeamDialogProps) 
 									onClick={async () => await link(team)}
 								/>
 							)) : (
-								<Description>
+								<p>
 									There aren't any teams that you haven't linked to the project.
-								</Description>
+								</p>
 							)
 						}
 					</Dialog.Column>
 
 					<Dialog.Row>
 						<Button focus onClick={() => linkTeamDialogRef.current?.hide()} type={"rounded"} usage={"form"} intent={"secondary"} className={"flex flex-grow justify-center"}>
-							<RemoveIcon className={"w-[16px] h-[16px]"}/>
+							<RemoveIcon className={"small-icon"}/>
 							Close
 						</Button>
 					</Dialog.Row>

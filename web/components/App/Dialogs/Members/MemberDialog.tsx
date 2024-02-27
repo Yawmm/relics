@@ -1,14 +1,12 @@
 import {Invite, Member, Project} from "@/lib/types";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import React, {FormEvent, RefObject, useRef, useState} from "react";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import MemberItem from "@/components/App/Projects/MemberItem";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import {kickProjectMember, leaveProject, revokeProjectInvite, sendProjectInvite} from "@/lib/projects";
-import {SentInviteItem} from "@/components/App/Projects/ProjectInviteItem";
+import {SentInviteItem} from "@/components/App/Projects/InviteItem";
 import {useRouter} from "next/navigation";
 import {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
 import InviteMemberDialog from "@/components/App/Dialogs/Members/InviteMemberDialog";
@@ -93,13 +91,13 @@ export default function MemberDialog({ dialog, project } : TeamDialogProps) {
 			<Dialog.Modal ref={dialog}>
 				<Dialog.Container>
 					<Dialog.Column>
-						<Title context={"dialog"}>
+						<h2>
 							Members
-						</Title>
+						</h2>
 
-						<Description>
+						<p>
 							Adjust the members of the project, adding or removing new users.
-						</Description>
+						</p>
 					</Dialog.Column>
 
 					<Dialog.Column>
@@ -125,13 +123,13 @@ export default function MemberDialog({ dialog, project } : TeamDialogProps) {
 						))}
 						
 						<Button onClick={() => inviteDialogRef.current?.show()} type={"square"} usage={"form"} intent={"primary"} className={"flex flex-grow justify-center"}>
-							<AddIcon className={"w-[16px] h-[16px]"}/>
+							<AddIcon className={"small-icon"}/>
 						</Button>
 					</Dialog.Column>
 					
 					<Dialog.Row>
 						<Button focus onClick={() => dialog.current?.hide()} type={"rounded"} usage={"form"} intent={"secondary"} className={"flex flex-grow justify-center"}>
-							<RemoveIcon className={"w-[16px] h-[16px]"}/>
+							<RemoveIcon className={"small-icon"}/>
 							Close
 						</Button>
 					</Dialog.Row>
@@ -141,6 +139,7 @@ export default function MemberDialog({ dialog, project } : TeamDialogProps) {
 			<InviteMemberDialog
 				dialog={inviteDialogRef}
 				error={inviteError}
+				setError={setInviteError}
 
 				onInvite={inviteUser}
 			/>

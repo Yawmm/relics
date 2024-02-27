@@ -24,19 +24,29 @@ const CORE_PROJECT_FIELDS = gql`
 					username
 					email
 				}
+				comments {
+					id
+					content
+					timestamp
+					owner {
+						userId
+						username
+						email
+					}
+				}
 			}
 		}
 		links {
-			id,
-			name,
+			id
+			name
 			owner {
-				userId,
-				username,
+				userId
+				username
 				email
 			},
 			members {
-				userId,
-				username,
+				userId
+				username
 				email
 			}
 		}
@@ -49,6 +59,16 @@ const CORE_PROJECT_FIELDS = gql`
 				userId
 				username
 				email
+			}
+			comments {
+				id
+				content
+				timestamp
+				owner {
+					userId
+					username
+					email
+				}
 			}
 		}
 	}

@@ -31,4 +31,9 @@ public class Task
     /// The owner of the task.
     /// </summary>
     public Member Owner { get; set; } = null!;
+
+    /// <summary>
+    /// The range of comments added to the task.
+    /// </summary>
+    public List<Comment> Comments { get; set; } = new();
 }

@@ -80,7 +80,7 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 				<div className={"fixed top-0 bottom-0 left-0 right-0 overflow-hidden z-40"}>
 					<motion.div
 						onClick={() => closeSheet()}
-						className={"fixed w-full h-full bg-zinc-900 z-40 bg-opacity-70"}
+						className={"fixed w-full h-full max-h-full bg-zinc-900 z-40 bg-opacity-70"}
 
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
@@ -105,7 +105,7 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 						<div className={"flex w-full h-fit justify-center items-end"}>
 							<div
 								ref={rootRef}
-								className={"flex flex-col w-full h-full gap-[24px] px-[36px] py-[24px] bg-zinc-800 rounded-t-2xl pointer-events-auto"}
+								className={"flex flex-col w-full md:w-[80%] lg:w-[60%] xl:w-[40%] h-full max-h-[90vh] overflow-y-auto gap-[24px] px-[36px] py-[24px] bg-zinc-800 rounded-t-2xl pointer-events-auto"}
 							>
 								<div onPointerDown={e => barDragControls.start(e)} className={"flex justify-center w-full"}>
 									<motion.div className={"w-[10%] h-[4px] bg-zinc-400 rounded-3xl"}/>

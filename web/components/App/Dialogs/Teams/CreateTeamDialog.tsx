@@ -1,6 +1,4 @@
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
 import ConfirmIcon from "@/components/Icons/ConfirmIcon";
@@ -34,13 +32,13 @@ export default function CreateTeamDialog({ dialog, user } : CreateProjectDialogP
         <Dialog.Modal ref={dialog}>
             <Dialog.Container>
                 <Dialog.Column>
-                    <Title context={"dialog"}>
+                    <h2>
                         Create team
-                    </Title>
+                    </h2>
 
-                    <Description>
+                    <p>
                         Create a new team item under the current logged in user.
-                    </Description>
+                    </p>
                 </Dialog.Column>
 
                 <Dialog.Form onSubmit={createTeam}>
@@ -57,11 +55,11 @@ export default function CreateTeamDialog({ dialog, user } : CreateProjectDialogP
 
                     <Dialog.Row>
                         <Button onClick={() => dialog.current?.hide()} type={"rounded"} usage={"other"} intent={"secondary"}>
-                            <RemoveIcon className={"w-[16px] h-[16px]"}/>
+                            <RemoveIcon className={"small-icon"}/>
                             Cancel
                         </Button>
                         <Button className={"w-full justify-center"} type={"rounded"} usage={"form"} intent={"primary"}>
-                            <ConfirmIcon className={"w-[16px] h-[16px]"}/>
+                            <ConfirmIcon className={"small-icon"}/>
                             Confirm
                         </Button>
                     </Dialog.Row>

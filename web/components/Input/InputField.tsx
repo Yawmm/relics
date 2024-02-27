@@ -47,7 +47,7 @@ export default function InputField(
 		<div className={`flex flex-col w-full px-[24px] py-[12px] bg-zinc-700 rounded-lg
 			focus-within:ring-4 focus-within:ring-zinc-500`
 		}>
-			<label htmlFor={title} className={"text-zinc-400 text-sm"}>
+			<label htmlFor={title}>
 				{title}{required && "*"}
 			</label>
 			<input
@@ -56,7 +56,7 @@ export default function InputField(
 				disabled={disabled}
 				minLength={minimum}
 				maxLength={maximum}
-				className={`text-zinc-200 text-md bg-transparent
+				className={` bg-transparent
 					autofill:fill-violet-800 autofill:rounded-md
 					placeholder:text-zinc-500
 					focus:outline-none`

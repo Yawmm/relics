@@ -1,9 +1,7 @@
-import React, {Dispatch, FormEvent, RefObject, SetStateAction, useEffect, useRef, useState} from "react";
+import React, {FormEvent, RefObject, useEffect, useRef, useState} from "react";
 import {Category, Project, User} from "@/lib/types";
 import {addTask} from "@/lib/tasks";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
 import RightArrowIcon from "@/components/Icons/RightArrowIcon";
@@ -65,13 +63,13 @@ export default function CreateTaskDialog({ dialog, user, project, category } : T
 			<Dialog.Modal ref={dialog}>
 				<Dialog.Container>
 					<Dialog.Column>
-						<Title context={"dialog"}>
+						<h2>
 							Create task
-						</Title>
+						</h2>
 
-						<Description>
+						<p>
 							Add a task to create a reminder for yourself.
-						</Description>
+						</p>
 					</Dialog.Column>
 
 					<Dialog.Form onSubmit={createTask}>
@@ -101,7 +99,7 @@ export default function CreateTaskDialog({ dialog, user, project, category } : T
 								className={"justify-between"}
 							>
 								{selectedCategory ? selectedCategory.name : "Category"}
-								<RightArrowIcon className={"w-[16px] h-[16px]"}/>
+								<RightArrowIcon className={"small-icon"}/>
 							</Button>
 							
 							<Toggle>
@@ -112,11 +110,11 @@ export default function CreateTaskDialog({ dialog, user, project, category } : T
 
 						<Dialog.Row>
 							<Button onClick={() => dialog.current?.hide()} type={"rounded"} usage={"form"} intent={"secondary"}>
-								<RemoveIcon className={"w-[16px] h-[16px]"}/>
+								<RemoveIcon className={"small-icon"}/>
 								Cancel
 							</Button>
 							<Button className={"w-full justify-center"} type={"rounded"} usage={"form"} intent={"primary"}>
-								<ConfirmIcon className={"w-[16px] h-[16px]"}/>
+								<ConfirmIcon className={"small-icon"}/>
 								Confirm
 							</Button>
 						</Dialog.Row>

@@ -1,7 +1,5 @@
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import {forwardRef, useImperativeHandle, useRef, useState} from "react";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import Button from "@/components/Input/Button";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import ConfirmIcon from "@/components/Icons/ConfirmIcon";
@@ -49,22 +47,22 @@ const ConfirmationDialog = forwardRef<ConfirmationDialogHandle, ConfirmationDial
         <Dialog.Modal ref={innerDialogRef}>
             <Dialog.Container>
                 <Dialog.Column>
-                    <Title context={"dialog"}>
+                    <h2>
                         {title}
-                    </Title>
+                    </h2>
 
-                    <Description>
+                    <p>
                         {warning}
-                    </Description>
+                    </p>
                 </Dialog.Column>
 
                 <Dialog.Row>
                     <Button focus onClick={dismiss} type={"rounded"} usage={"other"} intent={"secondary"}>
-                        <RemoveIcon className={"w-[16px] h-[16px]"}/>
+                        <RemoveIcon className={"small-icon"}/>
                         Cancel
                     </Button>
                     <Button onClick={confirm} className={"w-full justify-center"} type={"rounded"} usage={"form"} intent={"warn"}>
-                        <ConfirmIcon className={"w-[16px] h-[16px]"}/>
+                        <ConfirmIcon className={"small-icon"}/>
                         Confirm
                     </Button>
                 </Dialog.Row>

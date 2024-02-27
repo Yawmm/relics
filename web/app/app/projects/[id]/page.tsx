@@ -7,8 +7,6 @@ import AddIcon from "@/components/Icons/AddIcon";
 import {Category, Project, Task} from "@/lib/types";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Description from "@/components/Text/Description";
-import Subtitle from "@/components/Text/Subtitle";
 import CategoryItem from "@/components/App/Projects/CategoryItem";
 import {useUser} from "@/lib/hooks";
 import CreateTaskDialog from "@/components/App/Dialogs/Tasks/CreateTaskDialog";
@@ -112,49 +110,49 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 		<>
 			<LoadScreen isShown={loading} />
 
-			<div className={"flex flex-col min-h-full gap-[36px]"}>
-				<div className={"flex flex-col gap-[12px]"}>
+			<div className={"flex flex-col w-full min-h-full gap-[36px] py-gutter"}>
+				<div className={"flex flex-col gap-[12px] md:gap-[24px]"}>
 					<AppHeader
 						title={project?.name}
 						description={project?.description}
 					/>
 
-					<div className={"flex flex-row gap-[12px] px-[var(--gutter-x-margin)]"}>
+					<div className={"flex flex-row w-fit gap-[12px] px-gutter"}>
 						<Button onClick={() => itemDialogRef.current?.show()} type={"rounded"} usage={"form"} intent={"primary"}>
-							<AddIcon className={"w-[16px] h-[16px]"}/>
+							<AddIcon className={"small-icon"}/>
 							Create item
 						</Button>
 
 						<Button onClick={() => memberDialogRef.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
-							<UserIcon className={"w-[16px] h-[16px]"}/>
+							<UserIcon className={"small-icon"}/>
 						</Button>
 
 						<Button onClick={() => teamDialogRef.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
-							<TeamIcon className={"w-[16px] h-[16px]"}/>
+							<TeamIcon className={"small-icon"}/>
 						</Button>
 
 						{isOwner() && (
 							<Button onClick={deleteProject} type={"circle"} usage={"form"} intent={"secondary"}>
-								<DeleteIcon className={"w-[16px] h-[16px]"}/>
+								<DeleteIcon className={"small-icon"}/>
 							</Button>						
 						)}
 
 						<Button onClick={() => editProjectDialogRef.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
-							<EditIcon className={"w-[16px] h-[16px]"}/>
+							<EditIcon className={"small-icon"}/>
 						</Button>
 					</div>
 				</div>
 
 				<div className={"flex flex-col flex-grow gap-[36px]"}>
 					<div className={"flex flex-col gap-[12px]"}>
-						<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+						<h3 className={"px-gutter"}>
 							Categories
-						</Subtitle>
+						</h3>
 
-						<div className={"flex flex-row w-screen"}>
+						<div className={"flex flex-row w-screen md:w-full"}>
 							{project?.categories?.length && project?.categories.length > 0
 								? (
-									<div className={"flex flex-row w-screen overflow-x-auto snap-always snap-x gap-[12px] px-[var(--gutter-x-margin)] pb-[24px]"}>
+									<div className={"flex flex-row w-screen md:w-full overflow-x-auto gap-[12px] px-gutter pb-[24px]"}>
 										{project?.categories?.map((c: Category) =>
 											<CategoryItem
 												key={c.id}
@@ -168,10 +166,10 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 									</div>
 								)
 								: (
-									<div className={"px-[var(--gutter-x-margin)]"}>
-										<Description>
+									<div className={"px-gutter"}>
+										<p>
 											You haven't created any categories yet.
-										</Description>
+										</p>
 									</div>
 								)
 							}
@@ -179,11 +177,11 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 					</div>
 
 					<div className={"flex flex-col flex-grow gap-[12px]"}>
-						<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+						<h3 className={"px-gutter"}>
 							Tasks
-						</Subtitle>
+						</h3>
 
-						<div className={"flex flex-col gap-[12px] h-full px-[var(--gutter-x-margin)]"}>
+						<div className={"flex flex-col gap-[12px] h-full px-gutter"}>
 							{project?.tasks?.length && project.tasks.length > 0
 								? project?.tasks?.map((t: Task) => (
 									<TaskItem
@@ -195,9 +193,9 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 										className={"w-full h-fit"}
 									/>
 								)) : (
-									<Description>
+									<p>
 										You haven't created any separate tasks yet.
-									</Description>
+									</p>
 								)
 							}
 						</div>

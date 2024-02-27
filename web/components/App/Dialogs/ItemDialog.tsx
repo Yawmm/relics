@@ -1,7 +1,5 @@
 import React, {RefObject} from "react";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import Button from "@/components/Input/Button";
 import RightArrowIcon from "@/components/Icons/RightArrowIcon";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
@@ -26,13 +24,13 @@ export default function ItemDialog({ dialog, items } : ItemDialogProps) {
 		<Dialog.Modal ref={dialog}>
 			<Dialog.Container>
 				<Dialog.Column>
-					<Title context={"dialog"}>
+					<h2>
 						Create item
-					</Title>
+					</h2>
 
-					<Description>
+					<p>
 						Add a new item to the project.
-					</Description>
+					</p>
 				</Dialog.Column>
 
 				<Dialog.Column>
@@ -47,7 +45,7 @@ export default function ItemDialog({ dialog, items } : ItemDialogProps) {
 							intent={"primary"}
 						>
 							{item.name}
-							<RightArrowIcon className={"w-[16px] h-[16px]"}/>
+							<RightArrowIcon className={"small-icon"}/>
 						</Button>
 					))}
 				</Dialog.Column>
@@ -60,7 +58,7 @@ export default function ItemDialog({ dialog, items } : ItemDialogProps) {
 						usage={"form"}
 						intent={"secondary"}
 					>
-						<RemoveIcon className={"w-[16px] h-[16px]"}/>
+						<RemoveIcon className={"small-icon"}/>
 						Cancel
 					</Button>
 				</Dialog.Row>

@@ -8,6 +8,7 @@ import {setCookie} from "cookies-next";
 import {useRouter} from "next/navigation";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import {FormEvent, useState} from "react";
+import RightArrowIcon from "@/components/Icons/RightArrowIcon";
 
 export function SignUpForm() {
 	const [error, setError] = useState<string | null>(null);
@@ -60,14 +61,14 @@ export function SignUpForm() {
 			{error && (
 				<div className={"flex flex-row items-center gap-[12px] p-[12px] border-red-500 border-2 rounded-xl"}>
 					<RemoveIcon className={"text-red-500 w-[36px] h-[36px]"} />
-					<p className={"font-semibold text-sm text-red-500"}>{error}</p>
+					<p className={"text-red-500"}>{error}</p>
 				</div>
 			)}
 
 			<div className={"flex flex-col gap-[16px]"}>
 				<Button type={"rounded"} intent={"primary"} usage={"form"} className={"justify-center w-full"}>
-					<AddIcon className={"w-[16px] h-[16px]"}/>
-					Create account
+					<RightArrowIcon className={"w-[16px] h-[16px]"}/>
+					Sign up
 				</Button>
 			</div>
 		</form>

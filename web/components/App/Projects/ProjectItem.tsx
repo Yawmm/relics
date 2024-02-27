@@ -52,48 +52,48 @@ export default function ProjectItem({ project, confirmationDialog, className, ed
 	return (
 		<>
 			<div className={`flex flex-row items-center gap-[12px] bg-zinc-700 rounded-xl ${className}`}>
-				<button onClick={onClick} className={"flex flex-row p-[16px] flex-grow items-center gap-[12px] rounded-xl focus:outline-none focus:ring-4 focus:ring-zinc-500"}>
+				<button onClick={onClick} className={"card flex flex-row flex-grow items-center gap-[12px] rounded-xl focus:outline-none focus:ring-4 focus:ring-zinc-500"}>
 					<div>
-						<ProjectIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
+						<ProjectIcon className={"icon text-zinc-200"}/>
 					</div>
 					<div className={"flex flex-col flex-grow text-left"}>
-						<Header>
+						<h4>
 							{project.name}
-						</Header>
-						<Description>
+						</h4>
+						<p>
 							{project.description}
-						</Description>
+						</p>
 					</div>
 				</button>
 	
 				{editable && (
 					<Popover>
 						<button className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
-							<MoreIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
+							<MoreIcon className={"icon text-zinc-200"}/>
 						</button>
 						<Popover.Modal ref={popoverRef}>
 							<Popover.Container>
 								{isOwner() ? (
 									<Popover.Button focus onClick={remove}>
-										<Header className={"text-zinc-700"}>
+										<h4 className={"text-zinc-700"}>
 											Remove
-										</Header>
-										<DeleteIcon className={"w-[24px] h-[24px]"}/>
+										</h4>
+										<DeleteIcon className={"icon"}/>
 									</Popover.Button>
 								) : !isIndirectMember() && (
 									<Popover.Button focus onClick={leave}>
-										<Header className={"text-zinc-700"}>
+										<h4 className={"text-zinc-700"}>
 											Leave
-										</Header>
-										<SignOutIcon className={"w-[24px] h-[24px]"}/>
+										</h4>
+										<SignOutIcon className={"icon"}/>
 									</Popover.Button>
 								)}
 	
 								<Popover.Button onClick={() => editDialogRef.current?.show()}>
-									<Header className={"text-zinc-700"}>
+									<h4 className={"text-zinc-700"}>
 										Edit
-									</Header>
-									<EditIcon className={"w-[24px] h-[24px]"}/>
+									</h4>
+									<EditIcon className={"icon"}/>
 								</Popover.Button>
 							</Popover.Container>
 						</Popover.Modal>

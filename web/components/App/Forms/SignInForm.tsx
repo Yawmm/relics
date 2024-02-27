@@ -46,13 +46,13 @@ export function SignInForm() {
 			{error && (
 				<div className={"flex flex-row items-center gap-[12px] p-[12px] border-red-500 border-2 rounded-xl"}>
 					<RemoveIcon className={"text-red-500 w-[36px] h-[36px]"} />
-					<p className={"font-semibold text-sm text-red-500"}>{error}</p>
+					<p className={"text-red-500"}>{error}</p>
 				</div>
 			)}
 
 			<div className={"flex flex-col gap-[16px]"}>
 				<Button type={"rounded"} intent={"primary"} usage={"form"} className={"justify-center w-full"}>
-					<RightArrowIcon className={"w-[16px] h-[16px]"}/>
+					<RightArrowIcon className={"small-icon"}/>
 					Sign in
 				</Button>
 			</div>

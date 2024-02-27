@@ -1,7 +1,5 @@
 import React, {FormEvent, RefObject} from "react";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import InputField from "@/components/Input/InputField";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import Button from "@/components/Input/Button";
@@ -10,22 +8,23 @@ import ConfirmIcon from "@/components/Icons/ConfirmIcon";
 type InviteMemberDialogProps = {
 	dialog: RefObject<DialogModalHandle>,
 	error: string | undefined | null,
+	setError: React.Dispatch<React.SetStateAction<string | undefined | null>>,
 
 	onInvite: (event: FormEvent<HTMLFormElement>) => void,
 }
 
-export default function InviteMemberDialog({ dialog, error, onInvite } : InviteMemberDialogProps) {
+export default function InviteMemberDialog({ dialog, error, setError, onInvite } : InviteMemberDialogProps) {
 	return (
-		<Dialog.Modal ref={dialog}>
+		<Dialog.Modal onClose={() => setError(null)} ref={dialog}>
 			<Dialog.Container>
 				<Dialog.Column>
-					<Title>
+					<h2>
 						Invite user
-					</Title>
+					</h2>
 
-					<Description>
+					<p>
 						Invite a new user.
-					</Description>
+					</p>
 				</Dialog.Column>
 
 				<Dialog.Form onSubmit={onInvite}>
@@ -42,11 +41,11 @@ export default function InviteMemberDialog({ dialog, error, onInvite } : InviteM
 
 					<Dialog.Row>
 						<Button onClick={() => dialog.current?.hide()} type={"rounded"} usage={"other"} intent={"secondary"} className={"justify-center"}>
-							<RemoveIcon className={"w-[16px] h-[16px] text-zinc-200"}/>
+							<RemoveIcon className={"small-icon text-zinc-200"}/>
 							Cancel
 						</Button>
 						<Button type={"rounded"} usage={"form"} intent={"primary"} className={"flex flex-grow justify-center"}>
-							<ConfirmIcon className={"w-[16px] h-[16px] text-zinc-200"}/>
+							<ConfirmIcon className={"small-icon text-zinc-200"}/>
 							Confirm
 						</Button>
 					</Dialog.Row>

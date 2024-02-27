@@ -2,11 +2,9 @@
 
 import {useUser} from "@/lib/hooks";
 import HomeIcon from "@/components/Icons/HomeIcon";
-import Subtitle from "@/components/Text/Subtitle";
 import AppHeader from "@/components/App/AppHeader";
 import {Project, Task} from "@/lib/types";
 import ProjectItem from "@/components/App/Projects/ProjectItem";
-import Description from "@/components/Text/Description";
 import React, {useEffect, useRef, useState} from "react";
 import {useRouter} from "next/navigation";
 import TaskItem from "@/components/App/Projects/TaskItem";
@@ -59,7 +57,7 @@ export default function Home() {
 	return (
 		<>
 			<LoadScreen isShown={projectsLoading || tasksLoading} />
-			<div className={"flex flex-col w-full h-full gap-[36px]"}>
+			<div className={"flex flex-col w-full gap-[36px] py-gutter"}>
 				<AppHeader
 					title={"Home"}
 					description={`Welcome back, ${user?.username}, here's what's next.`}
@@ -67,11 +65,11 @@ export default function Home() {
 				/>
 
 				<div className={"flex flex-col gap-[12px]"}>
-					<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+					<h3 className={"px-gutter"}>
 						Recent projects
-					</Subtitle>
+					</h3>
 
-					<div className={"flex flex-row gap-[12px] w-full overflow-x-auto px-[var(--gutter-x-margin)] py-[8px] my-[-8px]"}>
+					<div className={"flex flex-row gap-[12px] w-full overflow-x-auto px-gutter py-[8px] my-[-8px]"}>
 						{projects.length > 0
 							? projects.map((p: Project) => (
 								<ProjectItem
@@ -84,20 +82,20 @@ export default function Home() {
 								/>
 							))
 							: (
-								<Description>
+								<p>
 									You haven't created any projects yet.
-								</Description>
+								</p>
 							)
 						}
 					</div>
 				</div>
 
 				<div className={"flex flex-col gap-[12px]"}>
-					<Subtitle className={"px-[var(--gutter-x-margin)]"}>
+					<h3 className={"px-gutter"}>
 						Recent tasks
-					</Subtitle>
+					</h3>
 
-					<div className={"flex flex-col gap-[12px] w-full overflow-x-auto px-[var(--gutter-x-margin)] py-[8px] my-[-8px]"}>
+					<div className={"flex flex-col gap-[12px] w-full overflow-x-auto px-gutter py-[8px] my-[-8px]"}>
 						{tasks.length > 0
 							? tasks.map((t: Task) => (
 								<TaskItem
@@ -107,9 +105,9 @@ export default function Home() {
 									className={"w-full h-fit"}
 								/>
 							)) : (
-								<Description>
+								<p>
 									You haven't created any tasks yet.
-								</Description>
+								</p>
 							)
 						}
 					</div>

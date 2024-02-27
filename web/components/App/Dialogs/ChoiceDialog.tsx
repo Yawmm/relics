@@ -1,7 +1,5 @@
 import React, {RefObject} from "react";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import Title from "@/components/Text/Title";
-import Description from "@/components/Text/Description";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
@@ -36,13 +34,13 @@ export default function ChoiceDialog({ dialog, options, onSelectOption, onResetO
 		<Dialog.Modal ref={dialog}>
 			<Dialog.Container>
 				<Dialog.Column>
-					<Title context={"dialog"}>
+					<h2>
 						Link item
-					</Title>
+					</h2>
 
-					<Description>
+					<p>
 						Choose one of the following options.
-					</Description>
+					</p>
 				</Dialog.Column>
 
 				<Dialog.Column>
@@ -56,7 +54,7 @@ export default function ChoiceDialog({ dialog, options, onSelectOption, onResetO
 							className={"justify-between"}
 						>
 							{o.name}
-							<AddIcon className={"w-[16px] h-[16px]"}/>
+							<AddIcon className={"small-icon"}/>
 						</Button>
 					))}
 
@@ -68,7 +66,7 @@ export default function ChoiceDialog({ dialog, options, onSelectOption, onResetO
 						className={"justify-between"}
 					>
 						None
-						<RemoveIcon className={"w-[16px] h-[16px]"}/>
+						<RemoveIcon className={"small-icon"}/>
 					</Button>
 				</Dialog.Column>
 
@@ -81,7 +79,7 @@ export default function ChoiceDialog({ dialog, options, onSelectOption, onResetO
 						intent={"secondary"}
 						className={"justify-center"}
 					>
-						<RemoveIcon className={"w-[16px] h-[16px]"}/>
+						<RemoveIcon className={"small-icon"}/>
 						Cancel
 					</Button>
 				</Dialog.Column>

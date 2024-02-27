@@ -1,6 +1,4 @@
 import {Invite} from "@/lib/types";
-import Header from "@/components/Text/Header";
-import Description from "@/components/Text/Description";
 import MoreIcon from "@/components/Icons/MoreIcon";
 import Popover, {PopoverModalHandle} from "@/components/Input/Modals/Popover";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
@@ -25,33 +23,33 @@ export function SentInviteItem({ invite, onRevoke, className } : SentProjectInvi
 
 	return (
 		<>
-			<div className={`flex flex-row items-center gap-[12px] p-[16px] bg-zinc-900 rounded-xl ${className}`}>
+			<div className={`card flex flex-row items-center gap-[12px] bg-zinc-900 rounded-xl ${className}`}>
 				<div className={"flex flex-row flex-grow items-center gap-[12px]"}>
 					<div>
-						<UserIcon className={"w-[24px] h-[24px] text-zinc-400"}/>
+						<UserIcon className={"icon text-zinc-400"}/>
 					</div>
 					<div className={"flex flex-col flex-grow text-left"}>
-						<Header className={"text-zinc-400"}>
+						<h4 className={"text-zinc-400"}>
 							{invite.username}
-						</Header>
-						<Description>
+						</h4>
+						<p>
 							{invite.email}
-						</Description>
+						</p>
 					</div>
 
 					<Popover>
 						<button className={"focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
 								onClick={() => popoverRef.current?.show()}>
-							<MoreIcon className={"w-[24px] h-[24px] text-zinc-400"}/>
+							<MoreIcon className={"icon text-zinc-400"}/>
 						</button>
 
 						<Popover.Modal ref={popoverRef}>
 							<Popover.Container>
 								<Popover.Button focus onClick={() => onRevoke(confirmationDialogRef, invite)}>
-									<Header className={"text-zinc-700"}>
+									<h4 className={"text-zinc-700"}>
 										Revoke
-									</Header>
-									<DeleteIcon className={"w-[24px] h-[24px]"}/>
+									</h4>
+									<DeleteIcon className={"icon"}/>
 								</Popover.Button>
 							</Popover.Container>
 						</Popover.Modal>
@@ -75,20 +73,24 @@ type ReceivedProjectInviteItemProps = {
 
 export function ReceivedInviteItem({onAccept, onDecline, content, className}: ReceivedProjectInviteItemProps) {
 	return (
-		<div className={`flex flex-row items-center gap-[12px] p-[16px] bg-zinc-700 rounded-xl ${className}`}>
-			<div className={"flex flex-row flex-grow items-center gap-[12px]"}>
-				{content}
-
-				<div className={"flex flex-row gap-[12px]"}>
-					<Button onClick={() => onDecline()}
-							className={"flex h-fit bg-zinc-800 hover:bg-zinc-600 active:bg-zinc-900"} intent={"other"}
-							type={"circle"} usage={"other"}>
-						<RemoveIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
-					</Button>
-					<Button onClick={() => onAccept()} className={"flex h-fit"} intent={"primary"} type={"circle"}
-							usage={"other"}>
-						<ConfirmIcon className={"w-[24px] h-[24px]"}/>
-					</Button>
+		<div className={"flex flex-row w-full bg-zinc-50 rounded-xl"}>
+			<div className={"flex flex-row h-full gap-[8px] p-[8px]"}>
+				<Button onClick={() => onDecline()}
+						className={"flex h-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900"}
+						intent={"other"}
+						type={"rounded"} usage={"other"}>
+					<RemoveIcon className={"small-icon text-zinc-200"}/>
+				</Button>
+				<Button onClick={() => onAccept()} className={"flex h-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900"}
+						intent={"primary"}
+						type={"rounded"}
+						usage={"other"}>
+					<ConfirmIcon className={"small-icon text-zinc-200"}/>
+				</Button>
+			</div>
+			<div className={`card flex flex-row w-full items-center gap-[12px] bg-zinc-700 rounded-xl ${className}`}>
+				<div className={"flex flex-row flex-grow items-center gap-[12px]"}>
+					{content}
 				</div>
 			</div>
 		</div>

@@ -4,7 +4,6 @@ import AppHeader from "@/components/App/AppHeader";
 import Button from "@/components/Input/Button";
 import UserIcon from "@/components/Icons/UserIcon";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
-import Subtitle from "@/components/Text/Subtitle";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import {deleteCookie} from "cookies-next";
 import {removeUser} from "@/lib/users";
@@ -31,35 +30,35 @@ export default function User() {
 	}
 
 	return (
-		<div className={"flex flex-col w-full gap-[36px]"}>
+		<div className={"flex flex-col w-full gap-[36px] py-gutter"}>
 			<AppHeader
 				title={"User profile"}
 				description={`Manage the different properties of your account.`}
 				icon={<UserIcon />}
 			/>
 
-			<div className={"flex flex-col gap-[12px] px-[var(--gutter-x-margin)]"}>
-				<Subtitle>
+			<div className={"flex flex-col gap-[12px] px-gutter"}>
+				<h3>
 					Settings
-				</Subtitle>
+				</h3>
 				<Button onClick={async () => push(`/app/user/${user?.id}`)} className={"items-center justify-between"} type={"square"} usage={"form"} intent={"tertiary"}>
-					<div className={"flex flex-row gap-[8px]"}>
-						<UserIcon className={"w-[18px] h-[18px]"}/>
+					<div className={"flex flex-row items-center gap-[8px] md:gap-[12px]"}>
+						<UserIcon className={"small-icon"}/>
 						Personal information
 					</div>
-					<RightArrowIcon className={"w-[18px] h-[18px]"}/>
+					<RightArrowIcon className={"small-icon"}/>
 				</Button>
 			</div>
 
-			<div className={"flex flex-col gap-[12px] px-[var(--gutter-x-margin)]"}>
-				<Subtitle>
+			<div className={"flex flex-col gap-[12px] px-gutter"}>
+				<h3>
 					Account
-				</Subtitle>
+				</h3>
 				<Button onClick={() => signOut()} type={"square"} usage={"form"} intent={"warn"}>
-					<SignOutIcon className={"w-[18px] h-[18px]"}/>
+					<SignOutIcon className={"small-icon"}/>
 				</Button>
 				<Button onClick={() => deleteUser()} type={"square"} usage={"form"} intent={"warn"}>
-					<DeleteIcon className={"w-[18px] h-[18px]"}/>
+					<DeleteIcon className={"small-icon"}/>
 				</Button>
 			</div>
 		</div>

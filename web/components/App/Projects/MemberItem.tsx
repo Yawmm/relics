@@ -1,6 +1,4 @@
 import {Member} from "@/lib/types";
-import Header from "@/components/Text/Header";
-import Description from "@/components/Text/Description";
 import MoreIcon from "@/components/Icons/MoreIcon";
 import Popover, {PopoverModalHandle} from "@/components/Input/Modals/Popover";
 import React, {RefObject, useCallback, useRef} from "react";
@@ -41,38 +39,38 @@ export default function MemberItem({ member, isOwner, onLeave, onKick, className
 
 	return (
 		<>
-			<div className={`flex flex-row items-center gap-[12px] p-[16px] bg-zinc-700 rounded-xl ${className}`}>
+			<div className={`card flex flex-row items-center gap-[12px] bg-zinc-700 rounded-xl ${className}`}>
 				<div className={"flex flex-row flex-grow items-center gap-[12px]"}>
 					<div>
 						{isOwner ? (
-							<KeyIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
+							<KeyIcon className={"icon text-zinc-200"}/>
 						) : (
-							<UserIcon className={"w-[24px] h-[24px] text-zinc-200"}/>
+							<UserIcon className={"icon text-zinc-200"}/>
 						)}
 					</div>
 					<div className={"flex flex-col flex-grow text-left"}>
-						<Header>
+						<h4>
 							{member.username}
-						</Header>
-						<Description>
+						</h4>
+						<p>
 							{member.email}
-						</Description>
+						</p>
 					</div>
 
 					{!isOwner && (
 						<Popover>
 							<button className={"focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
 									onClick={() => popoverRef.current?.toggle()}>
-								<MoreIcon className={"w-[24px] h-[24px] text-zinc-400"}/>
+								<MoreIcon className={"icon text-zinc-200"}/>
 							</button>
 
 							<Popover.Modal ref={popoverRef}>
 								<Popover.Container>
 									<Popover.Button focus onClick={() => submit()}>
-										<Header className={"text-zinc-700"}>
+										<h4 className={"text-zinc-700"}>
 											{isSelf() ? "Leave" : "Remove"}
-										</Header>
-										<SignOutIcon className={"w-[24px] h-[24px]"}/>
+										</h4>
+										<SignOutIcon className={"icon"}/>
 									</Popover.Button>
 								</Popover.Container>
 							</Popover.Modal>

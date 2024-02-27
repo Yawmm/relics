@@ -6,7 +6,7 @@ type ToggleProps = {
 
 const Toggle = ({ children } : ToggleProps) => {
     return (
-        <div className={"flex flex-row items-center gap-[12px] py-[8px] text-zinc-200 text-sm"}>
+        <div className={"flex flex-row items-center gap-[12px] py-[8px] text-zinc-200 text-sm md:text-base"}>
             {children}
         </div>
     );

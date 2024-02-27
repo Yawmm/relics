@@ -13,6 +13,16 @@ export const GET_TASKS_QUERY = gql`
 				username
 				email
 			}
+			comments {
+				id
+				content
+				timestamp
+				owner {
+					userId
+					username
+					email
+				}
+			}
 		}
 	}
 `;
@@ -30,6 +40,16 @@ export const TASKS_SUBSCRIPTION = gql`
 					userId,
 					username,
 					email
+				}
+				comments {
+					id
+					content
+					timestamp
+					owner {
+						userId
+						username
+						email
+					}
 				}
 			}
 		}
@@ -90,6 +110,46 @@ export async function editTask(
 			name: edit.name,
 			description: edit.description,
 			isFinished: edit.isFinished
+		}
+	});
+}
+
+export async function addComment(
+	content: string,
+	task: string,
+	owner: string
+) {
+	return client.mutate({
+		mutation: gql`
+        mutation AddComment($content: String!, $task: ID!, $owner: ID!) {
+			addComment(input: {content: $content, task: $task, owner: $owner}) {
+				uuid
+			}
+		}
+      `,
+		variables: {
+			content,
+			task,
+			owner,
+		}
+	});
+}
+
+export async function removeComment(
+	comment: string
+) {
+	await client.mutate({
+		mutation: gql`
+        mutation RemoveComment($comment: ID!) {
+			removeComment(input: {comment: $comment}) {
+				result {
+					success
+				}
+			}
+		}
+      `,
+		variables: {
+			comment
 		}
 	});
 }

@@ -76,7 +76,7 @@ const PopoverModal = forwardRef<PopoverModalHandle, PopoverModalProps>(({ classN
 	return (
 		<AnimatePresence>
 			{isShown && (
-				<div className={"flex"}>
+				<div className={"relative"}>
 					<motion.div
 						onClick={onCloseModal}
 						className={"fixed top-0 bottom-0 left-0 right-0 bg-zinc-900 bg-opacity-70 z-50"}

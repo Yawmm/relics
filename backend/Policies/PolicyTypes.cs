@@ -106,6 +106,11 @@ public class PolicyTypes
     public const string WriteTask = "WriteTask";
     
     /// <summary>
+    /// Whether or not the user is able to delete the given comment.
+    /// </summary>
+    public const string DeleteComment = "DeleteComment";
+    
+    /// <summary>
     /// Whether or not the user is able to delete the given task.
     /// </summary>
     public const string DeleteTask = "DeleteTask";

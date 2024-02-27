@@ -25,14 +25,24 @@ public class TaskDatabaseMigrator : IDatabaseMigrator
             CREATE TABLE IF NOT EXISTS 
             "Task" (
                 Id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-                Name VARCHAR(20),
+                Name VARCHAR(40),
                 Description TEXT,
                 IsFinished BOOL,
                       
-                OwnerId UUID REFERENCES "User"(Id),
+                OwnerId UUID REFERENCES "User"(Id) ON DELETE CASCADE,
                 ProjectId UUID REFERENCES "Project"(Id) ON DELETE CASCADE,
                 CategoryId UUID NULL REFERENCES "Category"(Id) ON DELETE CASCADE
             );
+
+            CREATE TABLE IF NOT EXISTS
+            "Comment" (
+                Id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+                Content TEXT,
+                Timestamp TIMESTAMP WITH TIME ZONE DEFAULT now(),
+                
+                OwnerId UUID REFERENCES "User"(Id) ON DELETE CASCADE,
+                TaskId UUID REFERENCES "Task"(Id) ON DELETE CASCADE
+            )
             """
         );
     }
@@ -44,6 +54,7 @@ public class TaskDatabaseMigrator : IDatabaseMigrator
     {
         _connection.Execute("""
             DROP TABLE IF EXISTS "Task";
+            DROP TABLE IF EXISTS "Comment";
             """
         );
     }

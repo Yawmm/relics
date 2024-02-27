@@ -39,33 +39,33 @@ export default function CategoryItem({ category, project, confirmationDialog, on
 	return (
 		<>
 			<div className={"flex flex-col h-fit min-w-full snap-center bg-zinc-800 border-zinc-700 border-2 rounded-lg"}>
-				<div className={"flex flex-row justify-between px-[24px] pt-[24px] pb-[16px]"}>
-					<Subtitle>
+				<div className={"flex flex-row justify-between px-[24px] md:px-[36px] pt-[24px] md:pt-[36px] pb-[16px] md:pb-[24px]"}>
+					<h3>
 						{category.name}
-					</Subtitle>
+					</h3>
 	
 					<div className={"flex flex-row gap-[12px] items-center"}>
 						<button className={"focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => onAdd && onAdd(category)}>
-							<AddIcon className={"w-[24px] h-[24px] text-zinc-200"} />
+							<AddIcon className={"icon text-zinc-200"} />
 						</button>
 						<Popover>
 							<button className={"flex focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
-								<MoreIcon className={"w-[24px] h-[24px] text-zinc-200"} />
+								<MoreIcon className={"icon text-zinc-200"} />
 							</button>
 	
 							<Popover.Modal ref={popoverRef}>
 								<Popover.Container>
 									<Popover.Button focus onClick={async () => await deleteCategory()}>
-										<Header className={"text-zinc-700"}>
+										<h4 className={"text-zinc-700"}>
 											Remove
-										</Header>
-										<DeleteIcon className={"w-[24px] h-[24px]"}/>
+										</h4>
+										<DeleteIcon className={"icon"}/>
 									</Popover.Button>
 									<Popover.Button onClick={() => editDialogRef.current?.show()}>
-										<Header className={"text-zinc-700"}>
+										<h4 className={"text-zinc-700"}>
 											Edit
-										</Header>
-										<EditIcon className={"w-[24px] h-[24px]"}/>
+										</h4>
+										<EditIcon className={"icon"}/>
 									</Popover.Button>
 								</Popover.Container>
 							</Popover.Modal>
@@ -73,7 +73,7 @@ export default function CategoryItem({ category, project, confirmationDialog, on
 					</div>
 				</div>
 	
-				<div className={"flex flex-col px-[24px] pb-[24px] pt-[8px] gap-[12px]"}>
+				<div className={"flex flex-col px-[24px] md:px-[36px] pb-[24px] md:pb-[26px] pt-[8px] md:pt-[12px] gap-[12px]"}>
 					{category.tasks.length > 0
 						? category.tasks?.map(t =>
 							<TaskItem

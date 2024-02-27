@@ -93,10 +93,19 @@ export type Task = {
 	description: string,
 	isFinished: boolean,
 
-	owner: Member
+	owner: Member,
+	comments: Comment[]
 }
 
 export type TaskNotification = {
 	type: NotificationType,
 	task: Task
+}
+
+export type Comment = {
+	id: string,
+	content: string,
+	timestamp: Date,
+
+	owner: Member
 }
