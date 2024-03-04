@@ -36,6 +36,7 @@ public static class GraphServiceCollection
         builder.AddMutationType<Mutation>()
             .AddTypeExtension<UserMutation>()
             .AddTypeExtension<ProjectMutation>()
+            .AddTypeExtension<TagMutation>()
             .AddTypeExtension<CategoryMutation>()
             .AddTypeExtension<TeamMutation>()
             .AddTypeExtension<TaskMutation>();

@@ -42,7 +42,27 @@ public class TaskDatabaseMigrator : IDatabaseMigrator
                 
                 OwnerId UUID REFERENCES "User"(Id) ON DELETE CASCADE,
                 TaskId UUID REFERENCES "Task"(Id) ON DELETE CASCADE
-            )
+            );
+            
+            CREATE TABLE IF NOT EXISTS
+            "Tag" (
+                Id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
+                Name VARCHAR(20),
+                Color VARCHAR(7),
+                
+                ProjectId UUID REFERENCES "Project"(Id) ON DELETE CASCADE
+            );
+            
+            CREATE TABLE IF NOT EXISTS
+            "Label" (
+                TaskId UUID NOT NULL REFERENCES "Task"(Id) ON DELETE CASCADE,
+                TagId UUID NOT NULL REFERENCES "Tag"(Id) ON DELETE CASCADE
+            );
+            
+            ALTER TABLE "Label" DROP CONSTRAINT IF EXISTS Link_unique_label_constraint;
+            ALTER TABLE "Label"
+                ADD CONSTRAINT Link_unique_label_constraint
+                    UNIQUE(TaskId, TagId);
             """
         );
     }

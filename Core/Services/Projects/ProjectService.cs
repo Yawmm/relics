@@ -7,6 +7,7 @@ using Backend.Models.Teams;
 using Backend.Models.Users;
 using Backend.Utility;
 using Dapper;
+using Tag = Backend.Models.Projects.Tag;
 using Task = Backend.Models.Tasks.Task;
 
 namespace Backend.Core.Services.Projects;
@@ -36,7 +37,7 @@ public interface IProjectService
     /// <param name="task">The <see cref="Guid"/> of the <see cref="Task"/> under the <see cref="Project"/>.</param>
     /// <param name="category">The <see cref="Guid"/> of the <see cref="Category"/> under the <see cref="Project"/>.</param>
     /// <returns>The retrieved <see cref="Guid"/> of the matching project.</returns>
-    Guid? Identify(Guid? task = null, Guid? category = null);
+    Guid? Identify(Guid? task = null, Guid? category = null, Guid? tag = null);
     
     /// <summary>
     /// Retrieve a <see cref="Project"/> by the given <see cref="Guid"/>.
@@ -122,7 +123,7 @@ public class ProjectService : IProjectService
     }
     
     /// <inheritdoc cref="IProjectService.Identify"/>>
-    public Guid? Identify(Guid? task = null, Guid? category = null)
+    public Guid? Identify(Guid? task = null, Guid? category = null, Guid? tag = null)
     {
         Guid? result = null;
         
@@ -144,6 +145,16 @@ public class ProjectService : IProjectService
                 WHERE c.Id = @Category;
                 """, 
                 new { category }
+            );
+        
+        if (tag is not null)
+            result = _connection.QuerySingleOrDefault<Guid>(
+                """
+                SELECT t.ProjectId
+                FROM "Tag" t
+                WHERE t.Id = @Tag;
+                """,
+                new { tag }
             );
 
         return result == Guid.Empty ? null : result;
@@ -169,17 +180,21 @@ public class ProjectService : IProjectService
                 pc.*,
                 pct.*,                
                 pcto.Id, pcto.Username, pcto.Email,
+                pctlg.*,
                 pctc.Id, pctc.Content, pctc.Timestamp,
                 pctco.Id, pctco.Username, pctco.Email,
-                
+            
                 pt.*,
                 pto.Id, pto.Username, pto.Email,
+                ptlg.*,
                 ptc.Id, ptc.Content, ptc.Timestamp,
                 ptco.Id, ptco.Username, ptco.Email,
                 
                 plt.*,
                 plto.Id, plto.Username, plto.Email,
                 pltmu.Id, pltmu.Username, pltmu.Email,
+                
+                pg.*,
                 
                 po.Id, po.Username, po.Email, 
                 pmu.Id, pmu.Username, pmu.Email,
@@ -190,8 +205,11 @@ public class ProjectService : IProjectService
                     LEFT JOIN "User" pmu ON pm.UserId = pmu.Id
                 LEFT JOIN "ProjectInvite" pi ON pi.ProjectId = p.Id
                     LEFT JOIN "User" piu ON pi.UserId = piu.Id
+                LEFT JOIN "Tag" pg ON pg.ProjectId = p.Id
                 LEFT JOIN "Task" pt ON pt.ProjectId = p.Id AND pt.CategoryId IS NULL
                     LEFT JOIN "User" pto ON pt.OwnerId = pto.Id
+                    LEFT JOIN "Label" ptl ON ptl.TaskId = pt.Id
+                        LEFT JOIN "Tag" ptlg ON ptl.TagId = ptlg.Id
                     LEFT JOIN "Comment" ptc ON ptc.TaskId = pt.Id
                         LEFT JOIN "User" ptco ON ptc.OwnerId = ptco.Id
                 LEFT JOIN "Link" pl ON pl.ProjectId = p.id
@@ -202,6 +220,8 @@ public class ProjectService : IProjectService
                 LEFT JOIN "Category" pc ON pc.ProjectId = p.Id
                     LEFT JOIN "Task" pct ON pct.CategoryId = pc.Id
                         LEFT JOIN "User" pcto ON pct.OwnerId = pcto.Id
+                        LEFT JOIN "Label" pctl ON pctl.TaskId = pct.Id
+                            LEFT JOIN "Tag" pctlg ON pctl.TagId = pctlg.Id
                         LEFT JOIN "Comment" pctc ON pctc.TaskId = pct.Id
                             LEFT JOIN "User" pctco ON pctc.OwnerId = pctco.Id
             WHERE p.Id = @Id
@@ -209,9 +229,10 @@ public class ProjectService : IProjectService
             types: new []
             {
                 typeof(Project),
-                typeof(Category), typeof(Task), typeof(User), typeof(Comment), typeof(User),
-                typeof(Task), typeof(User), typeof(Comment), typeof(User),
+                typeof(Category), typeof(Task), typeof(User), typeof(Tag), typeof(Comment), typeof(User),
+                typeof(Task), typeof(User), typeof(Tag), typeof(Comment), typeof(User),
                 typeof(Team), typeof(User), typeof(User),
+                typeof(Tag),
                 typeof(User),
                 typeof(User),
                 typeof(User)
@@ -239,11 +260,13 @@ public class ProjectService : IProjectService
                 pc.*,
                 pct.*,
                 pcto.Id, pcto.Username, pcto.Email,
+                pctlg.*,
                 pctc.Id, pctc.Content, pctc.Timestamp,
                 pctco.Id, pctco.Username, pctco.Email,
                 
                 pt.*,
                 pto.Id, pto.Username, pto.Email,
+                ptlg.*,
                 ptc.Id, ptc.Content, ptc.Timestamp,
                 ptco.Id, ptco.Username, ptco.Email,
                 
@@ -251,6 +274,8 @@ public class ProjectService : IProjectService
                 plto.Id, plto.Username, plto.Email,
                 pltmu.Id, pltmu.Username, pltmu.Email,
                 
+                pg.*,
+               
                 po.Id, po.Username, po.Email,
                 pmu.Id, pmu.Username, pmu.Email,
                 piu.Id, piu.Username, piu.Email
@@ -265,8 +290,11 @@ public class ProjectService : IProjectService
                             LEFT JOIN "User" pmu ON pm.UserId = pmu.Id
                         LEFT JOIN "ProjectInvite" pi ON pi.ProjectId = p.Id
                             LEFT JOIN "User" piu ON pi.UserId = piu.Id
+                        LEFT JOIN "Tag" pg ON pg.ProjectID = p.Id
                         LEFT JOIN "Task" pt ON pt.ProjectId = p.Id AND pt.CategoryId IS NULL
                             LEFT JOIN "User" pto ON pt.OwnerId = pto.Id
+                            LEFT JOIN "Label" ptl ON ptl.TaskId = pt.Id
+                                    LEFT JOIN "Tag" ptlg ON ptl.TagId = ptlg.Id
                             LEFT JOIN "Comment" ptc ON ptc.TaskId = pt.Id
                                 LEFT JOIN "User" ptco ON ptc.OwnerId = ptco.Id
                         LEFT JOIN "Link" pl ON pl.ProjectId = p.id
@@ -277,15 +305,18 @@ public class ProjectService : IProjectService
                         LEFT JOIN "Category" pc ON pc.ProjectId = p.Id
                             LEFT JOIN "Task" pct ON pct.CategoryId = pc.Id
                                 LEFT JOIN "User" pcto ON pct.OwnerId = pcto.Id
+                                LEFT JOIN "Label" pctl ON pctl.TaskId = pct.Id
+                                    LEFT JOIN "Tag" pctlg ON pctl.TagId = pctlg.Id
                                 LEFT JOIN "Comment" pctc ON pctc.TaskId = pct.Id
                                     LEFT JOIN "User" pctco ON pctc.OwnerId = pctco.Id
             """,
             types: new []
             {
                 typeof(Project),
-                typeof(Category), typeof(Task), typeof(User), typeof(Comment), typeof(User),
-                typeof(Task), typeof(User), typeof(Comment), typeof(User),
+                typeof(Category), typeof(Task), typeof(User), typeof(Tag), typeof(Comment), typeof(User),
+                typeof(Task), typeof(User), typeof(Tag), typeof(Comment), typeof(User),
                 typeof(Team), typeof(User), typeof(User),
+                typeof(Tag),
                 typeof(User),
                 typeof(User),
                 typeof(User)
@@ -456,8 +487,12 @@ public class ProjectService : IProjectService
                 // Link owner of task to task reference
                 if (objects[3] is User categoryTaskOwner)
                     categoryTaskRef.Owner = new Member(categoryTaskOwner);
+
+                // Link tag of task to task reference
+                if (objects[4] is Tag categoryTaskTag && categoryTaskRef.Tags.All(t => t.Id != categoryTaskTag.Id))
+                    categoryTaskRef.Tags.Add(categoryTaskTag);
                 
-                if (objects[4] is Comment categoryTaskComment && categoryTaskRef.Comments.All(c => c.Id != categoryTaskComment.Id)) 
+                if (objects[5] is Comment categoryTaskComment && categoryTaskRef.Comments.All(c => c.Id != categoryTaskComment.Id)) 
                 {
                     // Retrieve comment reference
                     var categoryTaskCommentRef = mapCache.Retrieve(categoryTaskComment.Id, categoryTaskComment);
@@ -466,13 +501,13 @@ public class ProjectService : IProjectService
                     categoryTaskRef.Comments.Add(categoryTaskCommentRef);
 
                     // Link owner of comment to comment reference
-                    if (objects[5] is User categoryTaskCommentOwner)
+                    if (objects[6] is User categoryTaskCommentOwner)
                         categoryTaskCommentRef.Owner = new Member(categoryTaskCommentOwner);
                 }
             }
         }
 
-        if (objects[6] is Task task)
+        if (objects[7] is Task task)
         {
             // Retrieve task reference
             var taskRef = mapCache.Retrieve(task.Id, task);
@@ -482,10 +517,14 @@ public class ProjectService : IProjectService
                 projectRef.Tasks.Add(taskRef);
 
             // Link owner of task to task reference
-            if (objects[7] is User taskOwner)
+            if (objects[8] is User taskOwner)
                 taskRef.Owner = new Member(taskOwner);
             
-            if (objects[8] is Comment taskComment && taskRef.Comments.All(c => c.Id != taskComment.Id)) 
+            // Link tag of task to task reference
+            if (objects[9] is Tag taskTag && taskRef.Tags.All(t => t.Id != taskTag.Id))
+                taskRef.Tags.Add(taskTag);
+            
+            if (objects[10] is Comment taskComment && taskRef.Comments.All(c => c.Id != taskComment.Id)) 
             {
                 // Retrieve comment reference
                 var taskCommentRef = mapCache.Retrieve(taskComment.Id, taskComment);
@@ -494,12 +533,12 @@ public class ProjectService : IProjectService
                 taskRef.Comments.Add(taskCommentRef);
 
                 // Link owner of comment to comment reference
-                if (objects[9] is User taskCommentOwner)
+                if (objects[11] is User taskCommentOwner)
                     taskCommentRef.Owner = new Member(taskCommentOwner);
             }
         }
 
-        if (objects[10] is Team team)
+        if (objects[12] is Team team)
         {
             var link = new Link
             {
@@ -515,24 +554,28 @@ public class ProjectService : IProjectService
                 projectRef.Links.Add(linkRef);
 
             // Link owner of link to link reference
-            if (objects[11] is User teamOwner)
+            if (objects[13] is User teamOwner)
                 linkRef.Owner = new Member(teamOwner);
             
             // Add member to link reference
-            if (objects[12] is User teamMember && linkRef.Members.All(m => m.UserId != teamMember.Id))
+            if (objects[14] is User teamMember && linkRef.Members.All(m => m.UserId != teamMember.Id))
                 linkRef.Members.Add(new Member(teamMember));
         }
         
+        // Add tag to project reference
+        if (objects[15] is Tag tag && projectRef.Tags.All(t => t.Id != tag.Id))
+            projectRef.Tags.Add(tag);
+        
         // Link owner of project to project reference
-        if (objects[13] is User owner) 
+        if (objects[16] is User owner) 
             projectRef.Owner = new Member(owner);
         
         // Add member to project reference
-        if (objects[14] is User member && projectRef.Members.All(m => m.UserId != member.Id))
+        if (objects[17] is User member && projectRef.Members.All(m => m.UserId != member.Id))
             projectRef.Members.Add(new Member(member));
         
         // Add invite to project reference
-        if (objects[15] is User invite && projectRef.Invites.All(i => i.UserId != invite.Id))
+        if (objects[18] is User invite && projectRef.Invites.All(i => i.UserId != invite.Id))
             projectRef.Invites.Add(new Invite(invite));
 
         return projectRef;

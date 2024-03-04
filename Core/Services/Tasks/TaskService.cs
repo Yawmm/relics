@@ -1,5 +1,6 @@
 using System.Data;
 using Backend.Errors;
+using Backend.Models.Projects;
 using Backend.Models.Tasks;
 using Backend.Models.Users;
 using Backend.Utility;
@@ -129,24 +130,30 @@ public class TaskService : ITaskService
             throw new ItemNotFoundError($"Task {id}");
 
         var cache = new MapCache();
-        var result = _connection.Query<Task, User, Comment, User, Task>(
+        var result = _connection.Query<Task, User, Tag, Comment, User, Task>(
             """
             SELECT t.*,
                     o.Id, o.Username, o.Email,
                     
+                    lt.*,
                     c.Id, c.Content, c.Timestamp,
                     co.Id, co.Username, co.Email
             FROM "Task" t 
                 LEFT JOIN "User" o ON t.OwnerId = o.Id
+                LEFT JOIN "Label" l ON l.TaskId = t.Id
+                    LEFT JOIN "Tag" lt ON l.TagId = lt.Id
                 LEFT JOIN "Comment" c ON c.TaskId = t.Id
                     LEFT JOIN "User" co ON c.OwnerId = co.Id
             WHERE t.Id = @Id
             """,
-            (task, owner, comment, author) =>
+            (task, owner, tag, comment, author) =>
             {
                 var taskRef = cache.Retrieve(task.Id, task);
                 if (owner is not null) 
                     taskRef.Owner = new Member(owner);
+                
+                if (tag is not null && taskRef.Tags.All(t => t.Id != tag.Id)) 
+                    taskRef.Tags.Add(tag);
 
                 if (comment is not null && taskRef.Comments.All(c => c.Id != comment.Id))
                 {
@@ -173,24 +180,30 @@ public class TaskService : ITaskService
     public List<Task> All(Guid userId)
     {
         var cache = new MapCache();
-        var result = _connection.Query<Task, User, Comment, User, Task>(
+        var result = _connection.Query<Task, User, Tag, Comment, User, Task>(
             """
             SELECT t.*, 
                    o.Id, o.Username, o.Email,
                    
+                   lt.*,
                    c.Id, c.Content, c.Timestamp,
                    co.Id, co.Username, co.Email
             FROM "Task" t 
                 LEFT JOIN "User" o ON t.OwnerId = o.Id
+                LEFT JOIN "Label" l ON l.TaskId = t.Id
+                    LEFT JOIN "Tag" lt ON l.TagId = lt.Id
                 LEFT JOIN "Comment" c ON c.TaskId = t.Id
                     LEFT JOIN "User" co ON c.OwnerId = co.Id
             WHERE t.OwnerId = @UserId
             """,
-            (task, owner, comment, author) =>
+            (task, owner, tag, comment, author) =>
             {
                 var taskRef = cache.Retrieve(task.Id, task);
                 if (owner is not null) 
                     taskRef.Owner = new Member(owner);
+                
+                if (tag is not null && taskRef.Tags.All(t => t.Id != tag.Id)) 
+                    taskRef.Tags.Add(tag);
 
                 if (comment is not null && taskRef.Comments.All(c => c.Id != comment.Id))
                 {

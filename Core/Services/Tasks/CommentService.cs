@@ -4,7 +4,6 @@ using Backend.Models.Tasks;
 using Backend.Models.Users;
 using Backend.Utility;
 using Dapper;
-using Task = Backend.Models.Tasks.Task;
 
 namespace Backend.Core.Services.Tasks;
 

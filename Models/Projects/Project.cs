@@ -47,7 +47,13 @@ public class Project
     /// <summary>
     /// The range of tasks of the project, not linked to a category.
     /// </summary>
+    [UseFiltering]
     public List<Task> Tasks { get; set; } = new();
+    
+    /// <summary>
+    /// The range of tags of the project.
+    /// </summary>
+    public List<Tag> Tags { get; set; } = new();
     
     /// <summary>
     /// The range of categories of the project.
