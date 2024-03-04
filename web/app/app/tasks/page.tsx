@@ -56,7 +56,7 @@ export default function Tasks() {
 	return (
 		<>
 			<LoadScreen isShown={loading} />
-			<div className={"flex flex-col w-full h-full gap-[36px] py-gutter"}>
+			<div className={"flex flex-col w-full h-fit gap-[36px] py-gutter"}>
 				<div className={"flex flex-col gap-[12px]"}>
 					<AppHeader
 						title={"Tasks"}

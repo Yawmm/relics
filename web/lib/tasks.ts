@@ -1,10 +1,9 @@
 import client from "@/apollo-client";
 import {gql} from "@apollo/client";
 
-export const GET_TASKS_QUERY = gql`
-	query Tasks($id: ID!) {
-		tasks(user: $id) {
-			id
+export const CORE_TASK_FIELDS = gql`
+	fragment CoreTaskFields on Task {
+		id
 			name
 			description
 			isFinished
@@ -12,6 +11,11 @@ export const GET_TASKS_QUERY = gql`
 				userId
 				username
 				email
+			}
+			tags {
+				id
+				name
+				color
 			}
 			comments {
 				id
@@ -23,34 +27,25 @@ export const GET_TASKS_QUERY = gql`
 					email
 				}
 			}
+	}
+`;
+
+export const GET_TASKS_QUERY = gql`
+	${CORE_TASK_FIELDS}
+	query Tasks($id: ID!) {
+		tasks(user: $id) {
+			...CoreTaskFields
 		}
 	}
 `;
 
 export const TASKS_SUBSCRIPTION = gql`
+	${CORE_TASK_FIELDS}
 	subscription TasksSubscription($id: ID!) {
 		userTasks(user: $id) {
 			type,
 			task {
-				id
-				name
-				description
-				isFinished,
-				owner { 
-					userId,
-					username,
-					email
-				}
-				comments {
-					id
-					content
-					timestamp
-					owner {
-						userId
-						username
-						email
-					}
-				}
+				...CoreTaskFields
 			}
 		}
 	}

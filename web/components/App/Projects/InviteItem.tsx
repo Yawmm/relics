@@ -19,6 +19,8 @@ type SentProjectInviteItemProps = {
 
 export function SentInviteItem({ invite, onRevoke, className } : SentProjectInviteItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
+	const anchorRef = useRef<HTMLButtonElement>(null);
+
 	const confirmationDialogRef = useRef<ConfirmationDialogHandle>(null);
 
 	return (
@@ -38,12 +40,12 @@ export function SentInviteItem({ invite, onRevoke, className } : SentProjectInvi
 					</div>
 
 					<Popover>
-						<button className={"focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
+						<button ref={anchorRef} className={"focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
 								onClick={() => popoverRef.current?.show()}>
 							<MoreIcon className={"icon text-zinc-400"}/>
 						</button>
 
-						<Popover.Modal ref={popoverRef}>
+						<Popover.Modal ref={popoverRef} anchor={anchorRef}>
 							<Popover.Container>
 								<Popover.Button focus onClick={() => onRevoke(confirmationDialogRef, invite)}>
 									<h4 className={"text-zinc-700"}>
@@ -62,7 +64,7 @@ export function SentInviteItem({ invite, onRevoke, className } : SentProjectInvi
 	);
 }
 
-type ReceivedProjectInviteItemProps = {
+type ReceivedInviteItemProps = {
 	onAccept: () => void,
 	onDecline: () => void,
 
@@ -71,17 +73,17 @@ type ReceivedProjectInviteItemProps = {
 	className?: string,
 }
 
-export function ReceivedInviteItem({onAccept, onDecline, content, className}: ReceivedProjectInviteItemProps) {
+export function ReceivedInviteItem({onAccept, onDecline, content, className}: ReceivedInviteItemProps) {
 	return (
 		<div className={"flex flex-row w-full bg-zinc-50 rounded-xl"}>
-			<div className={"flex flex-row h-full gap-[8px] p-[8px]"}>
+			<div className={"flex flex-row flex-grow min-h-full gap-[8px] p-[8px]"}>
 				<Button onClick={() => onDecline()}
-						className={"flex h-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900"}
+						className={"flex flex-grow h-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900"}
 						intent={"other"}
 						type={"rounded"} usage={"other"}>
 					<RemoveIcon className={"small-icon text-zinc-200"}/>
 				</Button>
-				<Button onClick={() => onAccept()} className={"flex h-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900"}
+				<Button onClick={() => onAccept()} className={"flex flex-grow h-full bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-900"}
 						intent={"primary"}
 						type={"rounded"}
 						usage={"other"}>

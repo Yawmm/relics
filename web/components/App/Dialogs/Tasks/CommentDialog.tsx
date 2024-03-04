@@ -13,7 +13,7 @@ type CommentDialogProps = {
 	task: Task | undefined | null
 }
 
-export default function CreateCommentDialog({ dialog, user, task } : CommentDialogProps) {
+export default function CommentDialog({ dialog, user, task } : CommentDialogProps) {
 	async function createComment(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		
@@ -39,7 +39,7 @@ export default function CreateCommentDialog({ dialog, user, task } : CommentDial
 				<Dialog.Container>
 					<Dialog.Column>
 						<h2>
-							Create comment
+							Comment
 						</h2>
 
 						<p>

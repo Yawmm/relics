@@ -1,6 +1,6 @@
 using Backend.Models.General;
 
-namespace Backend.Models.Users;
+namespace Backend.Models.Teams;
 
 /// <summary>
 /// A configuration class used to define the changes of a <see cref="Teams.Link"/> in a <see cref="Projects.Project"/>.

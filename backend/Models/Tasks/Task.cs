@@ -1,3 +1,4 @@
+using Backend.Models.Projects;
 using Backend.Models.Users;
 
 namespace Backend.Models.Tasks;
@@ -36,4 +37,9 @@ public class Task
     /// The range of comments added to the task.
     /// </summary>
     public List<Comment> Comments { get; set; } = new();
+    
+    /// <summary>
+    /// The range of tags added to the task.
+    /// </summary>
+    public List<Tag> Tags { get; set; } = new();
 }

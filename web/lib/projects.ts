@@ -1,5 +1,7 @@
 import client from "@/apollo-client";
 import {gql} from "@apollo/client";
+import {ProjectFilter} from "@/components/App/Dialogs/Projects/FilterProjectDialog";
+import {CORE_TASK_FIELDS} from "@/lib/tasks";
 
 const CORE_PROJECT_FIELDS = gql`
 	fragment CoreProjectFields on Project {
@@ -11,30 +13,14 @@ const CORE_PROJECT_FIELDS = gql`
 			username
 			email
 		}
+		tags {
+			id
+			name
+			color
+		}
 		categories {
 			id
 			name
-			tasks {
-				id
-				name
-				description
-				isFinished
-				owner {
-					userId
-					username
-					email
-				}
-				comments {
-					id
-					content
-					timestamp
-					owner {
-						userId
-						username
-						email
-					}
-				}
-			}
 		}
 		links {
 			id
@@ -50,32 +36,12 @@ const CORE_PROJECT_FIELDS = gql`
 				email
 			}
 		}
-		tasks {
-			id
-			name
-			description
-			isFinished
-			owner {
-				userId
-				username
-				email
-			}
-			comments {
-				id
-				content
-				timestamp
-				owner {
-					userId
-					username
-					email
-				}
-			}
-		}
 	}
 `;
 
 export const GET_PROJECT_QUERY = gql`
 	${CORE_PROJECT_FIELDS}
+	${CORE_TASK_FIELDS}
 	query Project($id: ID!) {
 		project(project: $id) {
 			...CoreProjectFields
@@ -89,21 +55,73 @@ export const GET_PROJECT_QUERY = gql`
 				username
 				email
 			}
+			categories {
+				id
+				name
+				tasks {
+					...CoreTaskFields
+				}
+			}
+			tasks {
+				...CoreTaskFields
+			}
+		}
+	}
+`;
+
+export const GET_PROJECT_FILTER_QUERY = gql`
+	${CORE_PROJECT_FIELDS}
+	${CORE_TASK_FIELDS}
+	query Project($id: ID!, $tags: [UUID]) {
+		project(project: $id) {
+			...CoreProjectFields
+			members {
+				userId
+				username
+				email
+			}
+			invites {
+				userId
+				username
+				email
+			}
+			categories {
+				id
+				name
+				tasks(where: { tags: { some: { id: { in: $tags }}}}) {
+					...CoreTaskFields
+				}
+			}
+			tasks(where: { tags: { some: { id: { in: $tags }}}}) {
+				...CoreTaskFields
+			}
 		}
 	}
 `;
 
 export const GET_PROJECTS_QUERY = gql`
 	${CORE_PROJECT_FIELDS}
+	${CORE_TASK_FIELDS}
 	query Projects($userId: ID!) {
 		projects(user: $userId) {
 			...CoreProjectFields
+			categories {
+				id
+				name
+				tasks {
+					...CoreTaskFields
+				}
+			}
+			tasks {
+				...CoreTaskFields
+			}
 		}
 	}
 `;
 
 export const PROJECT_SUBSCRIPTION = gql`
 	${CORE_PROJECT_FIELDS}
+	${CORE_TASK_FIELDS}
 	subscription ProjectSubscription($id: ID!) {
 		project(project: $id) {
 			type,
@@ -118,6 +136,49 @@ export const PROJECT_SUBSCRIPTION = gql`
 					userId
 					username
 					email
+				}
+				categories {
+					id
+					name
+					tasks {
+						...CoreTaskFields
+					}
+				}
+				tasks {
+					...CoreTaskFields
+				}
+			}
+		}
+	}
+`;
+
+export const PROJECT_FILTER_SUBSCRIPTION = gql`
+	${CORE_PROJECT_FIELDS}
+	${CORE_TASK_FIELDS}
+	subscription ProjectSubscription($id: ID!, $tags: [UUID]) {
+		project(project: $id) {
+			type,
+			project {
+				...CoreProjectFields
+				members {
+					userId
+					username
+					email
+				}
+				invites {
+					userId
+					username
+					email
+				}
+				categories {
+					id
+					name
+					tasks(where: { tags: { some: { id: { in: $tags }}}}) {
+						...CoreTaskFields
+					}
+				}
+				tasks(where: { tags: { some: { id: { in: $tags }}}}) {
+					...CoreTaskFields
 				}
 			}
 		}

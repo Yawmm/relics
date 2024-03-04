@@ -50,23 +50,34 @@ export default function InputField(
 			<label htmlFor={title}>
 				{title}{required && "*"}
 			</label>
-			<input
-				autoFocus={focus}
-				defaultValue={value}
-				disabled={disabled}
-				minLength={minimum}
-				maxLength={maximum}
-				className={` bg-transparent
+			{type === "color" ? (
+				<input
+					defaultValue={value}
+					className={`w-full h-[36px] md:h-[48px] rounded-lg`}
+					type={type}
+					id={title}
+					name={title}
+					required={required}
+				/>
+			) : (
+				<input
+					autoFocus={focus}
+					defaultValue={value}
+					disabled={disabled}
+					minLength={minimum}
+					maxLength={maximum}
+					className={` bg-transparent
 					autofill:fill-violet-800 autofill:rounded-md
 					placeholder:text-zinc-500
 					focus:outline-none`
-				}
-				placeholder={placeholder}
-				type={type}
-				id={title}
-				name={title}
-				required={required}
-			/>
+					}
+					placeholder={placeholder}
+					type={type}
+					id={title}
+					name={title}
+					required={required}
+				/>
+			)}
 		</div>
 	);
 }

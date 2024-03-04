@@ -1,11 +1,9 @@
 import {Category, Project} from "@/lib/types";
-import Subtitle from "@/components/Text/Subtitle";
 import AddIcon from "@/components/Icons/AddIcon";
 import MoreIcon from "@/components/Icons/MoreIcon";
 import Description from "@/components/Text/Description";
 import React, {RefObject, useRef} from "react";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
-import Header from "@/components/Text/Header";
 import EditIcon from "@/components/Icons/EditIcon";
 import TaskItem from "@/components/App/Projects/TaskItem";
 import {removeCategory} from "@/lib/projects";
@@ -24,6 +22,8 @@ type CategoryItemProps = {
 
 export default function CategoryItem({ category, project, confirmationDialog, onAdd } : CategoryItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
+	const anchorRef = useRef<HTMLButtonElement>(null);
+
 	const editDialogRef = useRef<DialogModalHandle>(null);
 
 	async function deleteCategory() {
@@ -49,11 +49,11 @@ export default function CategoryItem({ category, project, confirmationDialog, on
 							<AddIcon className={"icon text-zinc-200"} />
 						</button>
 						<Popover>
-							<button className={"flex focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
+							<button ref={anchorRef} className={"flex focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
 								<MoreIcon className={"icon text-zinc-200"} />
 							</button>
 	
-							<Popover.Modal ref={popoverRef}>
+							<Popover.Modal ref={popoverRef} anchor={anchorRef}>
 								<Popover.Container>
 									<Popover.Button focus onClick={async () => await deleteCategory()}>
 										<h4 className={"text-zinc-700"}>

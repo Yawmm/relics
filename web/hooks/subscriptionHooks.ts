@@ -7,11 +7,12 @@ import {
 	TaskNotification, TeamInviteNotification, TeamNotification,
 	User
 } from "@/lib/types";
-import {PROJECT_SUBSCRIPTION, PROJECTS_SUBSCRIPTION} from "@/lib/projects";
+import {PROJECT_FILTER_SUBSCRIPTION, PROJECT_SUBSCRIPTION, PROJECTS_SUBSCRIPTION} from "@/lib/projects";
 import {TASKS_SUBSCRIPTION} from "@/lib/tasks";
 import React from "react";
 import {PROJECT_INVITES_SUBSCRIPTION, TEAM_INVITES_SUBSCRIPTION} from "@/lib/users";
 import {TEAMS_SUBSCRIPTION} from "@/lib/teams";
+import {ProjectFilter} from "@/components/App/Dialogs/Projects/FilterProjectDialog";
 
 export const updateNotificationEvent = <TValue extends { id: string }>(type?: NotificationType, value?: TValue, setter?: React.Dispatch<React.SetStateAction<TValue[]>>) => {
 	if (!value || type === undefined || setter == undefined) return;
@@ -53,9 +54,10 @@ export const useProjectsSubscription = (user: User | null) => useSubscription<{ 
 	skip: !user,
 });
 
-export const useProjectSubscription = (project: Project | null) => useSubscription<{ project: ProjectNotification }>(PROJECT_SUBSCRIPTION, {
+export const useProjectSubscription = (project: Project | null, filter?: ProjectFilter) => useSubscription<{ project: ProjectNotification }>(filter === undefined ? PROJECT_SUBSCRIPTION : PROJECT_FILTER_SUBSCRIPTION, {
 	variables: {
-		id: project?.id
+		id: project?.id,
+		tags: filter?.tags.map(t => t.id)
 	},
 	shouldResubscribe: true,
 	skip: !project,

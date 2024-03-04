@@ -47,7 +47,7 @@ export default function RootLayout({
                                     <div className={"hidden lg:flex sticky left-0 bottom-0"}>
                                         <AppFooter/>
                                     </div>
-                                    <div className={"flex w-full max-h-[calc(100vh-132px)] overflow-y-scroll overscroll-contain"}>
+                                    <div className={"flex max-w-[100vw] md:w-full max-h-[calc(100vh-132px)] overflow-y-scroll overscroll-contain"}>
                                         {children}
                                     </div>
                                 </div>

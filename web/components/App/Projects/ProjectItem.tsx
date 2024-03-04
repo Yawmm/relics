@@ -1,7 +1,5 @@
 import {Project} from "@/lib/types";
-import Header from "@/components/Text/Header";
 import MoreIcon from "@/components/Icons/MoreIcon";
-import Description from "@/components/Text/Description";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditIcon from "@/components/Icons/EditIcon";
 import React, {RefObject, useCallback, useRef} from "react";
@@ -26,6 +24,8 @@ type ProjectItemProps = {
 
 export default function ProjectItem({ project, confirmationDialog, className, editable = true, onClick } : ProjectItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
+	const anchorRef = useRef<HTMLButtonElement>(null);
+
 	const editDialogRef = useRef<DialogModalHandle>(null);
 	
 	const { user } = useUser();
@@ -68,10 +68,10 @@ export default function ProjectItem({ project, confirmationDialog, className, ed
 	
 				{editable && (
 					<Popover>
-						<button className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
+						<button ref={anchorRef} className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
 							<MoreIcon className={"icon text-zinc-200"}/>
 						</button>
-						<Popover.Modal ref={popoverRef}>
+						<Popover.Modal ref={popoverRef} anchor={anchorRef}>
 							<Popover.Container>
 								{isOwner() ? (
 									<Popover.Button focus onClick={remove}>

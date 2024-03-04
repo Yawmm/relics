@@ -78,7 +78,7 @@ export default function Teams() {
 	return (
 		<>
 			<LoadScreen isShown={getTeamsLoading || getTeamInvitesLoading} />
-			<div className={"flex flex-col w-full h-full gap-[36px] py-gutter"}>
+			<div className={"flex flex-col w-full h-fit gap-[36px] py-gutter"}>
 				<div className={"flex flex-col gap-[12px] md:gap-[24px]"}>
 					<AppHeader
 						title={"Teams"}

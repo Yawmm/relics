@@ -84,7 +84,7 @@ export default function Projects() {
 	return (
 		<>
 			<LoadScreen isShown={projectsLoading || projectInvitesLoading} />
-			<div className={"flex flex-col w-full h-full gap-[36px] py-gutter"}>
+			<div className={"flex flex-col flex-grow w-full h-fit md:h-full gap-[36px] py-gutter"}>
 				<div className={"flex flex-col gap-[12px] md:gap-[24px]"}>
 					<AppHeader
 						title={"Projects"}

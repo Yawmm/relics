@@ -1,3 +1,4 @@
+using Backend.Models.Teams;
 using Backend.Models.Users;
 
 namespace Backend.Models.Projects;

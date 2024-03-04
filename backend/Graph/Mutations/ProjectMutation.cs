@@ -4,6 +4,7 @@ using Backend.Core.Services.Users;
 using Backend.Errors;
 using Backend.Models.General;
 using Backend.Models.Projects;
+using Backend.Models.Teams;
 using Backend.Models.Users;
 using Backend.Policies;
 using HotChocolate.Authorization;

@@ -1,7 +1,5 @@
 import {Comment} from "@/lib/types";
 import CommentIcon from "@/components/Icons/CommentIcon";
-import Header from "@/components/Text/Header";
-import Description from "@/components/Text/Description";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import React, {RefObject, useCallback, useRef} from "react";
 import {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
@@ -19,6 +17,8 @@ type CommentItemProps = {
 
 export default function CommentItem({ comment, confirmationDialog, className } : CommentItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
+	const anchorRef = useRef<HTMLButtonElement>(null);
+
 	const { user } = useUser();
 	
 	const isOwner = useCallback(() => comment.owner.userId == user?.id, [comment, user]);
@@ -51,11 +51,11 @@ export default function CommentItem({ comment, confirmationDialog, className } :
 					</div>
 					{isOwner() && (
 						<Popover>
-							<button className={"flex focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
+							<button ref={anchorRef} className={"flex focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
 								<MoreIcon className={"icon text-zinc-200"} />
 							</button>
 
-							<Popover.Modal ref={popoverRef}>
+							<Popover.Modal ref={popoverRef} anchor={anchorRef}>
 								<Popover.Container>
 									<Popover.Button focus onClick={deleteComment}>
 										<h4 className={"text-zinc-700"}>

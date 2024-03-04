@@ -1,13 +1,10 @@
 import {Category, Project, Task} from "@/lib/types";
 import TaskIcon from "@/components/Icons/TaskIcon";
-import Header from "@/components/Text/Header";
-import Description from "@/components/Text/Description";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditIcon from "@/components/Icons/EditIcon";
 import React, {RefObject, useCallback, useRef} from "react";
 import {editTask, removeTask} from "@/lib/tasks";
 import Sheet, {SheetModalHandle} from "@/components/Input/Modals/Sheet";
-import Title from "@/components/Text/Title";
 import Button from "@/components/Input/Button";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import EditTaskDialog from "@/components/App/Dialogs/Tasks/EditTaskDialog";
@@ -16,8 +13,11 @@ import ConfirmIcon from "@/components/Icons/ConfirmIcon";
 import {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
 import {useUser} from "@/lib/hooks";
 import CommentIcon from "@/components/Icons/CommentIcon";
-import CreateCommentDialog from "@/components/App/Dialogs/Tasks/CreateCommentDialog";
+import CommentDialog from "@/components/App/Dialogs/Tasks/CommentDialog";
 import CommentItem from "@/components/App/Projects/CommentItem";
+import TagItem from "@/components/App/Projects/TagItem";
+import TagIcon from "@/components/Icons/TagIcon";
+import TagDialog from "@/components/App/Dialogs/Projects/Tags/TagDialog";
 
 type TaskItemProps = {
 	task: Task,
@@ -31,8 +31,10 @@ type TaskItemProps = {
 export default function TaskItem({ task, category, project, confirmationDialog, className } : TaskItemProps) {
 	const sheetRef = useRef<SheetModalHandle>(null);
 	const editTaskDialog = useRef<DialogModalHandle>(null);
-	const createCommentDialog = useRef<DialogModalHandle>(null);
-	
+
+	const commentDialog = useRef<DialogModalHandle>(null);
+	const tagDialog = useRef<DialogModalHandle>(null);
+
 	const { user } = useUser();
 	
 	const isOwner = useCallback(() => task.owner.userId == user?.id, [task, user]);
@@ -87,41 +89,87 @@ export default function TaskItem({ task, category, project, confirmationDialog, 
 							{task.name}
 						</h1>
 
-						<p>
-							{task.description}
-						</p>
+						<div className={"flex flex-col gap-[24px]"}>
+							<p>
+								{task.description}
+							</p>
 
-						<div className={"flex flex-col gap-[12px] max-h-[50vh] overflow-y-auto"} >
-							{task.comments?.map(c => <CommentItem comment={c} confirmationDialog={confirmationDialog} />)}
+							<Sheet.Column>
+								<h4>
+									Tags
+								</h4>
+								<div className={"flex flex-row gap-[12px] overflow-x-auto"}>
+									{task.tags?.length > 0 ? (
+										task.tags?.map(t => <TagItem tag={t} task={task} confirmationDialog={confirmationDialog}/>)
+									) : (
+										<p>
+											No tags have been added to the task yet.
+										</p>
+									)}
+								</div>
+							</Sheet.Column>
+							<Sheet.Column>
+								<h4>
+									Comments
+								</h4>
+								<div className={"flex flex-col gap-[12px]"}>
+									{task.comments?.length > 0 ? (
+										task.comments?.map(c => <CommentItem comment={c} confirmationDialog={confirmationDialog}/>)
+									) : (
+										<p>
+											No comments have been added to the task yet.
+										</p>
+									)}
+								</div>
+							</Sheet.Column>
 						</div>
 					</Sheet.Column>
 
 					<Sheet.Row>
 						{isOwner() && (
-							<Button focus onClick={() => deleteTask()} type={"circle"} usage={"form"} intent={"secondary"}>
+							<Button focus onClick={() => deleteTask()} type={"circle"} usage={"form"}
+									intent={"secondary"}>
 								<DeleteIcon className={"small-icon text-zinc-200"}/>
 							</Button>
 						)}
 						{project && (
-							<Button onClick={() => editTaskDialog.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
-								<EditIcon className={"small-icon text-zinc-200"}/>
-							</Button>
+							<>
+								<Button onClick={() => editTaskDialog.current?.show()} type={"circle"} usage={"form"}
+										intent={"secondary"}>
+									<EditIcon className={"small-icon text-zinc-200"}/>
+								</Button>
+								<Button onClick={() => tagDialog.current?.show()} type={"circle"} usage={"form"}
+										intent={"secondary"}>
+									<TagIcon className={"small-icon text-zinc-200"}/>
+								</Button>
+							</>
 						)}
-						<Button focus onClick={() => createCommentDialog.current?.show()} type={"circle"} usage={"form"} intent={"secondary"}>
+						<Button focus onClick={() => commentDialog.current?.show()} type={"circle"} usage={"form"}
+								intent={"secondary"}>
 							<CommentIcon className={"small-icon"}/>
 						</Button>
-						<Button onClick={async () => await finishTask()} type={"circle"} usage={"form"} intent={task.isFinished ? "primary" : "secondary"}>
+						<Button onClick={async () => await finishTask()} type={"circle"} usage={"form"}
+								intent={task.isFinished ? "primary" : "secondary"}>
 							<ConfirmIcon className={"small-icon"}/>
 						</Button>
-						<Button onClick={() => sheetRef.current?.hide()} type={"rounded"} usage={"form"} intent={"primary"} className={"flex-grow justify-center"}>
-							<RemoveIcon className={"small-icon"}/>
-							Close
-						</Button>
+						<div className={"hidden md:flex md:flex-grow"}>
+							<Button onClick={() => sheetRef.current?.hide()} type={"rounded"} usage={"form"}
+									intent={"primary"} className={"flex-grow justify-center"}>
+								<RemoveIcon className={"small-icon"}/>
+								Close
+							</Button>
+						</div>
+						<div className={"flex flex-grow md:hidden"}>
+							<Button onClick={() => sheetRef.current?.hide()} type={"rounded"} usage={"form"} intent={"primary"} className={"flex flex-grow justify-center"}>
+								<RemoveIcon className={"small-icon"}/>
+							</Button>
+						</div>
 					</Sheet.Row>
 				</Sheet.Container>
 			</Sheet.Modal>
 
-			<CreateCommentDialog dialog={createCommentDialog} user={user} task={task} />
+			<CommentDialog dialog={commentDialog} user={user} task={task}/>
+			<TagDialog dialog={tagDialog} project={project} task={task}/>
 		</>
 	);
 }

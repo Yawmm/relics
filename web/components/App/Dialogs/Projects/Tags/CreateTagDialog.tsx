@@ -1,30 +1,31 @@
 import React, {FormEvent, RefObject} from "react";
-import {addCategory} from "@/lib/projects";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import ConfirmIcon from "@/components/Icons/ConfirmIcon";
 import {Project} from "@/lib/types";
+import {addTag} from "@/lib/tags";
 
-type CategoryDialogProps = {
+type TagDialogProps = {
 	dialog: RefObject<DialogModalHandle>
 	project: Project | null
 }
 
-export default function CreateCategoryDialog({ dialog, project } : CategoryDialogProps) {
-	async function createCategory(event: FormEvent<HTMLFormElement>) {
+export default function CreateTagDialog({ dialog, project } : TagDialogProps) {
+	async function createTag(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		
 		if (!project)
 			return;
 
 		const data = {
-			name: String(event.currentTarget.Name.value)
+			name: String(event.currentTarget.Name.value),
+			color: String(event.currentTarget.Color.value)
 		};
 
 		dialog.current?.hide();
-		await addCategory(data.name, project.id);
+		await addTag(data.name, data.color, project.id);
 		event.currentTarget?.reset();
 	}
 
@@ -33,22 +34,30 @@ export default function CreateCategoryDialog({ dialog, project } : CategoryDialo
 			<Dialog.Container>
 				<Dialog.Column>
 					<h2>
-						Create category
+						Create tag
 					</h2>
 
 					<p>
-						Add categories to group and manager your tasks more efficiently.
+						Add tags to filter tasks based on priority or other functions.
 					</p>
 				</Dialog.Column>
 
-				<Dialog.Form onSubmit={createCategory}>
+				<Dialog.Form onSubmit={createTag}>
 					<Dialog.Column>
 						<InputField
 							focus
 							maximum={20}
 							type={"form"}
 							title={"Name"}
-							placeholder={"Default category"}
+							placeholder={"Default tag"}
+							required={true}
+						/>
+
+						<InputField
+							maximum={7}
+							type={"color"}
+							title={"Color"}
+							placeholder={"#ffffff"}
 							required={true}
 						/>
 					</Dialog.Column>

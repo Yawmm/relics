@@ -54,6 +54,8 @@ builder.Services.AddGraphQLServer()
     .AddMutations()
     .AddSubscriptions()
     
+    .AddFiltering()
+    
     .AddMutationConventions(applyToAllMutations: true)
     .ModifyRequestOptions(options => options.IncludeExceptionDetails = true);
 

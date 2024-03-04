@@ -39,6 +39,7 @@ export type Project = {
 	links: Link[]
 	invites: Invite[]
 
+	tags: Tag[]
 	tasks: Task[]
 	categories: Category[]
 }
@@ -51,6 +52,12 @@ export type ProjectNotification = {
 export type ProjectInviteNotification = {
 	type : NotificationType,
 	projectInvite: ProjectInvite
+}
+
+export type Tag = {
+	id: string,
+	name: string,
+	color: string
 }
 
 export type Team = {
@@ -94,6 +101,7 @@ export type Task = {
 	isFinished: boolean,
 
 	owner: Member,
+	tags: Tag[],
 	comments: Comment[]
 }
 

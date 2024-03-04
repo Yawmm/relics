@@ -30,7 +30,7 @@ export default function User() {
 	}
 
 	return (
-		<div className={"flex flex-col w-full gap-[36px] py-gutter"}>
+		<div className={"flex flex-col w-full h-fit gap-[36px] py-gutter"}>
 			<AppHeader
 				title={"User profile"}
 				description={`Manage the different properties of your account.`}

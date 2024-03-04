@@ -1,8 +1,9 @@
-"use client"
+"use client";
 
-import React, {forwardRef, useImperativeHandle, useState} from "react";
+import React, {forwardRef, RefObject, useEffect, useImperativeHandle, useMemo, useRef, useState} from "react";
 import {AnimatePresence, motion} from "framer-motion";
 import Button from "@/components/Input/Button";
+import useWindowDimensions from "@/hooks/windowDimensions";
 
 /*
 The properties of the popover.
@@ -17,7 +18,7 @@ Used to group together common components for popover functionality in the applic
  */
 const Popover = ({ children } : PopoverProps) => {
 	return (
-		<div className={"relative"}>
+		<div>
 			{children}
 		</div>
 	);
@@ -43,6 +44,8 @@ type PopoverModalProps = {
 	className?: string,
 	/* Called when the popover modal is closed by tapping the back overlay. */
 	onClose?: () => void,
+	/* The reference to the button to which the modal should be anchored. */
+	anchor?: RefObject<HTMLButtonElement>
 	/* The children of the popover modal component. */
 	children: React.ReactNode
 }
@@ -50,9 +53,25 @@ type PopoverModalProps = {
 /*
 Used to display a modal popover to the user, with a back overlay to grab the user's attention.
  */
-const PopoverModal = forwardRef<PopoverModalHandle, PopoverModalProps>(({ className, onClose, children }: PopoverModalProps, ref) => {
-	/* Whether or not the popover modal is shown to the user. */
+const PopoverModal = forwardRef<PopoverModalHandle, PopoverModalProps>(({ className, onClose, anchor, children }: PopoverModalProps, ref) => {
+	/* Whether the popover modal is shown to the user. */
 	const [isShown, setIsShown] = useState<boolean>(false);
+
+	/* The current offset of the anchor and of the actual popover element */
+	const [anchorOffset, setAnchorOffset] = useState<DOMRect | undefined>();
+	const [selfOffset, setSelfOffset] = useState<DOMRect | undefined>();
+
+	/* The reference to the popover element. */
+	const self = useRef<HTMLDivElement>(null);
+
+	/* The current dimensions of the window. */
+	const dimensions = useWindowDimensions();
+
+	/* The offsets which should be used in calculating the position of the popover. */
+	const leftOffset = useMemo(() => !anchorOffset || !selfOffset ? 0 : anchorOffset.left + anchorOffset.width - (anchorOffset.right + selfOffset.width > dimensions.width ? selfOffset.width : 0), [anchorOffset, selfOffset, dimensions]);
+	const topOffset = useMemo(() => !anchorOffset ? 0 : anchorOffset.top + anchorOffset.height, [anchorOffset]);
+
+	const isVisible = useMemo(() => anchorOffset !== undefined && selfOffset !== undefined && isShown, [anchorOffset, selfOffset, isShown]);
 
 	/*
 	Hide the modal and call the given callback function.
@@ -73,10 +92,18 @@ const PopoverModal = forwardRef<PopoverModalHandle, PopoverModalProps>(({ classN
 		};
 	});
 
+	/*
+	Update the offset values of the anchor and of the current element when the popover element is toggled.
+	 */
+	useEffect(() => {
+		setAnchorOffset(anchor?.current?.getBoundingClientRect());
+		setSelfOffset(self?.current?.getBoundingClientRect());
+	}, [isShown]);
+
 	return (
 		<AnimatePresence>
 			{isShown && (
-				<div className={"relative"}>
+				<div className={"fixed"}>
 					<motion.div
 						onClick={onCloseModal}
 						className={"fixed top-0 bottom-0 left-0 right-0 bg-zinc-900 bg-opacity-70 z-50"}
@@ -86,7 +113,9 @@ const PopoverModal = forwardRef<PopoverModalHandle, PopoverModalProps>(({ classN
 						exit={{ opacity: 0 }}
 					/>
 					<motion.div
-						className={`absolute right-[0px] p-[12px] bg-zinc-800 rounded-lg ${className} z-50`}
+						ref={self}
+						className={`fixed p-[12px] bg-zinc-800 rounded-lg ${className} z-50`}
+						style={{ left: `${leftOffset}px`, top: `${topOffset}px`, visibility: isVisible ? "visible" : "hidden" }}
 						transition={{ duration: 0.1 }}
 						initial={{ opacity: 0.6 }}
 						animate={{ opacity: 1 }}

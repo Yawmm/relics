@@ -10,7 +10,7 @@ export default function UserInformation({ params: { id } } : { params: { id: str
 	const { data } = useUserQuery(id);
 
 	return (
-		<div className={"flex flex-col w-full gap-[36px] py-gutter"}>
+		<div className={"flex flex-col w-full h-fit gap-[36px] py-gutter"}>
 			<AppHeader
 				title={"Personal information"}
 				description={`Inspect the personal information of the current user.`}

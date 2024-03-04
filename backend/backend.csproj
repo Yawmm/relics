@@ -19,6 +19,8 @@
 
         <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.1.0" />
 
+        <PackageReference Include="HotChocolate.Data" Version="13.1.0" />
+
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
         <PackageReference Include="Npgsql" Version="7.0.4" />
 

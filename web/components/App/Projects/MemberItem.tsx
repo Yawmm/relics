@@ -20,6 +20,8 @@ type MemberItemProps = {
 
 export default function MemberItem({ member, isOwner, onLeave, onKick, className } : MemberItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
+	const anchorRef = useRef<HTMLButtonElement>(null);
+
 	const confirmationDialogRef = useRef<ConfirmationDialogHandle>(null);
 	
 	const { user } = useUser();
@@ -59,12 +61,12 @@ export default function MemberItem({ member, isOwner, onLeave, onKick, className
 
 					{!isOwner && (
 						<Popover>
-							<button className={"focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
+							<button ref={anchorRef} className={"focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"}
 									onClick={() => popoverRef.current?.toggle()}>
 								<MoreIcon className={"icon text-zinc-200"}/>
 							</button>
 
-							<Popover.Modal ref={popoverRef}>
+							<Popover.Modal ref={popoverRef} anchor={anchorRef}>
 								<Popover.Container>
 									<Popover.Button focus onClick={() => submit()}>
 										<h4 className={"text-zinc-700"}>

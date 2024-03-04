@@ -1,7 +1,6 @@
-import React, {RefObject, useCallback, useRef} from "react";
+import React, {useRef} from "react";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
 import Popover, {PopoverModalHandle} from "@/components/Input/Modals/Popover";
-import Header from "@/components/Text/Header";
 import MoreIcon from "@/components/Icons/MoreIcon";
 import {Link, Project} from "@/lib/types";
 import LinkIcon from "@/components/Icons/LinkIcon";
@@ -18,6 +17,8 @@ type LinkItemProps = {
 
 export default function LinkItem({ link, project, isOwner, className, editable = true } : LinkItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
+	const anchorRef = useRef<HTMLButtonElement>(null);
+
 	const confirmationDialog = useRef<ConfirmationDialogHandle>(null);
 
 	async function removeLink() {
@@ -50,10 +51,10 @@ export default function LinkItem({ link, project, isOwner, className, editable =
 
 				{(editable && isOwner) && (
 					<Popover>
-						<button className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
+						<button ref={anchorRef} className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
 							<MoreIcon className={"icon text-zinc-200"}/>
 						</button>
-						<Popover.Modal ref={popoverRef}>
+						<Popover.Modal ref={popoverRef} anchor={anchorRef}>
 							<Popover.Container>
 								<Popover.Button focus onClick={async () => await removeLink()}>
 									<h4 className={"text-zinc-700"}>

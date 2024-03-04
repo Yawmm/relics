@@ -4,7 +4,6 @@ import Popover, {PopoverModalHandle} from "@/components/Input/Modals/Popover";
 import {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import {useUser} from "@/lib/hooks";
 import TeamIcon from "@/components/Icons/TeamIcon";
-import Header from "@/components/Text/Header";
 import MoreIcon from "@/components/Icons/MoreIcon";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditIcon from "@/components/Icons/EditIcon";
@@ -12,11 +11,9 @@ import {Invite, Member, Team} from "@/lib/types";
 import UserIcon from "@/components/Icons/UserIcon";
 import {kickTeamMember, leaveTeam, removeTeam, revokeTeamInvite, sendTeamInvite} from "@/lib/teams";
 import Sheet, {SheetModalHandle} from "@/components/Input/Modals/Sheet";
-import Title from "@/components/Text/Title";
 import Button from "@/components/Input/Button";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import MemberItem from "@/components/App/Projects/MemberItem";
-import Subtitle from "@/components/Text/Subtitle";
 import AddIcon from "@/components/Icons/AddIcon";
 import InviteMemberDialog from "@/components/App/Dialogs/Members/InviteMemberDialog";
 import {SentInviteItem} from "@/components/App/Projects/InviteItem";
@@ -35,6 +32,8 @@ export default function TeamItem({ team, className, editable = true, onClick } :
 	const [inviteError, setInviteError] = useState<string | null>();
 
 	const popoverRef = useRef<PopoverModalHandle>(null);
+	const anchorRef = useRef<HTMLButtonElement>(null);
+
 	const sheetRef = useRef<SheetModalHandle>(null);
 	const confirmationDialog = useRef<ConfirmationDialogHandle>(null);
 
@@ -134,10 +133,10 @@ export default function TeamItem({ team, className, editable = true, onClick } :
 
 				{editable && (
 					<Popover>
-						<button className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
+						<button ref={anchorRef} className={"mr-[16px] focus:outline-none focus:rounded-md focus:ring-4 focus:ring-zinc-500"} onClick={() => popoverRef.current?.toggle()}>
 							<MoreIcon className={"icon text-zinc-200"}/>
 						</button>
-						<Popover.Modal ref={popoverRef}>
+						<Popover.Modal ref={popoverRef} anchor={anchorRef}>
 							<Popover.Container>
 								{isOwner() ? (
 									<Popover.Button focus onClick={remove}>

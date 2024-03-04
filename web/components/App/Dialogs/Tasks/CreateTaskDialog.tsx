@@ -76,7 +76,7 @@ export default function CreateTaskDialog({ dialog, user, project, category } : T
 						<Dialog.Column>
 							<InputField
 								focus
-								maximum={20}
+								maximum={40}
 								type={"form"}
 								title={"Name"}
 								placeholder={"Default task"}
