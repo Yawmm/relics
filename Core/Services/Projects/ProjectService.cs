@@ -172,8 +172,9 @@ public class ProjectService : IProjectService
         
         // Using left joins because inner joins will not return a result if the value isn't found, and not a null value.
         // This makes the auto-mapper of Dapper get confused, so you need to add 'splitOn' parameters which isn't worth it.
-        // Left joins make the data null and make the expected type paramteres of the Query method still valid.
+        // Left joins make the data null and make the expected type parameters of the Query method still valid.
         // This means that the 'splitOn' parameter isn't needed.
+        // This is also the reason why I love ORMs. I am aware of the fact that you can also efficiently do this without ORMs, it's just more effort.
         var result = _connection.Query(
             sql: """
             SELECT p.*, 

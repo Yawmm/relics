@@ -59,6 +59,7 @@ public class TagMutation
     /// <param name="color">The new color of the tag.</param>
     /// <param name="tasks">The range of changes to the tasks linked to the tag.</param>
     /// <returns>Whether or not the update was successful.</returns>
+    [Authorize(Policy = PolicyTypes.WriteTag)]
     public async Task<Result> UpdateTag(
         [Service] ITagService tagService, 
         [Service] IProjectService projectService, 
@@ -89,6 +90,7 @@ public class TagMutation
     /// <param name="eventSender">The current event sender service from which subscription updates can be sent.</param>
     /// <param name="tag">The guid of the tag which should be removed.</param>
     /// <returns>Whether or not the remove action was successful.</returns>
+    [Authorize(Policy = PolicyTypes.DeleteTag)]
     public async Task<Result> RemoveTag(
         [Service] ITagService tagService, 
         [Service] IProjectService projectService, 

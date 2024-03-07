@@ -1,11 +1,13 @@
 using Backend.Policies.Permissions;
 using Backend.Policies.Permissions.Handlers.Categories;
 using Backend.Policies.Permissions.Handlers.Projects;
+using Backend.Policies.Permissions.Handlers.Tags;
 using Backend.Policies.Permissions.Handlers.Tasks;
 using Backend.Policies.Permissions.Handlers.Teams;
 using Backend.Policies.Permissions.Handlers.Users;
 using Backend.Policies.Permissions.Variants.Categories;
 using Backend.Policies.Permissions.Variants.Projects;
+using Backend.Policies.Permissions.Variants.Tags;
 using Backend.Policies.Permissions.Variants.Tasks;
 using Backend.Policies.Permissions.Variants.Teams;
 using Backend.Policies.Permissions.Variants.Users;
@@ -46,6 +48,9 @@ public static class PolicyServiceCollection
         
         // Category handlers
         services.AddTransient<IPermissionHandler<IsCategoryProjectOwnerPermission>, IsCategoryProjectOwnerPermissionHandler>();
+        
+        // Tag handlers
+        services.AddTransient<IPermissionHandler<IsTagProjectMemberPermission>, IsTagProjectMemberPermissionHandler>();
         
         // Task handlers
         services.AddTransient<IPermissionHandler<IsTaskProjectMemberPermission>, IsTaskProjectMemberPermissionHandler>();
@@ -91,6 +96,10 @@ public static class PolicyServiceCollection
 
         // Category policies
         options.AddPolicy(PolicyTypes.DeleteCategory, policy => policy.Requirements.Add(new IsCategoryProjectOwnerPermission()));
+
+        // Tag policies
+        options.AddPolicy(PolicyTypes.WriteTag, policy => policy.Requirements.Add(new IsTagProjectMemberPermission()));
+        options.AddPolicy(PolicyTypes.DeleteTag, policy => policy.Requirements.Add(new IsTagProjectMemberPermission()));
 
         // Task policies
         options.AddPolicy(PolicyTypes.ReadTasks, policy => policy.Requirements.Add(new IsUserPermission()));
