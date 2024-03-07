@@ -1,4 +1,5 @@
 using System.Data;
+using System.Text.RegularExpressions;
 using Backend.Core.Database;
 using Backend.Core.Services.Authentication;
 using Backend.Core.Services.Projects;
@@ -26,10 +27,20 @@ internal static class ApplicationServiceCollection
 
         // Add database connection
         services.AddTransient<IDbConnection>(
-            provider => new NpgsqlConnection(
-                provider.GetService<IConfiguration>()
-                    ?.GetConnectionString("Postgres")
-            )
+            provider =>
+            {
+                // Development environment.
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
+                    return new NpgsqlConnection(provider.GetService<IConfiguration>()
+                        ?.GetConnectionString("Postgres")
+                    );
+                
+                // Production environment.
+                var match = Regex.Match(Environment.GetEnvironmentVariable("DATABASE_URL")!, "postgres://(.*):(.*)@(.*):(.*)/(.*)");
+                return new NpgsqlConnection(
+                    $"Server={match.Groups[3]};Port={match.Groups[4]};User Id={match.Groups[1]};Password={match.Groups[2]};Database={match.Groups[5]};sslmode=Prefer;Trust Server Certificate=true"
+                );
+            }
         );
 
         // Add migrations
