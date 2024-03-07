@@ -9,7 +9,7 @@ import RemoveIcon from "@/components/Icons/RemoveIcon";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
 import UserIcon from "@/components/Icons/UserIcon";
 
-type SentProjectInviteItemProps = {
+type SentInviteItemProps = {
 	invite: Invite,
 
 	onRevoke: (dialog: RefObject<ConfirmationDialogHandle>, invite: Invite) => void,
@@ -17,7 +17,7 @@ type SentProjectInviteItemProps = {
 	className?: string,
 }
 
-export function SentInviteItem({ invite, onRevoke, className } : SentProjectInviteItemProps) {
+export function SentInviteItem({ invite, onRevoke, className } : SentInviteItemProps) {
 	const popoverRef = useRef<PopoverModalHandle>(null);
 	const anchorRef = useRef<HTMLButtonElement>(null);
 

@@ -96,6 +96,17 @@ public class PolicyTypes
     
     
     /// <summary>
+    /// Whether or not the user is able to write to the given tag.
+    /// </summary>
+    public const string WriteTag = "WriteTag";
+    
+    /// <summary>
+    /// Whether or not the user is able to delete the given tag.
+    /// </summary>
+    public const string DeleteTag = "DeleteTag";
+    
+    
+    /// <summary>
     /// Whether or not the user is able to read the given tasks.
     /// </summary>
     public const string ReadTasks = "ReadTasks";

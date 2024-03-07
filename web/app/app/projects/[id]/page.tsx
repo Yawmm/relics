@@ -214,11 +214,9 @@ export default function Project({ params: { id } }: { params: { id: string }}) {
 									</div>
 								)
 								: (
-									<div className={"px-gutter"}>
-										<p>
-											You haven't created any categories yet.
-										</p>
-									</div>
+									<p className={"px-gutter"}>
+										You haven't created any categories yet.
+									</p>
 								)
 							}
 						</div>
