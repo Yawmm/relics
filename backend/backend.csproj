@@ -4,10 +4,16 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        
         <AssemblyName>Backend</AssemblyName>
         <RootNamespace>Backend</RootNamespace>
-      <UserSecretsId>e2ef5c30-86af-4be1-a8b7-44157c123c35</UserSecretsId>
+        
+        <UserSecretsId>e2ef5c30-86af-4be1-a8b7-44157c123c35</UserSecretsId>
   </PropertyGroup>
 
     <ItemGroup>
