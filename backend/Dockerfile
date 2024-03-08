@@ -1,20 +1,16 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /src
-COPY ["backend/backend.csproj", "backend/"]
-RUN dotnet restore "backend/backend.csproj"
-COPY . .
-WORKDIR "/src/backend"
-RUN dotnet build "backend.csproj" -c Release -o /app/build
+# Copy project file and restore the project.
+COPY *.csproj ./
+RUN dotnet restore
 
-FROM build AS publish
-RUN dotnet publish "backend.csproj" -c Release -o /app/publish /p:UseAppHost=false
+# Copy everything else and publish the project.
+COPY . ./
+RUN dotnet publish -c Release -o out /p:UseAppHost=false
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/out .
+
 ENTRYPOINT ["dotnet", "backend.dll"]
