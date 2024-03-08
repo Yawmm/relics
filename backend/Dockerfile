@@ -2,11 +2,11 @@
 WORKDIR /app
 
 # Copy project file and restore the project.
-COPY *.csproj ./
+COPY ./backend/*.csproj ./
 RUN dotnet restore
 
 # Copy everything else and publish the project.
-COPY . ./
+COPY /backend ./
 RUN dotnet publish -c Release -o out /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
