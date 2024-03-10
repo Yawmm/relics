@@ -2,8 +2,7 @@
 WORKDIR /app
 
 # Expose ports.
-EXPOSE 8080
-ENV ASPNETCORE_URLS=http://*:8080
+ENV ASPNETCORE_URLS=http://*:$PORT
 
 # Copy project file and restore the project.
 COPY ./backend/*.csproj .
