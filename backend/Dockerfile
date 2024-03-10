@@ -1,8 +1,9 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-EXPOSE 5000
+
+# Expose ports.
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://*:8080
 
 # Copy project file and restore the project.
 COPY ./backend/*.csproj .
