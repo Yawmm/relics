@@ -8,11 +8,11 @@ import {getMainDefinition} from "@apollo/client/utilities";
 const url = "relics-27392ddfcb64.herokuapp.com";
 
 const wsLink = new GraphQLWsLink(createClient({
-    url: `ws://${url}/graphql`,
+    url: `wss://${url}/graphql`,
 }));
 
 const baseHttpLink = createHttpLink({
-    uri: `http://${url}/graphql`
+    uri: `https://${url}/graphql`
 });
 
 const authLink = setContext(async (_, { headers }) => {
