@@ -29,12 +29,6 @@ internal static class ApplicationServiceCollection
         services.AddTransient<IDbConnection>(
             provider =>
             {
-                // Development environment.
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Production")
-                    return new NpgsqlConnection(provider.GetService<IConfiguration>()
-                        ?.GetConnectionString("Postgres")
-                    );
-                
                 // Production environment.
                 var match = Regex.Match(Environment.GetEnvironmentVariable("DATABASE_URL")!, "postgres://(.*):(.*)@(.*):(.*)/(.*)");
                 return new NpgsqlConnection(
