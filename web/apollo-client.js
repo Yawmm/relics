@@ -5,12 +5,14 @@ import {getCookie} from "cookies-next";
 import {createClient} from 'graphql-ws';
 import {getMainDefinition} from "@apollo/client/utilities";
 
+const url = "relics-27392ddfcb64.herokuapp.com";
+
 const wsLink = new GraphQLWsLink(createClient({
-    url: 'ws://localhost:5187/graphql',
+    url: `ws://${url}/graphql`,
 }));
 
 const baseHttpLink = createHttpLink({
-    uri: "http://localhost:5187/graphql"
+    uri: `http://${url}/graphql`
 });
 
 const authLink = setContext(async (_, { headers }) => {
