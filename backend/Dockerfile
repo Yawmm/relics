@@ -1,9 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
-# Expose ports.
-ENV ASPNETCORE_URLS=http://*:$PORT
-
 # Copy project file and restore the project.
 COPY ./backend/*.csproj .
 RUN dotnet restore

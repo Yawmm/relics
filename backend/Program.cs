@@ -83,5 +83,14 @@ app.UseWebSockets();
 // Use graph endpoints
 app.MapGraphQL();
 
+// Use correct url
+if (app.Environment.IsProduction())
+{
+    var port = Environment.GetEnvironmentVariable("PORT");
+    var url = $"http://*:{port}";
+    
+    app.Urls.Add(url);
+}
+
 // Run app
 app.Run();
