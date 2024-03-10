@@ -6,9 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <PublishSingleFile>true</PublishSingleFile>
-        <SelfContained>true</SelfContained>
-        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
         
         <AssemblyName>Backend</AssemblyName>
         <RootNamespace>Backend</RootNamespace>
