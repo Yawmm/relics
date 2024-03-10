@@ -4,8 +4,8 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint'],
     rules: {
-        'no-explicit-any': 'warn',
-        'no-unused-vars': 'warn',
+        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/no-unused-vars': 'warn',
         'no-undef': 'warn',
         'prefer-const': 'warn',
         'semi': 'warn'
