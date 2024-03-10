@@ -39,7 +39,7 @@ public class TokenOptions
     /// <summary>
     /// The secret used to sign the access tokens.
     /// </summary>
-    public string Secret { get; set; } = null!;
+    public string? Secret { get; set; }
 
     /// <summary>
     /// The lifespan of the token, in minutes.

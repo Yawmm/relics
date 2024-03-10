@@ -101,6 +101,10 @@ public class AuthenticationService : IAuthenticationService
             new(JwtRegisteredClaimNames.Email, user.Email)
         };
 
+        var secret = _options.Token.Secret ?? Environment.GetEnvironmentVariable("APPLICATION_JWT_SECRET");
+        if (secret is null)
+            throw new ApplicationException("No secret was set for the authentication service.");
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
@@ -108,7 +112,7 @@ public class AuthenticationService : IAuthenticationService
             Issuer = _options.Token.Issuer,
             Audience = _options.Token.Audience,
             SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Token.Secret)), 
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)), 
                 SecurityAlgorithms.HmacSha384Signature
             )
         };
