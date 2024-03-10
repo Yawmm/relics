@@ -7,8 +7,36 @@ import {getMainDefinition} from "@apollo/client/utilities";
 
 const url = "relics-27392ddfcb64.herokuapp.com";
 
+let timedOut;
 const wsLink = new GraphQLWsLink(createClient({
     url: `wss://${url}/graphql`,
+    lazy: true,
+    keepAlive: 10_000,
+    retryAttempt: 30,
+    // See https://github.com/enisdenjo/graphql-ws/discussions/290.
+    on: {
+        ping: (received) => {
+            if (!received /* sent */) {
+                // eslint-disable-next-line no-undef
+                timedOut = setTimeout(() => {
+                    // a close event `4499: Terminated` is issued to the current WebSocket and an
+                    // artificial `{ code: 4499, reason: 'Terminated', wasClean: false }` close-event-like
+                    // object is immediately emitted without waiting for the one coming from `WebSocket.onclose`
+                    //
+                    // calling terminate is not considered fatal and a connection retry will occur as expected
+                    //
+                    // see: https://github.com/enisdenjo/graphql-ws/discussions/290
+                    wsLink.client.terminate();
+                }, 5_000);
+            }
+        },
+        pong: (received) => {
+            if (received) {
+                // eslint-disable-next-line no-undef
+                clearTimeout(timedOut);
+            }
+        },
+    }
 }));
 
 const baseHttpLink = createHttpLink({
