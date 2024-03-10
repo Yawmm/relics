@@ -26,13 +26,18 @@ builder.Services
     .AddJwtBearer(
         options =>
         {
+            var secret = builder.Environment.IsProduction()
+                ? Environment.GetEnvironmentVariable("APPLICATION_JWT_SECRET")
+                : builder.Configuration["Authentication:Secret"];
+
+            if (secret is null)
+                throw new ApplicationException("No secret was set for the authentication service.");
+                
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidAudience = builder.Configuration["Authentication:Audience"],
                 ValidIssuer = builder.Configuration["Authentication:Issuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(builder.Configuration["Authentication:Secret"]!)
-                ),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
