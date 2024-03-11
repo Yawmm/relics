@@ -2,7 +2,6 @@
 
 import React, {useEffect} from "react";
 import {useUser} from "@/lib/hooks";
-import HomeHeader from "@/components/Home/HomeHeader";
 import {useRouter} from "next/navigation";
 import AppFooter from "@/components/App/AppFooter";
 import Loader from "@/components/Login/Loader";
@@ -30,7 +29,6 @@ export default function AppLayout({ children }: {
 					</main>
 				) : (
 					<main className={"inline-flex flex-col flex-grow w-full h-full"}>
-						<HomeHeader/>
 						<div className={"inline-flex flex-row w-full overscroll-contain"}>
 							<div className={"hidden lg:flex sticky left-0 bottom-0"}>
 								<AppFooter/>
