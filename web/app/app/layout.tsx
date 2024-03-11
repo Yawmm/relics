@@ -1,6 +1,5 @@
 "use client";
 
-import {Inter} from 'next/font/google';
 import React, {useEffect} from "react";
 import {useUser} from "@/lib/hooks";
 import HomeHeader from "@/components/Home/HomeHeader";

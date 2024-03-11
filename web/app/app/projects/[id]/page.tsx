@@ -29,7 +29,6 @@ import CreateTagDialog from "@/components/App/Dialogs/Projects/Tags/CreateTagDia
 import TagItem from "@/components/App/Items/TagItem";
 import FilterIcon from "@/components/Icons/FilterIcon";
 import FilterProjectDialog, {ProjectFilter} from "@/components/App/Dialogs/Projects/FilterProjectDialog";
-import Head from "next/head";
 
 
 export default function Project({ params: { id } }: { params: { id: string }}) {
