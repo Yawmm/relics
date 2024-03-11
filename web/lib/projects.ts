@@ -1,6 +1,5 @@
 import client from "@/apollo-client";
 import {gql} from "@apollo/client";
-import {ProjectFilter} from "@/components/App/Dialogs/Projects/FilterProjectDialog";
 import {CORE_TASK_FIELDS} from "@/lib/tasks";
 
 const CORE_PROJECT_FIELDS = gql`

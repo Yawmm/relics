@@ -6,7 +6,7 @@ The consistent type of style of a button.
 type ButtonStyle = "primary" | "secondary" | "tertiary" | "warn" | "other";
 
 /*
-The consistent background type of a button.
+The consistent background type of button.
  */
 type ButtonType = "square" | "rounded" | "circle";
 

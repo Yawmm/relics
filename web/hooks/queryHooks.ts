@@ -1,4 +1,4 @@
-import {useLazyQuery, useQuery} from "@apollo/client";
+import {useQuery} from "@apollo/client";
 import {Project, ProjectInvite, Task, Team, TeamInvite, User} from "@/lib/types";
 import {GET_PROJECT_FILTER_QUERY, GET_PROJECT_QUERY, GET_PROJECTS_QUERY} from "@/lib/projects";
 import {GET_TASKS_QUERY} from "@/lib/tasks";

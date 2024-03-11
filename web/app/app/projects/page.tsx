@@ -5,19 +5,16 @@ import ProjectIcon from "@/components/Icons/ProjectIcon";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
 import React, {useEffect, useRef, useState} from "react";
-import Description from "@/components/Text/Description";
 import {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import {acceptProjectInvite, declineProjectInvite} from "@/lib/projects";
 import {useUser} from "@/lib/hooks";
-import Subtitle from "@/components/Text/Subtitle";
 import {useRouter} from "next/navigation";
 import {Project, ProjectInvite} from "@/lib/types";
-import ProjectItem from "@/components/App/Projects/ProjectItem";
+import ProjectItem from "@/components/App/Items/ProjectItem";
 import LoadScreen from "@/components/Login/LoadScreen";
 import CreateProjectDialog from "@/components/App/Dialogs/Projects/CreateProjectDialog";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
-import {ReceivedInviteItem} from "@/components/App/Projects/InviteItem";
-import Header from "@/components/Text/Header";
+import {ReceivedInviteItem} from "@/components/App/Items/InviteItem";
 import {
 	updateNotificationEvent,
 	useProjectInvitesSubscription,

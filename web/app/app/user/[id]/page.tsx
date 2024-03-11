@@ -2,7 +2,6 @@
 
 import AppHeader from "@/components/App/AppHeader";
 import UserIcon from "@/components/Icons/UserIcon";
-import Subtitle from "@/components/Text/Subtitle";
 import InputField from "@/components/Input/InputField";
 import {useUserQuery} from "@/hooks/queryHooks";
 

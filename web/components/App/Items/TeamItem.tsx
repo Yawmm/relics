@@ -13,10 +13,10 @@ import {kickTeamMember, leaveTeam, removeTeam, revokeTeamInvite, sendTeamInvite}
 import Sheet, {SheetModalHandle} from "@/components/Input/Modals/Sheet";
 import Button from "@/components/Input/Button";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
-import MemberItem from "@/components/App/Projects/MemberItem";
+import MemberItem from "@/components/App/Items/MemberItem";
 import AddIcon from "@/components/Icons/AddIcon";
 import InviteMemberDialog from "@/components/App/Dialogs/Members/InviteMemberDialog";
-import {SentInviteItem} from "@/components/App/Projects/InviteItem";
+import {SentInviteItem} from "@/components/App/Items/InviteItem";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
 import EditTeamDialog from "@/components/App/Dialogs/Teams/EditTeamDialog";
 

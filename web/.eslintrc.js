@@ -4,11 +4,11 @@ module.exports = {
     parser: '@typescript-eslint/parser',
     plugins: ['@typescript-eslint'],
     rules: {
-        '@typescript-eslint/no-explicit-any': 'warn',
-        '@typescript-eslint/no-unused-vars': 'warn',
-        'no-undef': 'warn',
-        'prefer-const': 'warn',
-        'semi': 'warn'
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-unused-vars': 'error',
+        'no-undef': 'off',
+        'prefer-const': 'error',
+        'semi': 'error'
     },
     root: true,
 };

@@ -7,8 +7,8 @@ import RemoveIcon from "@/components/Icons/RemoveIcon";
 import {linkTeam} from "@/lib/projects";
 import {useQuery} from "@apollo/client";
 import {GET_TEAMS_QUERY} from "@/lib/teams";
-import TeamItem from "@/components/App/Teams/TeamItem";
-import LinkItem from "@/components/App/Teams/LinkItem";
+import TeamItem from "@/components/App/Items/TeamItem";
+import LinkItem from "@/components/App/Items/LinkItem";
 
 type TeamDialogProps = {
 	dialog: RefObject<DialogModalHandle>

@@ -13,7 +13,7 @@ export default function AppFooter() {
 	const path = usePathname();
 
 	return (
-		<nav className={"sticky bottom-0 lg:left-0 w-full lg:h-[calc(100vh-132px)] px-gutter lg:px-[36px] py-[28px] lg:py-[calc(theme(margin.gutter-y)*2)] bg-zinc-700 border-zinc-600 border-t-2 lg:border-t-0 lg:border-r-4"}>
+		<nav className={"fixed md:sticky bottom-0 lg:left-0 w-full lg:h-[calc(100vh-132px)] px-gutter lg:px-[36px] py-[28px] lg:py-[calc(theme(margin.gutter-y)*2)] bg-zinc-700 border-zinc-600 border-t-2 lg:border-t-0 lg:border-r-4"}>
 			<div className={"flex flex-row lg:flex-col lg:h-full justify-between"}>
 				<NavigationItem icon={<HomeIcon />} isSelected={path.endsWith("/app")} href={"/app"} />
 				<NavigationItem icon={<TeamIcon />} isSelected={path.startsWith("/app/teams")} href={"/app/teams"} />

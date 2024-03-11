@@ -4,11 +4,9 @@ import {useUser} from "@/lib/hooks";
 import AppHeader from "@/components/App/AppHeader";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
-import Subtitle from "@/components/Text/Subtitle";
 import TaskIcon from "@/components/Icons/TaskIcon";
 import {Task} from "@/lib/types";
-import TaskItem from "@/components/App/Projects/TaskItem";
-import Description from "@/components/Text/Description";
+import TaskItem from "@/components/App/Items/TaskItem";
 import React, {useEffect, useRef, useState} from "react";
 import LoadScreen from "@/components/Login/LoadScreen";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
@@ -73,9 +71,9 @@ export default function Tasks() {
 				</div>
 
 				<div className={"flex flex-col h-full gap-[12px]"}>
-					<Subtitle className={"px-gutter"}>
+					<h3 className={"px-gutter"}>
 						Tasks
-					</Subtitle>
+					</h3>
 
 					<div className={"flex flex-col gap-[12px] h-full px-gutter"}>
 						{tasks.length > 0
@@ -87,9 +85,9 @@ export default function Tasks() {
 									className={"w-full h-fit"}
 								/>
 							)) : (
-								<Description>
+								<p>
 									You haven't created any tasks yet.
-								</Description>
+								</p>
 							)
 						}
 					</div>

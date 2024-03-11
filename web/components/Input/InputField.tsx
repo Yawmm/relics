@@ -9,15 +9,15 @@ type InputFieldProps = {
 	/* The maximum amount of characters required for the input field */
 	maximum?: number,
 
-	/* Whether or not the input field is disabled. */
+	/* Whether the input field is disabled. */
 	disabled?: boolean,
-	/* Whether or not the input field is required. */
+	/* Whether the input field is required. */
 	required?: boolean
 	/* The placeholder of the input field. */
 	placeholder?: string,
 	/* The current value of the input field. */
 	value?: string,
-	/* Whether or not the field should grab focus on appear. */
+	/* Whether the field should grab focus on appear. */
 	focus?: boolean,
 
 	/* The type of the input field. */

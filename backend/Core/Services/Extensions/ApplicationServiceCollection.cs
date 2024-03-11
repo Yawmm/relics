@@ -29,10 +29,18 @@ internal static class ApplicationServiceCollection
         services.AddTransient<IDbConnection>(
             provider =>
             {
-                // Production environment.
-                var match = Regex.Match(Environment.GetEnvironmentVariable("DATABASE_URL")!, "postgres://(.*):(.*)@(.*):(.*)/(.*)");
-                return new NpgsqlConnection(
-                    $"Server={match.Groups[3]};Port={match.Groups[4]};User Id={match.Groups[1]};Password={match.Groups[2]};Database={match.Groups[5]};sslmode=Prefer;Trust Server Certificate=true"
+                var environment = provider.GetService<IWebHostEnvironment>();
+                if (environment is null || environment.IsProduction())
+                {
+                    // Production environment.
+                    var match = Regex.Match(Environment.GetEnvironmentVariable("DATABASE_URL")!, "postgres://(.*):(.*)@(.*):(.*)/(.*)");
+                    return new NpgsqlConnection(
+                        $"Server={match.Groups[3]};Port={match.Groups[4]};User Id={match.Groups[1]};Password={match.Groups[2]};Database={match.Groups[5]};sslmode=Prefer;Trust Server Certificate=true"
+                    );
+                }
+                
+                return new NpgsqlConnection(provider.GetService<IConfiguration>()
+                    ?.GetConnectionString("Postgres")
                 );
             }
         );

@@ -135,7 +135,7 @@ The properties of popover button.
 type PopoverButtonProps = {
 	/* Called when the button is pressed. */
 	onClick?: () => void,
-	/* Whether or not the button should grab focus on appear. */
+	/* Whether the button should grab focus on appear. */
 	focus?: boolean,
 	/* The children of the popover button component. */
 	children: React.ReactNode

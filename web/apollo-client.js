@@ -5,11 +5,13 @@ import {getCookie} from "cookies-next";
 import {createClient} from 'graphql-ws';
 import {getMainDefinition} from "@apollo/client/utilities";
 
-const url = "relics-27392ddfcb64.herokuapp.com";
+// eslint-disable-next-line no-undef
+const useSsl = !(process.env.NEXT_PUBLIC_API_SSL.toLowerCase() === "false");
 
 let timedOut;
 const wsLink = new GraphQLWsLink(createClient({
-    url: `wss://${url}/graphql`,
+    // eslint-disable-next-line no-undef
+    url: `ws${useSsl ? "s" : ""}://${process.env.NEXT_PUBLIC_API_URL}/graphql`,
     lazy: true,
     keepAlive: 10_000,
     retryAttempt: 30,
@@ -40,7 +42,8 @@ const wsLink = new GraphQLWsLink(createClient({
 }));
 
 const baseHttpLink = createHttpLink({
-    uri: `https://${url}/graphql`
+    // eslint-disable-next-line no-undef
+    uri: `http${useSsl ? "s" : ""}://${process.env.NEXT_PUBLIC_API_URL}/graphql`
 });
 
 const authLink = setContext(async (_, { headers }) => {

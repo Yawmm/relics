@@ -1,11 +1,10 @@
 import {Category, Project} from "@/lib/types";
 import AddIcon from "@/components/Icons/AddIcon";
 import MoreIcon from "@/components/Icons/MoreIcon";
-import Description from "@/components/Text/Description";
 import React, {RefObject, useRef} from "react";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditIcon from "@/components/Icons/EditIcon";
-import TaskItem from "@/components/App/Projects/TaskItem";
+import TaskItem from "@/components/App/Items/TaskItem";
 import {removeCategory} from "@/lib/projects";
 import Popover, {PopoverModalHandle} from "@/components/Input/Modals/Popover";
 import {DialogModalHandle} from "@/components/Input/Modals/Dialog";
@@ -85,9 +84,9 @@ export default function CategoryItem({ category, project, confirmationDialog, on
 							/>
 							)
 						: (
-							<Description>
+							<p>
 								No tasks are linked to this category.
-							</Description>
+							</p>
 						)
 					}
 				</div>

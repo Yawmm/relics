@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 import LoaderIcon from "@/components/Icons/LoaderIcon";
-import {motion} from "framer-motion"
+import {motion} from "framer-motion";
 
 /*
 A spinning loading component to show the user that data is loading.

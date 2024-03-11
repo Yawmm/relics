@@ -6,5 +6,5 @@ export default function CommentIcon(props: any) {
 				fill="currentColor"
 			/>
 		</svg>
-	)
+	);
 }

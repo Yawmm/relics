@@ -14,8 +14,8 @@ import {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDia
 import {useUser} from "@/lib/hooks";
 import CommentIcon from "@/components/Icons/CommentIcon";
 import CommentDialog from "@/components/App/Dialogs/Tasks/CommentDialog";
-import CommentItem from "@/components/App/Projects/CommentItem";
-import TagItem from "@/components/App/Projects/TagItem";
+import CommentItem from "@/components/App/Items/CommentItem";
+import TagItem from "@/components/App/Items/TagItem";
 import TagIcon from "@/components/Icons/TagIcon";
 import TagDialog from "@/components/App/Dialogs/Projects/Tags/TagDialog";
 

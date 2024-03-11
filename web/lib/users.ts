@@ -55,19 +55,6 @@ export const TEAM_INVITES_SUBSCRIPTION = gql`
 	}
 `;
 
-export async function getUser(
-	uuid: string
-) {
-	const { data } = await client.query({
-		query: GET_USER_QUERY,
-		variables: {
-			id: uuid
-		}
-	});
-
-	return data.user;
-}
-
 export async function registerUser(
 	username: string,
 	email: string,
@@ -126,7 +113,7 @@ export async function loginPasswordUser(
 export async function removeUser(
 	id: string,
 ) {
-	const { data } = await client.mutate({
+	await client.mutate({
 		mutation: gql`
         mutation RemoveUser($id: ID!) {
 			removeUser(input: {user: $id}) {

@@ -1,12 +1,12 @@
 import {Invite, Member, Project} from "@/lib/types";
 import Dialog, {DialogModalHandle} from "@/components/Input/Modals/Dialog";
 import React, {FormEvent, RefObject, useRef, useState} from "react";
-import MemberItem from "@/components/App/Projects/MemberItem";
+import MemberItem from "@/components/App/Items/MemberItem";
 import Button from "@/components/Input/Button";
 import AddIcon from "@/components/Icons/AddIcon";
 import RemoveIcon from "@/components/Icons/RemoveIcon";
 import {kickProjectMember, leaveProject, revokeProjectInvite, sendProjectInvite} from "@/lib/projects";
-import {SentInviteItem} from "@/components/App/Projects/InviteItem";
+import {SentInviteItem} from "@/components/App/Items/InviteItem";
 import {useRouter} from "next/navigation";
 import {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
 import InviteMemberDialog from "@/components/App/Dialogs/Members/InviteMemberDialog";

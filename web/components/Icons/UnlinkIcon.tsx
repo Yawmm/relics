@@ -6,5 +6,5 @@ export default function UnlinkIcon(props: any) {
 				fill="currentColor"
 			/>
 		</svg>
-	)
+	);
 }

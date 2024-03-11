@@ -37,7 +37,7 @@ type DialogModalProps = {
 Used to display a modal dialog to the user, with a back overlay to grab the user's attention.
  */
 const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onOpen, onClose, children } : DialogModalProps, ref) => {
-	/* Whether or not the dialog modal is shown to the user. */
+	/* Whether the dialog modal is shown to the user. */
 	const [isShown, setIsShown] = useState<boolean>(false);
 
 	/*
@@ -96,7 +96,7 @@ const DialogModal = forwardRef<DialogModalHandle, DialogModalProps>(({ onOpen, o
 });
 
 /*
-The properties of dialog forms.
+The properties of dialog form.
  */
 type DialogFormProps = {
 	onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -115,7 +115,7 @@ const DialogForm = ({ onSubmit, children } : DialogFormProps) => {
 };
 
 /*
-The properties of dialog sections (columns, rows, etc.).
+The properties of dialog section (columns, rows, etc.).
  */
 type DialogSectionProps = {
 	children: React.ReactNode

@@ -5,5 +5,5 @@ export default function LogoIcon(props: any) {
 			<path d="M0 10L80 70L160 10H0Z" fill="#D4D4D8"/>
 			<path d="M0 10L80 70V150L0 10Z" fill="#A1A1AA"/>
 		</svg>
-	)
+	);
 }

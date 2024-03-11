@@ -31,7 +31,7 @@ type SheetModalProps = {
 }
 
 const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, children } : SheetModalProps, ref) => {
-	/* Whether or not the sheet modal is shown to the user. */
+	/* Whether the sheet modal is shown to the user. */
 	const [isShown, setIsShown] = useState<boolean>(false);
 	/* The current height of the modal. */
 	const [height, setHeight] = useState<number>(200);
@@ -89,7 +89,7 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 					<motion.div
 						className={"fixed bottom-0 w-full h-fit z-40 pointer-events-none"}
 
-						onDragEnd={(e, info) => closeSheet(info)}
+						onDragEnd={(_, info) => closeSheet(info)}
 
 						dragControls={barDragControls}
 						dragConstraints={rootRef}
@@ -123,7 +123,7 @@ const SheetModal = forwardRef<SheetModalHandle, SheetModalProps>(({ onClose, chi
 
 
 /*
-The properties of sheet sections (columns, rows, etc.).
+The properties of sheet section (columns, rows, etc.).
  */
 type SheetSectionProps = {
 	children: React.ReactNode

@@ -2,7 +2,6 @@
 
 import InputField from "@/components/Input/InputField";
 import Button from "@/components/Input/Button";
-import AddIcon from "@/components/Icons/AddIcon";
 import {loginPasswordUser, registerUser} from "@/lib/users";
 import {setCookie} from "cookies-next";
 import {useRouter} from "next/navigation";

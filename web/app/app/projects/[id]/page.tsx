@@ -7,7 +7,7 @@ import AddIcon from "@/components/Icons/AddIcon";
 import {Category, Project, Tag, Task} from "@/lib/types";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {DialogModalHandle} from "@/components/Input/Modals/Dialog";
-import CategoryItem from "@/components/App/Projects/CategoryItem";
+import CategoryItem from "@/components/App/Items/CategoryItem";
 import {useUser} from "@/lib/hooks";
 import CreateTaskDialog from "@/components/App/Dialogs/Tasks/CreateTaskDialog";
 import CreateCategoryDialog from "@/components/App/Dialogs/Projects/Categories/CreateCategoryDialog";
@@ -19,16 +19,17 @@ import {useRouter} from "next/navigation";
 import ItemDialog from "@/components/App/Dialogs/ItemDialog";
 import EditProjectDialog from "@/components/App/Dialogs/Projects/EditProjectDialog";
 import ConfirmationDialog, {ConfirmationDialogHandle} from "@/components/App/Dialogs/ConfirmationDialog";
-import TaskItem from "@/components/App/Projects/TaskItem";
+import TaskItem from "@/components/App/Items/TaskItem";
 import UserIcon from "@/components/Icons/UserIcon";
 import TeamDialog from "@/components/App/Dialogs/Teams/TeamDialog";
 import TeamIcon from "@/components/Icons/TeamIcon";
 import {useProjectQuery} from "@/hooks/queryHooks";
 import {useProjectSubscription} from "@/hooks/subscriptionHooks";
 import CreateTagDialog from "@/components/App/Dialogs/Projects/Tags/CreateTagDialog";
-import TagItem from "@/components/App/Projects/TagItem";
+import TagItem from "@/components/App/Items/TagItem";
 import FilterIcon from "@/components/Icons/FilterIcon";
 import FilterProjectDialog, {ProjectFilter} from "@/components/App/Dialogs/Projects/FilterProjectDialog";
+import Head from "next/head";
 
 
 export default function Project({ params: { id } }: { params: { id: string }}) {

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 import {useEffect, useState} from "react";
-import {CookieValueTypes, deleteCookie, getCookie, getCookies, setCookie} from "cookies-next";
+import {CookieValueTypes, deleteCookie, getCookie, getCookies} from "cookies-next";
 import {User} from "@/lib/types";
 import {useRouter} from "next/navigation";
 import client from "@/apollo-client";
@@ -34,9 +34,9 @@ export const useUser = () => {
 	} as UserData);
 
 	function parseToken(raw: string) {
-		let base64Url = raw.split('.')[1];
-		let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-		let body = decodeURIComponent(window
+		const base64Url = raw.split('.')[1];
+		const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+		const body = decodeURIComponent(window
 			.atob(base64)
 			.split('')
 			.map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
@@ -49,14 +49,14 @@ export const useUser = () => {
 	async function updateUser(token: CookieValueTypes) {
 		if (typeof token === "string")
 		{
-			let parsedToken = parseToken(token);
-			let id = parsedToken.sub;
+			const parsedToken = parseToken(token);
+			const id = parsedToken.sub;
 
 			if (user.user?.id === id)
 				return;
 
 			try {
-				let { data } = await client.query<{ user: User }>({
+				const { data } = await client.query<{ user: User }>({
 					query: GET_USER_QUERY,
 					variables: {
 						id: id
@@ -75,12 +75,12 @@ export const useUser = () => {
 							}
 						},
 						user: data.user
-					})
+					});
 				}
 				return;
 			} catch {
-				await deleteCookie("token")
-				await push("/sign-in")
+				deleteCookie("token");
+				push("/sign-in");
 			}
 		} else if (user.loading || user.authentication.isLoggedIn) {
 			setUser({
@@ -91,14 +91,14 @@ export const useUser = () => {
 					token: null
 				},
 				user: null
-			})
+			});
 		}
 	}
 
 	useEffect(() => {
-		let token = getCookie("token");
-		updateUser(token)
-	}, [getCookies()])
+		const token = getCookie("token");
+		(async () => await updateUser(token))();
+	}, [getCookies()]);
 
-	return user
-}
+	return user;
+};
